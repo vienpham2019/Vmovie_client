@@ -18,3 +18,54 @@
 }
 
 /* End Input */
+
+/* Animate */
+.animate__animated {
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+}
+
+.animate__fadeInRight {
+  animation-name: fadeInRight;
+  transform: translateX(100%);
+}
+
+@keyframes fadeInRight {
+  100% {
+    transform: translateX(0%);
+  }
+}
+
+.animate__fadeInLeft {
+  animation-name: fadeInLeft;
+  transform: translateX(0%);
+}
+
+@keyframes fadeInLeft {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate__fadeIn {
+  animation-name: fadeIn;
+  opacity: 0;
+}
+
+@keyframes fadeIn {
+  100% {
+    opacity: 1;
+  }
+}
+
+.animate__fadeOut {
+  animation-name: fadeOut;
+  opacity: 1;
+}
+
+@keyframes fadeOut {
+  100% {
+    opacity: 0;
+  }
+}
+/* End Animate */

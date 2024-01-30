@@ -12,6 +12,7 @@ const SignUp = () => {
   return (
     <>
       <div className="text-center grid gap-[1.3rem] mx-[0.2rem] w-[17rem] mobile:w-[25rem] mobile:px-[3rem]">
+        <input type="text" className="input" placeholder="Name" />
         <input type="text" className="input" placeholder="Email" />
         <input type="text" className="input" placeholder="Password" />
         <ul className="text-gray-400 bg-[#2b2b31] p-2 text-[0.8rem] rounded-lg grid text-start">
