@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Button */
+.btn-disabled {
+  @apply opacity-50 cursor-not-allowed;
+}
+.btn-blue {
+  @apply bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded h-[3rem] uppercase text-sm;
+}
+
+/* End Button */
+
+/* Input */
+.input {
+  @apply rounded px-[1rem] h-[2.5rem] bg-[#2b2b31] outline-none text-white focus:border focus:border-cyan-500;
+}
+
+/* End Input */
