@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
 import bg from "../assets/bg1.jpeg";
-import Logo from "./Logo";
+import Logo from "../components/Logo";
 
 const AuthLayout = () => {
   return (
