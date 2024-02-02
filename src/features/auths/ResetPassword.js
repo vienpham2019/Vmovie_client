@@ -2,8 +2,11 @@ import { Link } from "react-router-dom";
 import CheckBox from "../../components/CheckBox";
 import PasswordRule from "../../components/PasswordRule";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { openModal } from "../../components/modal/ModalSlice";
 
 const ResetPassword = () => {
+  const dispatch = useDispatch();
   const [password, changePassword] = useState("");
   return (
     <>
@@ -28,9 +31,14 @@ const ResetPassword = () => {
         <div className="flex items-center gap-[0.5rem] text-[1rem] text-gray-300">
           <CheckBox />
           <span>I agree to the</span>
-          <Link to={"/privacy"} className="text-cyan-500">
+          <span
+            className="text-cyan-500 cursor-pointer"
+            onClick={() => {
+              dispatch(openModal("PRIVATE_POLICY_MODAL"));
+            }}
+          >
             Privacy policy
-          </Link>
+          </span>
         </div>
         <button className="btn-blue">Reset Password</button>
       </div>

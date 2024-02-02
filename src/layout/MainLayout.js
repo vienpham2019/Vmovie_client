@@ -1,20 +1,12 @@
 import { Outlet } from "react-router-dom";
-import { useEffect, useState } from "react";
-import ErrorMessage from "../components/ErrorMessage";
-import SuccessMessage from "../components/SuccessMessage";
+import Modal from "../components/modal/Modal";
+import { useSelector } from "react-redux";
 
 const MainLayout = () => {
-  const [displayMessage, setDisplayMessage] = useState(true);
-  //   useEffect(() => {
-  //     const timeoutId = setTimeout(() => {
-  //       setDisplayMessage(false);
-  //     }, 3000);
-  //     return () => clearTimeout(timeoutId);
-  //   }, []);
-
+  const { isModalOpen } = useSelector((state) => state.modal);
   return (
     <div className="relative overflow-x-hidden">
-      {displayMessage && <ErrorMessage message="success" />}
+      {isModalOpen && <Modal />}
       <Outlet />
     </div>
   );
