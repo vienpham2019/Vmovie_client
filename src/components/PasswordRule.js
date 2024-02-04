@@ -1,31 +1,49 @@
 import { useEffect, useState } from "react";
 import { GiCheckMark, GiCrossedBones } from "react-icons/gi";
+import { passwordValidate } from "../util/formValidate";
+
 const PasswordRule = ({ password = "" }) => {
-  const [validationResults, setValidationResults] = useState([]);
-  const passwordRule = [
-    [`^(?=.*[^a-zA-Z]).+$`, "Be at least 8 characters long."],
-    [`^(?=.*[A-Z]).+$`, "Contain at least one uppercase letter."],
-    [`^(?=.*[a-z]).+$`, "Contain at least one lowercase letter."],
-    [`^(?=.*\\d).+$`, "Contain at least one digit (0-9)."],
-    [
-      `^(?=.*[!@#$%^&*]).+$`,
-      "Contain at least one special character (!@#$%^&*).",
-    ],
-  ];
+  const [validationResults, setValidationResults] = useState({
+    isLengthValid: {
+      valid: false,
+      description: "Be at least 8 characters long.",
+    },
+    hasUppercase: {
+      valid: false,
+      description: "Contain at least one uppercase letter.",
+    },
+    hasLowercase: {
+      valid: false,
+      description: "Contain at least one lowercase letter.",
+    },
+    hasDigit: {
+      valid: false,
+      description: "Contain at least one digit (0-9).",
+    },
+    hasSpecialChar: {
+      valid: false,
+      description: "Contain at least one special character (!@#$%^&*).",
+    },
+  });
 
   useEffect(() => {
-    const results = passwordRule.map((rule) => ({
-      valid: new RegExp(rule[0]).test(password),
-      description: rule[1],
-    }));
-
-    setValidationResults(results);
+    const passwordValidity = passwordValidate(password);
+    setValidationResults((prevData) => {
+      const updatedResults = {};
+      Object.entries(passwordValidity).forEach(([key, value]) => {
+        updatedResults[key] = {
+          valid: value,
+          description: prevData[key].description,
+        };
+      });
+      return updatedResults;
+    });
   }, [password]);
 
   return (
     <ul className="text-gray-400 bg-[#2b2b31] p-2 text-[0.8rem] rounded-lg grid text-start">
       <span>Password Requirements</span>
-      {validationResults.map((result, index) => (
+      {Object.entries(validationResults).map(([_, result], index) => (
         <li
           key={index}
           className={`flex items-center gap-2 ${

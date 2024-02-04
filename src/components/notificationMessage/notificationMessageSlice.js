@@ -3,17 +3,26 @@ import { createSlice } from "@reduxjs/toolkit";
 export const notificationMessage = createSlice({
   name: "notificationMessage",
   initialState: {
-    message: "Password and confirm password not match!",
-    messageType: "Error",
+    message: "",
+    messageType: "",
+    delayTime: 3000,
   },
   reducers: {
     setMessage: (state, action) => {
       state.message = action.payload.message;
-      state.messageType = state.payload.messageType;
+      state.messageType = action.payload.messageType;
+      if (action.payload?.delayTime) {
+        state.delayTime = action.payload.delayTime;
+      }
+    },
+    resetMessage: (state) => {
+      state.message = "";
+      state.messageType = "";
+      state.delayTime = 3000;
     },
   },
 });
 
-export const { setMessage } = notificationMessage.actions;
+export const { setMessage, resetMessage } = notificationMessage.actions;
 
 export default notificationMessage.reducer;
