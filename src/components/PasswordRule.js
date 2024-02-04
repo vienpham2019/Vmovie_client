@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { GiCheckMark, GiCrossedBones } from "react-icons/gi";
-
 const PasswordRule = ({ password = "" }) => {
   const [validationResults, setValidationResults] = useState([]);
   const passwordRule = [
@@ -25,6 +24,7 @@ const PasswordRule = ({ password = "" }) => {
 
   return (
     <ul className="text-gray-400 bg-[#2b2b31] p-2 text-[0.8rem] rounded-lg grid text-start">
+      <span>Password Requirements</span>
       {validationResults.map((result, index) => (
         <li
           key={index}
