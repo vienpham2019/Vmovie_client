@@ -7,6 +7,7 @@ import { openModal } from "../../components/modal/ModalSlice";
 import ConfirmPasswordRule from "../../components/ConfirmPasswordRule";
 import { passwordValidate } from "../../util/formValidate";
 import { setMessage } from "../../components/notificationMessage/notificationMessageSlice";
+import { separatedWords } from "../../util/string";
 
 const SignUp = () => {
   const dispatch = useDispatch();
@@ -80,6 +81,7 @@ const SignUp = () => {
       });
       return;
     }
+    setFormData(initFormData);
   };
   return (
     <>
@@ -98,7 +100,7 @@ const SignUp = () => {
               onFocus={handleFocus}
               required
             />
-            <span>{name} *</span>
+            <span>{separatedWords(name)} *</span>
             {name === "password" && formData.password.focus && (
               <PasswordRule password={formData.password.value} />
             )}
