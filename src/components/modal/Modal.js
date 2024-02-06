@@ -26,7 +26,7 @@ const Modal = () => {
       >
         <div className="flex justify-between">
           <h2 className="text-lg capitalize">
-            {modalContentTitle.toLowerCase().replace(/_/g, " ")}
+            {modalContentTitle?.toLowerCase().replace(/_/g, " ")}
           </h2>
           <span
             className="cursor-pointer text-lg"

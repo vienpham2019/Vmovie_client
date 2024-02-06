@@ -1,12 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 import PrivatePolicy from "../PrivatePolicy";
+import ResetPasswordModal from "../../features/auths/ResetPasswordModal";
 
 export const modalSlice = createSlice({
   name: "modal",
   initialState: {
-    isModalOpen: false,
-    modalContent: null,
-    modalContentTitle: null,
+    isModalOpen: true,
+    modalContent: <ResetPasswordModal />,
+    modalContentTitle: "",
   },
   reducers: {
     openModal: (state, action) => {
@@ -32,7 +33,8 @@ const getModalComponent = (modalIdentifier) => {
           <PrivatePolicy />
         </div>
       );
-    // Add more cases for other modals
+    case "RESET_PASSWORD_MODAL":
+      return <ResetPasswordModal />;
 
     default:
       return null;
