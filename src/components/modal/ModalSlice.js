@@ -5,9 +5,9 @@ import ResetPasswordModal from "../../features/auths/ResetPasswordModal";
 export const modalSlice = createSlice({
   name: "modal",
   initialState: {
-    isModalOpen: true,
-    modalContent: <ResetPasswordModal />,
-    modalContentTitle: "",
+    isModalOpen: false,
+    modalContent: null,
+    modalContentTitle: null,
   },
   reducers: {
     openModal: (state, action) => {

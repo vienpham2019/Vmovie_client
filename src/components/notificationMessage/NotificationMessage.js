@@ -54,7 +54,7 @@ const NotificationMessage = () => {
   return (
     <>
       {message && (
-        <div className="absolute left-1/2 top-[1rem] transform -translate-x-1/2">
+        <div className="fixed left-1/2 top-[1rem] transform -translate-x-1/2">
           <div
             className={`relative w-[20rem] ${secondary_color} text-black overflow-hidden`}
           >

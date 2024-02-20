@@ -23,6 +23,12 @@ ol ol > li:before {
 }
 /* End List */
 
+/* Skeleton */
+.skeleton {
+  @apply bg-slate-700 rounded;
+}
+/* End Skeleton */
+
 /* Button */
 .btn-disabled {
   @apply opacity-50 cursor-not-allowed;
