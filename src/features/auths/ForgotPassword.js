@@ -1,7 +1,10 @@
 import { Link } from "react-router-dom";
 import CheckBox from "../../components/CheckBox";
 import { useDispatch } from "react-redux";
-import { openModal } from "../../components/modal/ModalSlice";
+import {
+  modalComponentEnum,
+  openModal,
+} from "../../components/modal/ModalSlice";
 import { useState } from "react";
 
 const ForgotPassword = () => {
@@ -50,7 +53,7 @@ const ForgotPassword = () => {
           <span
             className="text-cyan-500 cursor-pointer"
             onClick={() => {
-              dispatch(openModal("PRIVATE_POLICY_MODAL"));
+              dispatch(openModal(modalComponentEnum.PRIVATE_POLICY));
             }}
           >
             Privacy policy

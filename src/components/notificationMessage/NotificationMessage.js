@@ -1,13 +1,12 @@
 import { useDispatch, useSelector } from "react-redux";
-import { RxCross2, RxInfoCircled } from "react-icons/rx";
+import { RxCross2 } from "react-icons/rx";
+
 import {
-  PiWarningOctagonLight,
-  PiWarningLight,
-  PiCheckCircleLight,
-} from "react-icons/pi";
-import { resetMessage } from "./notificationMessageSlice";
+  notificationMessageEnum,
+  resetMessage,
+} from "./notificationMessageSlice";
 import { useEffect } from "react";
-let timeoutId;
+
 const NotificationMessage = () => {
   const dispatch = useDispatch();
   const { message, messageType, delayTime } = useSelector(
@@ -15,25 +14,53 @@ const NotificationMessage = () => {
   );
   let primary_color, secondary_color, icon;
   switch (messageType) {
-    case "Error":
+    case notificationMessageEnum.ERROR:
       primary_color = "bg-red-500";
       secondary_color = "bg-red-300";
-      icon = <PiWarningOctagonLight />;
+      icon = (
+        <lord-icon
+          src="https://cdn.lordicon.com/ygvjgdmk.json"
+          trigger="in"
+          delay="10"
+          state="in-error"
+        ></lord-icon>
+      );
       break;
-    case "Success":
+    case notificationMessageEnum.SUCCESS:
       primary_color = "bg-green-500";
       secondary_color = "bg-green-300";
-      icon = <PiCheckCircleLight />;
+      icon = (
+        <lord-icon
+          src="https://cdn.lordicon.com/oqdmuxru.json"
+          trigger="in"
+          delay="10"
+          state="in-check"
+        ></lord-icon>
+      );
       break;
-    case "Info":
+    case notificationMessageEnum.INFO:
       primary_color = "bg-blue-500";
       secondary_color = "bg-blue-300";
-      icon = <RxInfoCircled />;
+      icon = (
+        <lord-icon
+          src="https://cdn.lordicon.com/yxczfiyc.json"
+          trigger="in"
+          delay="10"
+          state="in-info"
+        ></lord-icon>
+      );
       break;
-    case "Warning":
+    case notificationMessageEnum.WARNING:
       primary_color = "bg-yellow-500";
       secondary_color = "bg-yellow-300";
-      icon = <PiWarningLight />;
+      icon = (
+        <lord-icon
+          src="https://cdn.lordicon.com/vihyezfv.json"
+          trigger="in"
+          delay="10"
+          state="in-warning"
+        ></lord-icon>
+      );
       break;
     default:
       primary_color = "";
@@ -46,10 +73,11 @@ const NotificationMessage = () => {
   };
 
   useEffect(() => {
+    let timeoutId; // Declare timeoutId using let
     clearTimeout(timeoutId);
     timeoutId = setTimeout(handleClose, delayTime);
     return () => clearTimeout(timeoutId);
-  }, [message, messageType]);
+  }, [message, messageType, delayTime, handleClose]); // Include all dependencies
 
   return (
     <>
@@ -65,7 +93,7 @@ const NotificationMessage = () => {
               />
 
               <div
-                className={`text-[1.7rem] w-[2rem] h-[2rem] flex justify-center items-center rounded-lg  ${secondary_color}`}
+                className={`w-[2rem] h-[2rem] flex justify-center items-center rounded-lg  ${secondary_color}`}
               >
                 {icon}
               </div>

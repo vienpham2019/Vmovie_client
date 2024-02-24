@@ -2,6 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Icon */
+.svg_icon path:first-child {
+  stroke-dashoffset: 100%;
+  stroke-dasharray: 100%;
+  animation: 1s ease-in-out forwards full_stroke;
+}
+
+.svg_icon path:nth-child(2) {
+  stroke-dashoffset: 57;
+  stroke-dasharray: 57;
+  animation: 1s ease-in-out forwards full_stroke;
+}
+
+@keyframes full_stroke {
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+/* End Icon */
+
 /* List */
 ol {
   counter-reset: item;
@@ -47,7 +67,11 @@ ol ol > li:before {
   @apply text-[0.8rem] px-[0.5rem] text-gray-200 absolute -top-3 left-3 bg-[#2b2b31] rounded capitalize;
 }
 .input {
-  @apply rounded px-[1rem] h-[2.5rem] bg-[#2b2b31] outline-none text-white border focus:border-cyan-500;
+  @apply rounded pr-[2rem] pl-[1rem] h-[2.5rem] bg-[#2b2b31] outline-none text-white border focus:border-cyan-500;
+}
+
+.password_type {
+  @apply absolute top-0 right-0 h-[2.5rem] flex items-center p-2 cursor-pointer text-[1.4rem] text-gray-500;
 }
 
 .input:focus + span {

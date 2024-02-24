@@ -1,13 +1,21 @@
 import { Link } from "react-router-dom";
 import CheckBox from "../../components/CheckBox";
 import PasswordRule from "../../components/PasswordRule";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { openModal } from "../../components/modal/ModalSlice";
+import {
+  modalComponentEnum,
+  openModal,
+} from "../../components/modal/ModalSlice";
 import ConfirmPasswordRule from "../../components/ConfirmPasswordRule";
 import { passwordValidate } from "../../util/formValidate";
-import { setMessage } from "../../components/notificationMessage/notificationMessageSlice";
+import {
+  notificationMessageEnum,
+  setMessage,
+} from "../../components/notificationMessage/notificationMessageSlice";
 import { separatedWords } from "../../util/string";
+import { IoEyeOff, IoEye } from "react-icons/io5";
+import { useSignupMutation } from "./authApiSlice";
 
 const SignUp = () => {
   const dispatch = useDispatch();
@@ -23,6 +31,31 @@ const SignUp = () => {
     },
   };
   const [formData, setFormData] = useState(initFormData);
+  const [signup, { isLoading }] = useSignupMutation();
+
+  useEffect(
+    () => {
+      const isInvalid = Object.values(formData).some(
+        (field) => field.validate === "invalid"
+      );
+
+      if (isInvalid) {
+        setFormData((prevData) => {
+          const updatedFormData = {};
+          for (const key in prevData) {
+            if (prevData.hasOwnProperty(key)) {
+              updatedFormData[key] = {
+                ...prevData[key],
+                validate: "",
+              };
+            }
+          }
+          return updatedFormData;
+        });
+      }
+    },
+    Object.values(formData).map((field) => field.value)
+  );
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -42,6 +75,10 @@ const SignUp = () => {
         ...formData[key],
         focus: key === name,
         validate: "",
+        type:
+          (key === "password" || key === "confirmPassword") && key !== name
+            ? "password"
+            : formData[key].type,
       };
       return acc;
     }, {});
@@ -60,7 +97,7 @@ const SignUp = () => {
     dispatch(setMessage({ message, messageType: "Error", delayTime: 4000 }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (
       Object.values(passwordValidate(formData.password.value)).some(
@@ -81,8 +118,64 @@ const SignUp = () => {
       });
       return;
     }
-    setFormData(initFormData);
+
+    try {
+      const { email, password, name } = formData;
+      const res = await signup({
+        name: name.value,
+        email: email.value,
+        password: password.value,
+      }).unwrap();
+      dispatch(
+        setMessage({
+          message: res.metadata.message,
+          messageType: notificationMessageEnum.SUCCESS,
+          delayTime: 4000,
+        })
+      );
+      console.log(res.metadata.message);
+      setFormData(initFormData);
+    } catch (error) {
+      console.log(error);
+      // setFormData((prevData) => ({
+      //   email: {
+      //     ...prevData["email"],
+      //     validate: "invalid",
+      //   },
+      //   password: {
+      //     ...prevData["password"],
+      //     validate: "invalid",
+      //   },
+      // }));
+    }
   };
+
+  const handlePasswordType = (name, passwordType) => {
+    const updatedFormData = formData;
+    for (let key in formData) {
+      if (key === "password" || key === "confirmPassword") {
+        updatedFormData[key].type = key !== name ? "password" : passwordType;
+        updatedFormData[key].focus = key === name;
+      }
+    }
+
+    setFormData(() => ({ ...updatedFormData }));
+  };
+
+  const passwordType = (name) => {
+    if (name !== "password" && name !== "confirmPassword") return;
+    const { type } = formData[name];
+    return (
+      <div className="password_type">
+        {type === "text" ? (
+          <IoEye onClick={() => handlePasswordType(name, "password")} />
+        ) : (
+          <IoEyeOff onClick={() => handlePasswordType(name, "text")} />
+        )}
+      </div>
+    );
+  };
+
   return (
     <>
       <form
@@ -101,6 +194,7 @@ const SignUp = () => {
               required
             />
             <span>{separatedWords(name)} *</span>
+            {passwordType(name)}
             {name === "password" && formData.password.focus && (
               <PasswordRule password={formData.password.value} />
             )}
@@ -115,7 +209,7 @@ const SignUp = () => {
           <span
             className="text-cyan-500 cursor-pointer"
             onClick={() => {
-              dispatch(openModal("PRIVATE_POLICY_MODAL"));
+              dispatch(openModal(modalComponentEnum.PRIVATE_POLICY));
             }}
           >
             Privacy policy

@@ -8,6 +8,7 @@ import { passwordValidate } from "../../util/formValidate";
 import { setMessage } from "../../components/notificationMessage/notificationMessageSlice";
 import ConfirmPasswordRule from "../../components/ConfirmPasswordRule";
 import { separatedWords } from "../../util/string";
+import { IoEye, IoEyeOff } from "react-icons/io5";
 
 const ResetPassword = () => {
   const initFormData = {
@@ -80,6 +81,29 @@ const ResetPassword = () => {
     }
     setFormData(initFormData);
   };
+
+  const handlePasswordType = (passwordType) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      password: {
+        ...prevData["password"],
+        type: passwordType,
+      },
+    }));
+  };
+
+  const passwordType = () => {
+    const { type } = formData["password"];
+    return (
+      <div className="password_type">
+        {type === "text" ? (
+          <IoEye onClick={() => handlePasswordType("password")} />
+        ) : (
+          <IoEyeOff onClick={() => handlePasswordType("text")} />
+        )}
+      </div>
+    );
+  };
   return (
     <>
       <form
@@ -97,6 +121,7 @@ const ResetPassword = () => {
               onFocus={handleFocus}
               required
             />
+            {name === "password" && passwordType()}
             <span>{separatedWords(name)} *</span>
             {name === "password" && formData.password.focus && (
               <PasswordRule password={formData.password.value} />

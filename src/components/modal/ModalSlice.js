@@ -6,18 +6,15 @@ export const modalSlice = createSlice({
   name: "modal",
   initialState: {
     isModalOpen: false,
-    modalContent: null,
     modalContentTitle: null,
   },
   reducers: {
     openModal: (state, action) => {
       state.isModalOpen = true;
-      state.modalContent = getModalComponent(action.payload);
       state.modalContentTitle = action.payload;
     },
     closeModal: (state) => {
       state.isModalOpen = false;
-      state.modalContent = null;
       state.modalContentTitle = null;
     },
   },
@@ -25,20 +22,28 @@ export const modalSlice = createSlice({
 
 export const { openModal, closeModal } = modalSlice.actions;
 
+const modalComponentEnum = Object.freeze({
+  PRIVATE_POLICY: "PRIVATE_POLICY_MODAL",
+  RESET_PASSWORD: "RESET_PASSWORD_MODAL",
+  // Add more roles as needed
+});
+
 const getModalComponent = (modalIdentifier) => {
   switch (modalIdentifier) {
-    case "PRIVATE_POLICY_MODAL":
+    case modalComponentEnum.PRIVATE_POLICY:
       return (
         <div className="max-w-[50rem] max-h-[50rem]">
           <PrivatePolicy />
         </div>
       );
-    case "RESET_PASSWORD_MODAL":
+    case modalComponentEnum.RESET_PASSWORD:
       return <ResetPasswordModal />;
 
     default:
       return null;
   }
 };
+
+export { getModalComponent, modalComponentEnum };
 
 export default modalSlice.reducer;

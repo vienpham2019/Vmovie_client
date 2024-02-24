@@ -1,5 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const notificationMessageEnum = Object.freeze({
+  ERROR: "Error",
+  SUCCESS: "Success",
+  INFO: "Info",
+  WARNING: "Warning",
+  // Add more roles as needed
+});
+
 export const notificationMessage = createSlice({
   name: "notificationMessage",
   initialState: {
@@ -24,5 +32,7 @@ export const notificationMessage = createSlice({
 });
 
 export const { setMessage, resetMessage } = notificationMessage.actions;
+
+export { notificationMessageEnum };
 
 export default notificationMessage.reducer;

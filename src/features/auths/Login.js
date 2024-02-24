@@ -1,9 +1,14 @@
 import { Link } from "react-router-dom";
-import CheckBox from "../../components/CheckBox";
 import { useEffect, useState } from "react";
-import { setMessage } from "../../components/notificationMessage/notificationMessageSlice";
 import { useDispatch } from "react-redux";
 import { useLoginMutation } from "./authApiSlice";
+import AuthSkeleton from "./AuthSkeleton";
+import { IoEyeOff, IoEye } from "react-icons/io5";
+import { setCredentials } from "./authSlice";
+import {
+  notificationMessageEnum,
+  setMessage,
+} from "../../components/notificationMessage/notificationMessageSlice";
 
 const Login = () => {
   const initFormData = {
@@ -48,10 +53,19 @@ const Login = () => {
     e.preventDefault();
     try {
       const { email, password } = formData;
-      const { accessToken } = await login({
+      const res = await login({
         email: email.value,
         password: password.value,
       }).unwrap();
+      setFormData(initFormData);
+      dispatch(
+        setMessage({
+          message: "Login Success",
+          messageType: notificationMessageEnum.SUCCESS,
+          delayTime: 4000,
+        })
+      );
+      dispatch(setCredentials(res.metadata));
     } catch (error) {
       setFormData((prevData) => ({
         email: {
@@ -66,31 +80,29 @@ const Login = () => {
     }
   };
 
-  if (isLoading)
+  const handlePasswordType = (passwordType) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      password: {
+        ...prevData["password"],
+        type: passwordType,
+      },
+    }));
+  };
+
+  const passwordType = () => {
+    const { type } = formData["password"];
     return (
-      <div className="animate-pulse text-center grid gap-[1.3rem] mx-[0.2rem] w-[17rem] mobile:w-[25rem] mobile:px-[3rem]">
-        {/* Skeleton input fields */}
-        <div className="input_group">
-          <div className="h-8 skeleton"></div>
-        </div>
-        <div className="input_group">
-          <div className="h-8 skeleton"></div>
-        </div>
-        {/* Skeleton remember me checkbox */}
-        <div className="flex items-center gap-[0.5rem] text-[1rem] text-white">
-          <div className="h-4 w-4 skeleton"></div>
-          <div className="h-4 w-20 skeleton"></div>
-        </div>
-        {/* Skeleton sign in button */}
-        <div className="skeleton h-[3rem] flex items-center justify-center font-bold">
-          Loading...
-        </div>
-        <div className="items-center flex flex-col gap-[1rem]">
-          <div className="w-[13rem] h-[1rem] skeleton"></div>
-          <div className="w-[10rem] h-[1.4rem] skeleton"></div>
-        </div>
+      <div className="password_type">
+        {type === "text" ? (
+          <IoEye onClick={() => handlePasswordType("password")} />
+        ) : (
+          <IoEyeOff onClick={() => handlePasswordType("text")} />
+        )}
       </div>
     );
+  };
+  if (isLoading) return <AuthSkeleton inputs={2} checkBox={false} />;
 
   return (
     <>
@@ -108,13 +120,10 @@ const Login = () => {
               onChange={handleChange}
               required
             />
+            {name === "password" && passwordType()}
             <span>{name} *</span>
           </div>
         ))}
-        <div className="flex items-center gap-[0.5rem] text-[1rem] text-gray-300">
-          <CheckBox />
-          <span>Remember me</span>
-        </div>
         <button type="submit" className="btn-blue">
           Sign in
         </button>

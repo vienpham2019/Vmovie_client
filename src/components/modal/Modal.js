@@ -1,14 +1,12 @@
 import { useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { closeModal } from "./ModalSlice";
+import { closeModal, getModalComponent } from "./ModalSlice";
 
 // Icon
 import { RxCross2 } from "react-icons/rx";
 
 const Modal = () => {
-  const { modalContent, modalContentTitle } = useSelector(
-    (state) => state.modal
-  );
+  const { modalContentTitle } = useSelector((state) => state.modal);
   const dispatch = useDispatch();
   const contentRef = useRef(null);
   return (
@@ -36,7 +34,9 @@ const Modal = () => {
           </span>
         </div>
         <hr className="mb-[0.4rem]" />
-        <div className="overflow-auto">{modalContent}</div>
+        <div className="overflow-auto">
+          {getModalComponent(modalContentTitle)}
+        </div>
       </div>
     </div>
   );
