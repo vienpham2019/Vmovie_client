@@ -1,5 +1,8 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { setMessage } from "../../components/notificationMessage/notificationMessageSlice";
+import {
+  notificationMessageEnum,
+  setMessage,
+} from "../../components/notificationMessage/notificationMessageSlice";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: "http://localhost:3055/v1/api",
@@ -19,8 +22,7 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
     api.dispatch(
       setMessage({
         message: result.error.data.message,
-        messageType: "Error",
-        delayTime: 4000,
+        messageType: notificationMessageEnum.ERROR,
       })
     );
   }

@@ -12,59 +12,63 @@ const NotificationMessage = () => {
   const { message, messageType, delayTime } = useSelector(
     (state) => state.notificationMessage
   );
-  let primary_color, secondary_color, icon;
+  let primary_color, text_color, icon;
   switch (messageType) {
     case notificationMessageEnum.ERROR:
       primary_color = "bg-red-500";
-      secondary_color = "bg-red-300";
+      text_color = "text-[#ba0a00]";
       icon = (
         <lord-icon
           src="https://cdn.lordicon.com/ygvjgdmk.json"
           trigger="in"
           delay="10"
           state="in-error"
+          colors="primary:#ba0a00"
         ></lord-icon>
       );
       break;
     case notificationMessageEnum.SUCCESS:
       primary_color = "bg-green-500";
-      secondary_color = "bg-green-300";
+      text_color = "text-[#0cb300]";
       icon = (
         <lord-icon
           src="https://cdn.lordicon.com/oqdmuxru.json"
           trigger="in"
           delay="10"
           state="in-check"
+          colors="primary:#0cb300"
         ></lord-icon>
       );
       break;
     case notificationMessageEnum.INFO:
       primary_color = "bg-blue-500";
-      secondary_color = "bg-blue-300";
+      text_color = "text-[#0077b3]";
       icon = (
         <lord-icon
           src="https://cdn.lordicon.com/yxczfiyc.json"
           trigger="in"
           delay="10"
           state="in-info"
+          colors="primary:#0077b3"
         ></lord-icon>
       );
       break;
     case notificationMessageEnum.WARNING:
       primary_color = "bg-yellow-500";
-      secondary_color = "bg-yellow-300";
+      text_color = "text-[#9ea300]";
       icon = (
         <lord-icon
           src="https://cdn.lordicon.com/vihyezfv.json"
           trigger="in"
           delay="10"
           state="in-warning"
+          colors="primary:#9ea300"
         ></lord-icon>
       );
       break;
     default:
       primary_color = "";
-      secondary_color = "";
+      text_color = "";
       icon = null;
   }
 
@@ -84,22 +88,24 @@ const NotificationMessage = () => {
       {message && (
         <div className="fixed left-1/2 top-[1rem] transform -translate-x-1/2">
           <div
-            className={`relative w-[20rem] ${secondary_color} text-black overflow-hidden`}
+            className={`relative w-[20rem] bg-slate-100 text-black overflow-hidden rounded-sm`}
           >
             <div className="py-[1rem] px-[0.5rem] text-sm flex gap-[0.5rem]">
               <RxCross2
-                className={`absolute p-[0.1rem] right-2 top-2 cursor-pointer text-lg bg-white rounded-full`}
+                className={`absolute p-[0.1rem] right-2 top-2 cursor-pointer text-[1.4rem] rounded-full`}
                 onClick={handleClose}
               />
 
               <div
-                className={`w-[2rem] h-[2rem] flex justify-center items-center rounded-lg  ${secondary_color}`}
+                className={`w-[2rem] h-[2rem] flex justify-center items-center rounded-lg`}
               >
                 {icon}
               </div>
-              <div className="grid gap-1">
-                <h3 className="text-[1rem]">{messageType}</h3>
-                <span className="text-[0.8rem]">{message}</span>
+              <div className="grid gap-1 border-l border-gray-400 pl-3">
+                <h3 className={`text-[1rem] font-bold ${text_color}`}>
+                  {messageType}
+                </h3>
+                <span className="text-[0.8rem] text-gray-800">{message}</span>
               </div>
             </div>
 
@@ -107,6 +113,9 @@ const NotificationMessage = () => {
               key={`${message}${messageType}`}
               className={`absolute w-full h-[0.5rem] ${primary_color} bottom-0 ttl_animate`}
               style={{ animationDuration: `${delayTime / 1000}s` }}
+            ></div>
+            <div
+              className={`absolute w-full h-[0.5rem] ${primary_color} opacity-50 bottom-0`}
             ></div>
           </div>
         </div>

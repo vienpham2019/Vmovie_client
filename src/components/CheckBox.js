@@ -1,4 +1,4 @@
-const CheckBox = () => {
+const CheckBox = ({ isChecked, handleCheckboxChange }) => {
   return (
     <label
       className="relative flex items-center rounded cursor-pointer"
@@ -8,6 +8,8 @@ const CheckBox = () => {
         type="checkbox"
         className="border bg-[#2b2b31] border-gray-500 before:content[''] peer relative h-[1.4rem] aspect-square cursor-pointer appearance-none rounded-lg transition-all before:absolute before:top-2/4 before:left-2/4 before:block before:h-12 before:w-12 before:-translate-y-2/4 before:-translate-x-2/4 before:opacity-0 before:transition-opacity  checked:border-cyan-500"
         id="customStyle"
+        checked={isChecked}
+        onChange={handleCheckboxChange}
       />
       <span className="absolute text-white transition-opacity opacity-0 pointer-events-none top-2/4 left-2/4 -translate-y-2/4 -translate-x-2/4 peer-checked:opacity-100">
         <svg

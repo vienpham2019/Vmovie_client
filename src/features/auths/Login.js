@@ -62,7 +62,6 @@ const Login = () => {
         setMessage({
           message: "Login Success",
           messageType: notificationMessageEnum.SUCCESS,
-          delayTime: 4000,
         })
       );
       dispatch(setCredentials(res.metadata));
@@ -120,8 +119,8 @@ const Login = () => {
               onChange={handleChange}
               required
             />
-            {name === "password" && passwordType()}
             <span>{name} *</span>
+            {name === "password" && passwordType()}
           </div>
         ))}
         <button type="submit" className="btn-blue">

@@ -23,8 +23,8 @@ export const modalSlice = createSlice({
 export const { openModal, closeModal } = modalSlice.actions;
 
 const modalComponentEnum = Object.freeze({
-  PRIVATE_POLICY: "PRIVATE_POLICY_MODAL",
-  RESET_PASSWORD: "RESET_PASSWORD_MODAL",
+  PRIVATE_POLICY: "PRIVATE_POLICY",
+  RESET_PASSWORD: "RESET_PASSWORD",
   // Add more roles as needed
 });
 

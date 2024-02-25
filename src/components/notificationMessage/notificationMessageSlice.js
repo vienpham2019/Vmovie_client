@@ -13,7 +13,7 @@ export const notificationMessage = createSlice({
   initialState: {
     message: "",
     messageType: "",
-    delayTime: 3000,
+    delayTime: 5000,
   },
   reducers: {
     setMessage: (state, action) => {

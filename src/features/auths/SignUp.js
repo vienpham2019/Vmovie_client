@@ -16,6 +16,7 @@ import {
 import { separatedWords } from "../../util/string";
 import { IoEyeOff, IoEye } from "react-icons/io5";
 import { useSignupMutation } from "./authApiSlice";
+import AuthSkeleton from "./AuthSkeleton";
 
 const SignUp = () => {
   const dispatch = useDispatch();
@@ -30,6 +31,8 @@ const SignUp = () => {
       type: "password",
     },
   };
+
+  const [isChecked, setIsChecked] = useState(false);
   const [formData, setFormData] = useState(initFormData);
   const [signup, { isLoading }] = useSignupMutation();
 
@@ -56,6 +59,10 @@ const SignUp = () => {
     },
     Object.values(formData).map((field) => field.value)
   );
+
+  const handleCheckboxChange = (event) => {
+    setIsChecked(event.target.checked);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -87,14 +94,28 @@ const SignUp = () => {
   };
 
   const handleInvalid = ({ name, message }) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: {
-        ...prevData[name],
-        validate: "invalid",
-      },
-    }));
-    dispatch(setMessage({ message, messageType: "Error", delayTime: 4000 }));
+    if (name) {
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: {
+          ...prevData[name],
+          validate: "invalid",
+        },
+      }));
+    }
+    dispatch(setMessage({ message, messageType: "Error" }));
+  };
+
+  const handleValidationError = (error, fieldName) => {
+    if (error.data.message.toLowerCase().includes(fieldName)) {
+      setFormData((prevData) => ({
+        ...prevData,
+        [fieldName]: {
+          ...prevData[fieldName],
+          validate: "invalid",
+        },
+      }));
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -119,6 +140,13 @@ const SignUp = () => {
       return;
     }
 
+    if (isChecked === false) {
+      handleInvalid({
+        message: "Please agree to the Privacy Policy.",
+      });
+      return;
+    }
+
     try {
       const { email, password, name } = formData;
       const res = await signup({
@@ -130,23 +158,12 @@ const SignUp = () => {
         setMessage({
           message: res.metadata.message,
           messageType: notificationMessageEnum.SUCCESS,
-          delayTime: 4000,
         })
       );
-      console.log(res.metadata.message);
       setFormData(initFormData);
     } catch (error) {
-      console.log(error);
-      // setFormData((prevData) => ({
-      //   email: {
-      //     ...prevData["email"],
-      //     validate: "invalid",
-      //   },
-      //   password: {
-      //     ...prevData["password"],
-      //     validate: "invalid",
-      //   },
-      // }));
+      handleValidationError(error, "email");
+      handleValidationError(error, "password");
     }
   };
 
@@ -176,6 +193,8 @@ const SignUp = () => {
     );
   };
 
+  if (isLoading) return <AuthSkeleton inputs={4} links={1} />;
+
   return (
     <>
       <form
@@ -204,7 +223,10 @@ const SignUp = () => {
           </div>
         ))}
         <div className="flex items-center gap-[0.5rem] text-[1rem] text-gray-300">
-          <CheckBox />
+          <CheckBox
+            isChecked={isChecked}
+            handleCheckboxChange={handleCheckboxChange}
+          />
           <span>I agree to the</span>
           <span
             className="text-cyan-500 cursor-pointer"
@@ -212,7 +234,7 @@ const SignUp = () => {
               dispatch(openModal(modalComponentEnum.PRIVATE_POLICY));
             }}
           >
-            Privacy policy
+            Privacy Policy
           </span>
         </div>
         <button type="submit" className="btn-blue">
