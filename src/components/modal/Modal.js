@@ -22,8 +22,8 @@ const Modal = () => {
         className=" p-[1rem] rounded-lg bg-white cursor-default"
         ref={contentRef}
       >
-        <div className="flex justify-between">
-          <h2 className="text-lg capitalize">
+        <div className="flex justify-between pb-[1rem]">
+          <h2 className="text-lg capitalize text-gray-700">
             {modalContentTitle?.toLowerCase().replace(/_/g, " ")}
           </h2>
           <span
@@ -33,7 +33,6 @@ const Modal = () => {
             <RxCross2 />
           </span>
         </div>
-        <hr className="mb-[0.4rem]" />
         <div className="overflow-auto">
           {getModalComponent(modalContentTitle)}
         </div>

@@ -8,13 +8,15 @@ const notificationMessageEnum = Object.freeze({
   // Add more roles as needed
 });
 
+const initState = {
+  message: "",
+  messageType: "",
+  delayTime: 5000,
+};
+
 export const notificationMessage = createSlice({
   name: "notificationMessage",
-  initialState: {
-    message: "",
-    messageType: "",
-    delayTime: 5000,
-  },
+  initialState: initState,
   reducers: {
     setMessage: (state, action) => {
       state.message = action.payload.message;
@@ -23,10 +25,10 @@ export const notificationMessage = createSlice({
         state.delayTime = action.payload.delayTime;
       }
     },
-    resetMessage: (state) => {
-      state.message = "";
-      state.messageType = "";
-      state.delayTime = 3000;
+    resetMessage: () => {
+      return {
+        ...initState,
+      };
     },
   },
 });

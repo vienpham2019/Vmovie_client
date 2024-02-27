@@ -1,14 +1,22 @@
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import CheckBox from "../../components/CheckBox";
 import PasswordRule from "../../components/PasswordRule";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { openModal } from "../../components/modal/ModalSlice";
+import {
+  modalComponentEnum,
+  openModal,
+} from "../../components/modal/ModalSlice";
 import { passwordValidate } from "../../util/formValidate";
-import { setMessage } from "../../components/notificationMessage/notificationMessageSlice";
+import {
+  notificationMessageEnum,
+  setMessage,
+} from "../../components/notificationMessage/notificationMessageSlice";
 import ConfirmPasswordRule from "../../components/ConfirmPasswordRule";
 import { separatedWords } from "../../util/string";
 import { IoEye, IoEyeOff } from "react-icons/io5";
+import { useResetPasswordMutation } from "./authApiSlice";
+import AuthSkeleton from "./AuthSkeleton";
 
 const ResetPassword = () => {
   const initFormData = {
@@ -20,8 +28,16 @@ const ResetPassword = () => {
       type: "password",
     },
   };
+  const { token } = useParams();
   const dispatch = useDispatch();
+  const [resetPassowrd, { isLoading }] = useResetPasswordMutation();
+  const [isChecked, setIsChecked] = useState(true);
   const [formData, setFormData] = useState(initFormData);
+
+  const handleCheckboxChange = (event) => {
+    setIsChecked(event.target.checked);
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -48,62 +64,93 @@ const ResetPassword = () => {
   };
 
   const handleInvalid = ({ name, message }) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: {
-        ...prevData[name],
-        validate: "invalid",
-      },
-    }));
-    dispatch(setMessage({ message, messageType: "Error", delayTime: 4000 }));
+    if (name) {
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: {
+          ...prevData[name],
+          validate: "invalid",
+        },
+      }));
+    }
+    dispatch(
+      setMessage({ message, messageType: notificationMessageEnum.ERROR })
+    );
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (
-      Object.values(passwordValidate(formData.password.value)).some(
+      Object.values(passwordValidate(formData.newPassword.value)).some(
         (value) => !value
       )
     ) {
       handleInvalid({
-        name: "password",
-        message: "Password does not meet requirements",
+        name: "newPassword",
+        message: "New password does not meet requirements",
       });
       return;
     }
 
-    if (formData.password.value !== formData.confirmNewPassword.value) {
+    if (formData.newPassword.value !== formData.confirmNewPassword.value) {
       handleInvalid({
         name: "confirmNewPassword",
         message: "New password and confirm new password not match!",
       });
       return;
     }
-    setFormData(initFormData);
+
+    if (isChecked === false) {
+      handleInvalid({
+        message: "Please agree to the Privacy Policy.",
+      });
+      return;
+    }
+    try {
+      await resetPassowrd({
+        token,
+        password: formData.newPassword.value,
+      }).unwrap();
+      dispatch(
+        setMessage({
+          message: "Your password has been changed successfully.",
+          messageType: notificationMessageEnum.SUCCESS,
+        })
+      );
+      setFormData(initFormData);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  const handlePasswordType = (passwordType) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      password: {
-        ...prevData["password"],
-        type: passwordType,
-      },
-    }));
+  const handlePasswordType = (name, passwordType) => {
+    const updatedFormData = formData;
+    for (let key in formData) {
+      if (key === "newPassword" || key === "confirmNewPassword") {
+        updatedFormData[key].type = key !== name ? "password" : passwordType;
+        updatedFormData[key].focus = key === name;
+      }
+    }
+
+    setFormData(() => ({ ...updatedFormData }));
   };
 
-  const passwordType = () => {
-    const { type } = formData["password"];
+  const passwordType = (name) => {
+    if (name !== "newPassword" && name !== "confirmNewPassword") return;
+    const { type } = formData[name];
     return (
       <div className="password_type">
         {type === "text" ? (
-          <IoEye onClick={() => handlePasswordType("password")} />
+          <IoEye onClick={() => handlePasswordType(name, "password")} />
         ) : (
-          <IoEyeOff onClick={() => handlePasswordType("text")} />
+          <IoEyeOff onClick={() => handlePasswordType(name, "text")} />
         )}
       </div>
     );
   };
+
+  if (isLoading) return <AuthSkeleton inputs={2} links={1} />;
+
   return (
     <>
       <form
@@ -121,23 +168,25 @@ const ResetPassword = () => {
               onFocus={handleFocus}
               required
             />
-            {name === "password" && passwordType()}
             <span>{separatedWords(name)} *</span>
-            {name === "password" && formData.password.focus && (
-              <PasswordRule password={formData.password.value} />
+            {passwordType(name)}
+            {name === "newPassword" && formData.newPassword.focus && (
+              <PasswordRule password={formData.newPassword.value} />
             )}
-            {name === "confirmPassword" && formData.confirmPassword.focus && (
-              <ConfirmPasswordRule />
-            )}
+            {name === "confirmNewPassword" &&
+              formData.confirmNewPassword.focus && <ConfirmPasswordRule />}
           </div>
         ))}
         <div className="flex items-center gap-[0.5rem] text-[1rem] text-gray-300">
-          <CheckBox />
+          <CheckBox
+            isChecked={isChecked}
+            handleCheckboxChange={handleCheckboxChange}
+          />
           <span>I agree to the</span>
           <span
             className="text-cyan-500 cursor-pointer"
             onClick={() => {
-              dispatch(openModal("PRIVATE_POLICY_MODAL"));
+              dispatch(openModal(modalComponentEnum.PRIVATE_POLICY));
             }}
           >
             Privacy policy

@@ -8,7 +8,7 @@ import {
   openModal,
 } from "../../components/modal/ModalSlice";
 import ConfirmPasswordRule from "../../components/ConfirmPasswordRule";
-import { passwordValidate } from "../../util/formValidate";
+import { emailValidate, passwordValidate } from "../../util/formValidate";
 import {
   notificationMessageEnum,
   setMessage,
@@ -32,7 +32,7 @@ const SignUp = () => {
     },
   };
 
-  const [isChecked, setIsChecked] = useState(false);
+  const [isChecked, setIsChecked] = useState(true);
   const [formData, setFormData] = useState(initFormData);
   const [signup, { isLoading }] = useSignupMutation();
 
@@ -83,7 +83,8 @@ const SignUp = () => {
         focus: key === name,
         validate: "",
         type:
-          (key === "password" || key === "confirmPassword") && key !== name
+          (key === "newPassword" || key === "confirmNewPassword") &&
+          key !== name
             ? "password"
             : formData[key].type,
       };
@@ -103,7 +104,9 @@ const SignUp = () => {
         },
       }));
     }
-    dispatch(setMessage({ message, messageType: "Error" }));
+    dispatch(
+      setMessage({ message, messageType: notificationMessageEnum.ERROR })
+    );
   };
 
   const handleValidationError = (error, fieldName) => {
@@ -120,6 +123,14 @@ const SignUp = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!emailValidate(formData.email.value)) {
+      handleInvalid({
+        name: "email",
+        message: "Invalid Email",
+      });
+      return;
+    }
+
     if (
       Object.values(passwordValidate(formData.password.value)).some(
         (value) => !value

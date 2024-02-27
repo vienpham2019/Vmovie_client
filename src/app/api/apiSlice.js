@@ -5,7 +5,7 @@ import {
 } from "../../components/notificationMessage/notificationMessageSlice";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: "http://localhost:3055/v1/api",
+  baseUrl: process.env.REACT_APP_BASE_API_URL,
   credentials: "include",
   prepareHeaders: (headers, { getState }) => {
     const token = getState().auth.token;

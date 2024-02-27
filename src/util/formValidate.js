@@ -14,4 +14,10 @@ const passwordValidate = (password) => {
   };
 };
 
-export { passwordValidate };
+const emailValidate = (email) => {
+  // Regular expression for validating email addresses
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
+export { passwordValidate, emailValidate };

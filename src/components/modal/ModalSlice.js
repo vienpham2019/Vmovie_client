@@ -2,25 +2,31 @@ import { createSlice } from "@reduxjs/toolkit";
 import PrivatePolicy from "../PrivatePolicy";
 import ResetPasswordModal from "../../features/auths/ResetPasswordModal";
 
+const initState = {
+  isModalOpen: false,
+  modalContentTitle: null,
+  modalParams: null,
+};
 export const modalSlice = createSlice({
   name: "modal",
-  initialState: {
-    isModalOpen: false,
-    modalContentTitle: null,
-  },
+  initialState: initState,
   reducers: {
     openModal: (state, action) => {
       state.isModalOpen = true;
       state.modalContentTitle = action.payload;
     },
-    closeModal: (state) => {
-      state.isModalOpen = false;
-      state.modalContentTitle = null;
+    setModalParams: (state, action) => {
+      state.modalParams = action.payload;
+    },
+    closeModal: () => {
+      return {
+        ...initState,
+      };
     },
   },
 });
 
-export const { openModal, closeModal } = modalSlice.actions;
+export const { openModal, closeModal, setModalParams } = modalSlice.actions;
 
 const modalComponentEnum = Object.freeze({
   PRIVATE_POLICY: "PRIVATE_POLICY",

@@ -10,12 +10,17 @@ const authSlice = createSlice({
       const { accessToken } = action.payload;
       state.token = accessToken;
     },
+    setResetPasswordEmail: (state, action) => {
+      const { email } = action.payload;
+      state.resetPasswordEmail = email;
+    },
     logOut: (state, action) => {
       state.token = null;
     },
   },
 });
 
-export const { setCredentials, logOut } = authSlice.actions;
+export const { setCredentials, logOut, setResetPasswordEmail } =
+  authSlice.actions;
 
 export default authSlice.reducer;

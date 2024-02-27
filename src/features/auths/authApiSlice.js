@@ -9,6 +9,27 @@ export const authApiSlice = apiSlice.injectEndpoints({
         body: payload,
       }),
     }),
+    resetPassword: builder.mutation({
+      query: (payload) => ({
+        url: "/auth/resetPassword",
+        method: "POST",
+        body: payload,
+      }),
+    }),
+    resendForgotPassword: builder.mutation({
+      query: (payload) => ({
+        url: "/auth/resendForgotPassword",
+        method: "POST",
+        body: payload,
+      }),
+    }),
+    forgotPassword: builder.mutation({
+      query: (payload) => ({
+        url: "/auth/forgotPassword",
+        method: "POST",
+        body: payload,
+      }),
+    }),
     signup: builder.mutation({
       query: (payload) => ({
         url: "/auth/signUp",
@@ -19,4 +40,10 @@ export const authApiSlice = apiSlice.injectEndpoints({
   }),
 });
 
-export const { useLoginMutation, useSignupMutation } = authApiSlice;
+export const {
+  useLoginMutation,
+  useForgotPasswordMutation,
+  useResendForgotPasswordMutation,
+  useResetPasswordMutation,
+  useSignupMutation,
+} = authApiSlice;

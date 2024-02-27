@@ -4,28 +4,97 @@ import { useDispatch } from "react-redux";
 import {
   modalComponentEnum,
   openModal,
+  setModalParams,
 } from "../../components/modal/ModalSlice";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { emailValidate } from "../../util/formValidate";
+import {
+  notificationMessageEnum,
+  setMessage,
+} from "../../components/notificationMessage/notificationMessageSlice";
+import { useForgotPasswordMutation } from "./authApiSlice";
 
 const ForgotPassword = () => {
   const dispatch = useDispatch();
   const initFormData = {
     email: { value: "", validate: "", type: "email" },
   };
+  const [forgotPassword] = useForgotPasswordMutation();
+  const [isChecked, setIsChecked] = useState(true);
   const [formData, setFormData] = useState(initFormData);
+
+  useEffect(() => {
+    if (formData.email.validate === "invalid") {
+      setFormData((prevData) => ({
+        ...prevData,
+        email: {
+          ...prevData.email,
+          validate: "",
+        },
+      }));
+    }
+  }, [formData.email.value]);
+
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
-      [name]: {
-        ...prevData[name],
+      email: {
+        ...prevData["email"],
         value: value,
       },
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleCheckboxChange = (event) => {
+    setIsChecked(event.target.checked);
+  };
+
+  const handleInvalid = ({ name, message }) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      email: {
+        ...prevData["email"],
+        validate: name === "email" ? "invalid" : "",
+      },
+    }));
+    dispatch(
+      setMessage({ message, messageType: notificationMessageEnum.ERROR })
+    );
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!emailValidate(formData.email.value)) {
+      handleInvalid({ name: "email", message: "Invalid Email" });
+      return;
+    }
+    if (isChecked === false) {
+      handleInvalid({
+        message: "Please agree to the Privacy Policy.",
+      });
+      return;
+    }
+
+    try {
+      await forgotPassword({
+        email: formData.email.value,
+        clientUrl: `${process.env.REACT_APP_BASE_URL}/resetpassword`,
+      }).unwrap();
+      setFormData(initFormData);
+      dispatch(openModal(modalComponentEnum.RESET_PASSWORD));
+      dispatch(setModalParams({ email: formData.email.value }));
+    } catch (error) {
+      if (error.data.message.toLowerCase().includes("email")) {
+        setFormData((prevData) => ({
+          ...prevData,
+          email: {
+            ...prevData["email"],
+            validate: "invalid",
+          },
+        }));
+      }
+    }
   };
 
   return (
@@ -48,7 +117,10 @@ const ForgotPassword = () => {
           </div>
         ))}
         <div className="flex items-center gap-[0.5rem] text-[1rem] text-gray-300">
-          <CheckBox />
+          <CheckBox
+            isChecked={isChecked}
+            handleCheckboxChange={handleCheckboxChange}
+          />
           <span>I agree to the</span>
           <span
             className="text-cyan-500 cursor-pointer"
