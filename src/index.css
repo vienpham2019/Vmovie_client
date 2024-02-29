@@ -96,6 +96,10 @@ ol ol > li:before {
   animation-fill-mode: forwards;
 }
 
+.animate__animated_paused {
+  animation-play-state: paused; /* Apply paused state to pause the animation */
+}
+
 .animate__fadeInRight {
   animation-name: fadeInRight;
   transform: translateX(100%);
@@ -119,6 +123,8 @@ ol ol > li:before {
 }
 
 .animate__fadeIn {
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
   animation-name: fadeIn;
   opacity: 0;
 }

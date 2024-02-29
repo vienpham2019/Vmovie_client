@@ -5,13 +5,15 @@ import {
   notificationMessageEnum,
   resetMessage,
 } from "./notificationMessageSlice";
-import { useEffect } from "react";
+import { useRef, useState } from "react";
 
 const NotificationMessage = () => {
   const dispatch = useDispatch();
   const { message, messageType, delayTime } = useSelector(
     (state) => state.notificationMessage
   );
+  const animationRef = useRef(null);
+  const [isPaused, setIsPaused] = useState(false);
   let primary_color, text_color, icon;
   switch (messageType) {
     case notificationMessageEnum.ERROR:
@@ -76,17 +78,23 @@ const NotificationMessage = () => {
     dispatch(resetMessage());
   };
 
-  useEffect(() => {
-    let timeoutId; // Declare timeoutId using let
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(handleClose, delayTime);
-    return () => clearTimeout(timeoutId);
-  }, [message, messageType, delayTime, handleClose]); // Include all dependencies
+  const handleMouseEnter = () => {
+    setIsPaused(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsPaused(false);
+  };
 
   return (
     <>
       {message && (
-        <div className="fixed left-1/2 top-[1rem] transform -translate-x-1/2">
+        <div
+          ref={animationRef}
+          className="fixed left-1/2 top-[1rem] transform -translate-x-1/2 animate__fadeIn"
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
           <div
             className={`relative w-[20rem] bg-slate-100 text-black overflow-hidden rounded-sm`}
           >
@@ -111,8 +119,11 @@ const NotificationMessage = () => {
 
             <div
               key={`${message}${messageType}`}
-              className={`absolute w-full h-[0.5rem] ${primary_color} bottom-0 ttl_animate`}
+              className={`absolute w-full h-[0.5rem] ${primary_color} bottom-0 ttl_animate ${
+                isPaused ? "animate__animated_paused" : ""
+              }`}
               style={{ animationDuration: `${delayTime / 1000}s` }}
+              onAnimationEnd={() => handleClose()}
             ></div>
             <div
               className={`absolute w-full h-[0.5rem] ${primary_color} opacity-50 bottom-0`}
