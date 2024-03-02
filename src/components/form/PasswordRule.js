@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { GiCheckMark, GiCrossedBones } from "react-icons/gi";
-import { passwordValidate } from "../util/formValidate";
+import { passwordValidate } from "../../util/formValidate";
 
 const PasswordRule = ({ password = "" }) => {
   const [validationResults, setValidationResults] = useState({

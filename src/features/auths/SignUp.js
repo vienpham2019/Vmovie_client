@@ -1,13 +1,10 @@
 import { Link } from "react-router-dom";
-import CheckBox from "../../components/CheckBox";
-import PasswordRule from "../../components/PasswordRule";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import {
   modalComponentEnum,
   openModal,
 } from "../../components/modal/ModalSlice";
-import ConfirmPasswordRule from "../../components/ConfirmPasswordRule";
 import { emailValidate, passwordValidate } from "../../util/formValidate";
 import {
   notificationMessageEnum,
@@ -17,6 +14,10 @@ import { separatedWords } from "../../util/string";
 import { IoEyeOff, IoEye } from "react-icons/io5";
 import { useSignupMutation } from "./authApiSlice";
 import AuthSkeleton from "./AuthSkeleton";
+
+import ConfirmPasswordRule from "../../components/form/ConfirmPasswordRule";
+import PasswordRule from "../../components/form/PasswordRule";
+import CheckBox from "../../components/form/CheckBox";
 
 const SignUp = () => {
   const dispatch = useDispatch();
@@ -36,29 +37,26 @@ const SignUp = () => {
   const [formData, setFormData] = useState(initFormData);
   const [signup, { isLoading }] = useSignupMutation();
 
-  useEffect(
-    () => {
-      const isInvalid = Object.values(formData).some(
-        (field) => field.validate === "invalid"
-      );
+  useEffect(() => {
+    const isInvalid = Object.values(formData).some(
+      (field) => field.validate === "invalid"
+    );
 
-      if (isInvalid) {
-        setFormData((prevData) => {
-          const updatedFormData = {};
-          for (const key in prevData) {
-            if (prevData.hasOwnProperty(key)) {
-              updatedFormData[key] = {
-                ...prevData[key],
-                validate: "",
-              };
-            }
+    if (isInvalid) {
+      setFormData((prevData) => {
+        const updatedFormData = {};
+        for (const key in prevData) {
+          if (prevData.hasOwnProperty(key)) {
+            updatedFormData[key] = {
+              ...prevData[key],
+              validate: "",
+            };
           }
-          return updatedFormData;
-        });
-      }
-    },
-    Object.values(formData).map((field) => field.value)
-  );
+        }
+        return updatedFormData;
+      });
+    }
+  }, [formData]);
 
   const handleCheckboxChange = (event) => {
     setIsChecked(event.target.checked);

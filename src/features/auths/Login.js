@@ -36,7 +36,7 @@ const Login = () => {
         },
       }));
     }
-  }, [formData.email.value, formData.password.value]);
+  }, [formData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

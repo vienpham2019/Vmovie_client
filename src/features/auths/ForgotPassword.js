@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import CheckBox from "../../components/CheckBox";
 import { useDispatch } from "react-redux";
 import {
   modalComponentEnum,
@@ -13,6 +12,7 @@ import {
   setMessage,
 } from "../../components/notificationMessage/notificationMessageSlice";
 import { useForgotPasswordMutation } from "./authApiSlice";
+import CheckBox from "../../components/form/CheckBox";
 
 const ForgotPassword = () => {
   const dispatch = useDispatch();
@@ -33,7 +33,7 @@ const ForgotPassword = () => {
         },
       }));
     }
-  }, [formData.email.value]);
+  }, [formData]);
 
   const handleChange = (e) => {
     const { value } = e.target;

@@ -1,6 +1,4 @@
 import { Link, useParams } from "react-router-dom";
-import CheckBox from "../../components/CheckBox";
-import PasswordRule from "../../components/PasswordRule";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import {
@@ -12,11 +10,15 @@ import {
   notificationMessageEnum,
   setMessage,
 } from "../../components/notificationMessage/notificationMessageSlice";
-import ConfirmPasswordRule from "../../components/ConfirmPasswordRule";
+
 import { separatedWords } from "../../util/string";
 import { IoEye, IoEyeOff } from "react-icons/io5";
 import { useResetPasswordMutation } from "./authApiSlice";
 import AuthSkeleton from "./AuthSkeleton";
+
+import PasswordRule from "../../components/form/PasswordRule";
+import CheckBox from "../../components/form/CheckBox";
+import ConfirmPasswordRule from "../../components/form/ConfirmPasswordRule";
 
 const ResetPassword = () => {
   const initFormData = {
