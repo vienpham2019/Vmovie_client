@@ -4,9 +4,11 @@ import { SlMagnifier } from "react-icons/sl";
 
 const Catalog = () => {
   const filterOptions = ["Date created", "Rating", "Views"];
-  const [filter, setFilter] = useState(filterOptions[0]);
+  const [filter, setFilter] = useState([filterOptions[0]]);
   const handleFilter = (filterVal) => {
-    setFilter(filterVal);
+    if (filter.includes(filterVal)) return;
+
+    setFilter([filterVal]);
   };
   return (
     <div className="p-[1rem]">
@@ -20,6 +22,8 @@ const Catalog = () => {
             <div className="w-[10rem]">
               <Selection
                 selected={filter}
+                type="string"
+                placeHolder="Select filter"
                 selectOptions={filterOptions}
                 handleSelect={handleFilter}
               />
