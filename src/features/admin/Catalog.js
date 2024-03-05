@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Selection from "../../components/form/Selection";
 import { SlMagnifier } from "react-icons/sl";
+import UploadFile from "../../components/form/UploadFile";
 
 const Catalog = () => {
   const filterOptions = ["Date created", "Rating", "Views"];
@@ -36,6 +37,10 @@ const Catalog = () => {
             </div>
           </div>
         </div>
+      </div>
+      {/* Body */}
+      <div className="h-full py-2">
+        <UploadFile />
       </div>
     </div>
   );

@@ -57,7 +57,7 @@ const AdminLayout = () => {
   return (
     <div className="flex h-screen p-0">
       <div
-        className="w-[15rem] text-white bg-[rgb(33,37,41)] flex items-center flex-col gap-[1rem]"
+        className="w-[15rem] tablet:hidden text-white bg-[rgb(33,37,41)] flex items-center flex-col gap-[1rem]"
         style={{
           boxShadow: "inset -5px 0 5px -5px rgba(0,0,0, 0.6)",
         }}
