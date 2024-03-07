@@ -5,27 +5,31 @@ import { useUploadImageMutation } from "./imageApiSlice";
 import { useEffect, useRef, useState } from "react";
 
 const UploadFileProgress = ({ file }) => {
-  const [uploadImage, { isError, isLoading, isSuccess }] =
+  const [uploadImage, { isError, isSuccess, isLoading }] =
     useUploadImageMutation();
 
-  //   const [imageSrc, setImageSrc] = useState(null);
+  const [imageSrc, setImageSrc] = useState(null);
   const [progress, setProgress] = useState(0);
+  const isUpload = useRef(false);
   useEffect(() => {
     const uploadFile = async () => {
       const formData = new FormData();
-      formData.append(file.name, file);
+      formData.append("file", file);
+      isUpload.current = true;
       try {
-        await uploadImage({
+        const res = await uploadImage({
           payload: formData,
           onProgress: setProgress,
         });
+        setImageSrc(res.data.metadata);
+        console.log(res.data.metadata.url);
       } catch (error) {
         // Handle error
         console.error(`Error uploading ${file.name}:`, error);
       }
     };
 
-    uploadFile();
+    if (!isUpload.current) uploadFile();
   }, [file, uploadImage]);
 
   useEffect(() => {
@@ -39,30 +43,22 @@ const UploadFileProgress = ({ file }) => {
             <FaPhotoFilm />
           </span>
         )}{" "}
-        {isSuccess && (
-          <img
-            src="https://resizing.flixster.com/-XZAfHZM39UwaGJIFWKAE8fS0ak=/v3/t/assets/p170620_p_v8_az.jpg"
-            alt="iron man"
-          />
-        )}
+        {isSuccess && <img src={imageSrc?.url} alt="Google Drive" />}
       </div>
       <div className="grow flex flex-col justify-evenly">
         <div className="flex gap-1 text-[0.7rem]">
-          <p className="max-w-[7rem] truncate">
-            image_03.png Lorem ipsum dolor sit amet consectetur adipisicing
-            elit. Illum repellat sunt soluta corporis natus quasi! Ex
-            perferendis, vero numquam ratione, vel id nulla quia omnis pariatur
-            explicabo veniam iusto inventore.
-          </p>
+          <p className="max-w-[7rem] truncate">{file.name}</p>
           <span>-</span>
           <div className="font-bold">
             {isError && <span className="text-red-500">Error</span>}
             {isLoading && <span>Uploading</span>}
-            {isSuccess && <span className="text-green-500">Uploaded</span>}
+            {isSuccess && <span className="text-green-500">Loaded</span>}
           </div>
         </div>
         {isSuccess && (
-          <small className="text-[0.6rem] text-gray-200">87.42KB</small>
+          <small className="text-[0.6rem] text-gray-200">
+            {imageSrc?.size}
+          </small>
         )}
         {isLoading && (
           <div className="relative w-full h-[0.5rem] bg-gray-200 rounded-full">
@@ -70,6 +66,7 @@ const UploadFileProgress = ({ file }) => {
               className="absolute top-0 h-full bg-cyan-600 rounded-full"
               style={{ width: `${progress}%` }}
             ></div>
+            <span className="text-[0.6rem] text-white">{progress}%</span>
           </div>
         )}
         {isError && (

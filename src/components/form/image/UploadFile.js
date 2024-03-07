@@ -30,7 +30,7 @@ const UploadFile = () => {
           <input
             type="file"
             className="hidden appearance-none"
-            // accept="image/*"
+            accept="image/*"
             id="fileInput"
             placeholder="Browse files"
             onChange={handleOnchange}
