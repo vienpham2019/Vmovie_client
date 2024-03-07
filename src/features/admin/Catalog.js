@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Selection from "../../components/form/Selection";
 import { SlMagnifier } from "react-icons/sl";
-import UploadFile from "../../components/form/UploadFile";
+import UploadFile from "../../components/form/image/UploadFile";
 
 const Catalog = () => {
   const filterOptions = ["Date created", "Rating", "Views"];
