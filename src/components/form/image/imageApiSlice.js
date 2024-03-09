@@ -1,10 +1,9 @@
 import axios from "axios";
 import { apiSlice } from "../../../app/api/apiSlice";
-
 export const imageApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     uploadImage: builder.mutation({
-      queryFn: async ({ payload, onProgress }, { signal }) => {
+      queryFn: async ({ payload, onProgress }) => {
         try {
           const response = await axios.post(
             `${process.env.REACT_APP_BASE_API_URL}/image/upload`,
@@ -16,21 +15,23 @@ export const imageApiSlice = apiSlice.injectEndpoints({
                 );
                 onProgress(progress);
               },
-              cancelToken: new axios.CancelToken((cancel) => {
-                signal.addEventListener("abort", () =>
-                  cancel("Upload cancelled")
-                );
-              }),
             }
           );
 
           return response;
         } catch (error) {
-          throw new Error(`Upload failed: ${error.message}`);
+          console.error("error from api", error.response.data?.message);
+          throw new Error(error.response.data?.message || "Upload failed");
         }
       },
+    }),
+    deleteImage: builder.mutation({
+      query: (fileName) => ({
+        url: `/image/${fileName}`,
+        method: "DELETE",
+      }),
     }),
   }),
 });
 
-export const { useUploadImageMutation } = imageApiSlice;
+export const { useUploadImageMutation, useDeleteImageMutation } = imageApiSlice;
