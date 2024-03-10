@@ -10,6 +10,7 @@ const uploadFileStatusEnum = Object.freeze({
 
 const UploadFile = () => {
   const [uploadImage, setUploadImage] = useState({});
+
   const handleOnchange = async (e) => {
     const files = e.target.files;
     Object.keys(files).forEach(async (index) => {
@@ -78,7 +79,7 @@ const UploadFile = () => {
         </div>
       </div>
       {Object.keys(uploadImage).length !== 0 && (
-        <div className="flex flex-col flex-auto min-w-[17.5rem] max-w-[25rem] text-gray-300 gap-2 rounded-md overflow-y-auto overflow-x-auto max-h-[15rem]">
+        <div className="flex flex-col flex-auto min-w-[17.5rem] max-w-[25rem] text-gray-300 gap-2 rounded-md overflow-y-auto overflow-x-auto px-1 max-h-[15rem]">
           {Object.entries(uploadImage).map(([key, val]) => (
             <div key={key}>
               <UploadFileProgress
