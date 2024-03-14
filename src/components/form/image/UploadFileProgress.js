@@ -8,6 +8,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { uploadFileStatusEnum } from "./UploadFile";
+
 const UploadFileProgress = ({
   uploadImageFile,
   updateUploadObj,
@@ -92,8 +93,8 @@ const UploadFileProgress = ({
   }
 
   return (
-    <div className="h-[4rem] bg-cyan-900 rounded-sm flex gap-2 p-2">
-      <div className="rounded-sm overflow-hidden w-[4rem] flex-none flex items-center justify-center">
+    <div className="h-[4rem] bg-cyan-900 rounded-sm flex gap-2 p-2 mobile:max-w-[15rem]">
+      <div className="rounded-sm overflow-hidden w-[4rem] mobile:w-[2rem] flex-none flex items-center justify-center">
         {!uploadImageFile.imageSrc && (
           <span className="text-[2rem]">
             <FaPhotoFilm />
@@ -109,10 +110,10 @@ const UploadFileProgress = ({
       </div>
       <div className="flex-1 flex flex-col justify-evenly">
         <div className="flex gap-1 text-[0.7rem]">
-          <p className="max-w-[12rem] mobile:max-w-[10rem] mobileM:w-[4rem] truncate">
+          <p className="max-w-[12rem] mobile:max-w-[8rem] mobileM:w-[4rem] truncate">
             {uploadImageFile.file.name}
           </p>
-          <div className="font-bold capitalize">
+          <div className="font-bold capitalize mobile:hidden">
             {uploadImageFile.status === uploadFileStatusEnum.ERROR && (
               <span className="text-red-500">{uploadImageFile.status}</span>
             )}

@@ -221,7 +221,9 @@ const SignUp = () => {
               onFocus={handleFocus}
               required
             />
-            <span>{separatedWords(name)} *</span>
+            <div className="input_title">
+              <span>{separatedWords(name)} *</span>
+            </div>
             {passwordType(name)}
             {name === "password" && formData.password.focus && (
               <PasswordRule password={formData.password.value} />

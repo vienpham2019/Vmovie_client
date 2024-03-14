@@ -5,6 +5,7 @@ const OutsideClickDetector = ({ children, onOutsideClick }) => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
+      console.log(ref.current.contains(event.target));
       if (ref.current && !ref.current.contains(event.target)) {
         onOutsideClick();
       }
@@ -17,7 +18,11 @@ const OutsideClickDetector = ({ children, onOutsideClick }) => {
     };
   }, [onOutsideClick]);
 
-  return <div ref={ref}>{children}</div>;
+  return (
+    <div ref={ref} className="h-full">
+      {children}
+    </div>
+  );
 };
 
 export default OutsideClickDetector;

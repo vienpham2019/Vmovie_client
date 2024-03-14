@@ -113,7 +113,9 @@ const ForgotPassword = () => {
               onChange={handleChange}
               required
             />
-            <span>{name} *</span>
+            <div className="input_title">
+              <span>{name} *</span>
+            </div>
           </div>
         ))}
         <div className="flex items-center gap-[0.5rem] text-[1rem] text-gray-300">

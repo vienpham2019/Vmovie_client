@@ -9,6 +9,7 @@ import {
   notificationMessageEnum,
   setMessage,
 } from "../../components/notificationMessage/notificationMessageSlice";
+import { separatedWords } from "../../util/string";
 
 const Login = () => {
   const initFormData = {
@@ -119,7 +120,9 @@ const Login = () => {
               onChange={handleChange}
               required
             />
-            <span>{name} *</span>
+            <div className="input_title">
+              <span>{separatedWords(name)} *</span>
+            </div>
             {name === "password" && passwordType()}
           </div>
         ))}
