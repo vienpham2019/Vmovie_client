@@ -45,11 +45,11 @@ const MovieForm = ({ handleOnSubmit }) => {
       ],
     },
     country: {
-      value: "",
+      value: [],
       validate: "",
     },
     language: {
-      value: "",
+      value: [],
       validate: "",
     },
     movieDetail: {
@@ -65,7 +65,7 @@ const MovieForm = ({ handleOnSubmit }) => {
       validate: "",
     },
     cast: {
-      value: "",
+      value: [],
       validate: "",
     },
     director: {
@@ -148,10 +148,10 @@ const MovieForm = ({ handleOnSubmit }) => {
           </div>
           {/*  */}
           <div className="flex flex-wrap flex-1 gap-4 items-center">
-            <div className="flex-1 min-w-[15rem]">
+            <div className="flex-1 w-[15rem]">
               {input({ name: "country", type: "input-list" })}
             </div>
-            <div className="flex-1 min-w-[15rem]">
+            <div className="flex-1 w-[15rem]">
               {input({ name: "language", type: "input-list" })}
             </div>
           </div>
@@ -164,7 +164,7 @@ const MovieForm = ({ handleOnSubmit }) => {
             {input({ name: "cast", type: "input-list" })}
           </div>
           <div className="flex flex-wrap flex-1 gap-4 items-center">
-            <div className="flex-[5]">
+            <div className="flex-[5] w-[20rem] mobile:w-[15rem]">
               {input({ name: "writer", type: "input-list" })}
             </div>
             <div className="flex-auto w-[8rem]">

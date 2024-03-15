@@ -32,8 +32,8 @@ const displayInput = ({
     content = (
       <InputList
         height="h-[2.2rem]"
-        value={formData[name].value}
-        onChange={(e) => handleOnChange(e, name)}
+        listValues={formData[name].value}
+        handleOnChange={(value) => handleOnChange(value, name)}
       />
     );
   } else if (type === "file") {
