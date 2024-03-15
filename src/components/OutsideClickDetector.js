@@ -5,7 +5,6 @@ const OutsideClickDetector = ({ children, onOutsideClick }) => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      console.log(ref.current.contains(event.target));
       if (ref.current && !ref.current.contains(event.target)) {
         onOutsideClick();
       }

@@ -57,6 +57,10 @@ ol ol > li:before {
   @apply bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded h-[3rem] uppercase text-sm;
 }
 
+.btn-red {
+  @apply bg-gradient-to-r from-red-400 to-red-700 text-white rounded h-[3rem] uppercase text-sm;
+}
+
 /* End Button */
 
 /* Input */

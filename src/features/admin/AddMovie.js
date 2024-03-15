@@ -1,11 +1,6 @@
-import CustomForm from "../../components/form/CustomForm";
+import MovieForm from "../../components/form/MovieForm";
 
 const AddMovie = () => {
-  //   const initFormData = {
-  //     title: { value: "", validate: "", type: "text" },
-  //     yearRelease: { value: "", validate: "", type: "text" },
-  //     runningTime: { value: "", validate: "", type: "text" },
-  //   };
   return (
     <div className="p-[1rem]">
       <div className="py-[0.4rem] border-b border-gray-600">
@@ -13,7 +8,7 @@ const AddMovie = () => {
       </div>
       {/* Body */}
       <div className="p-2">
-        <CustomForm />
+        <MovieForm />
       </div>
     </div>
   );
