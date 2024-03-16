@@ -3,6 +3,7 @@ import InputList from "./InputList";
 import Selection from "./Selection";
 import UploadFile from "./image/UploadFile";
 import { separatedWords } from "../../util/string";
+import { inputTypeEnum } from "./formEnum";
 
 const displayInput = ({
   formData,
@@ -12,40 +13,42 @@ const displayInput = ({
   handleOnChange,
 }) => {
   let content;
-  if (type === "text-area") {
+  if (type === inputTypeEnum.TEXT_AREA) {
     content = (
       <textarea
         name={name}
         value={formData[name].value}
         onChange={(e) => handleOnChange(e.target.value, name)}
-        className="text-area h-[6rem] pt-2 resize-none border-gray-500"
+        className={`text-area h-[6rem] pt-2 resize-none ${formData[name].validate} border-gray-500`}
       ></textarea>
     );
-  } else if (type === "select") {
+  } else if (type === inputTypeEnum.SELECT) {
     content = (
       <Selection
         formData={formData[name]}
         handleOnChange={(value) => handleOnChange(value, name)}
       />
     );
-  } else if (type === "input-list") {
+  } else if (type === inputTypeEnum.INPUT_LIST) {
     content = (
       <InputList
         height="h-[2.2rem]"
         listValues={formData[name].value}
+        validate={formData[name].validate}
         handleOnChange={(value) => handleOnChange(value, name)}
       />
     );
-  } else if (type === "file") {
+  } else if (type === inputTypeEnum.FILE) {
     content = (
       <UploadFile
         name={name}
         type={typeof formData[name].value === "string" ? "single" : "list"}
         value={formData[name].value}
+        validate={formData[name].validate}
         onChange={(e) => handleOnChange(e, name)}
       />
     );
-  } else if (type === "video") {
+  } else if (type === inputTypeEnum.VIDEO) {
     content = (
       <>
         <input
@@ -72,8 +75,10 @@ const displayInput = ({
   return (
     <div className="input_group">
       {content}
-      <div className="input_title">
-        <span>{separatedWords(name)} *</span>
+      <div className={`input_title ${formData[name].validate}`}>
+        <span>
+          {separatedWords(name)} <small className="text-red-400">*</small>
+        </span>
       </div>
     </div>
   );

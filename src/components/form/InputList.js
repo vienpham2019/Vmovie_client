@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { FiX } from "react-icons/fi";
 const InputList = ({
   listValues = [],
+  validate = "",
   handleOnChange,
   height = "h-[5rem]",
 }) => {
@@ -35,7 +36,7 @@ const InputList = ({
     return listValues.map((val, index) => (
       <div
         key={"inputList" + val + index}
-        className="flex items-center gap-[5px] border border-gray-500 bg-gray-800 text-[0.9rem] text-white font-thin px-[10px] rounded-sm "
+        className="flex items-center gap-[5px] border border-gray-500 bg-gray-800 text-[0.9rem] text-white font-thin px-[10px] rounded-sm"
       >
         {" "}
         {val}
@@ -51,7 +52,9 @@ const InputList = ({
     ));
   };
   return (
-    <div className="border rounded-md border-gray-500 bg-[#2b2b31] grid text-white w-full">
+    <div
+      className={`border rounded-md border-gray-500  ${validate}  bg-[#2b2b31] grid text-white w-full`}
+    >
       <div
         ref={containerRef}
         className={`flex flex-wrap gap-1 m-2 ${height} rounded-md overflow-y-auto border bg-[#1e1e1e] border-gray-500`}

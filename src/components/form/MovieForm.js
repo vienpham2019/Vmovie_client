@@ -1,5 +1,11 @@
 import { useState } from "react";
 import { displayInput } from "./formUtil";
+import { inputTypeEnum, inputValidateEnum } from "./formEnum";
+import { useDispatch } from "react-redux";
+import {
+  notificationMessageEnum,
+  setMessage,
+} from "../notificationMessage/notificationMessageSlice";
 
 const MovieForm = ({ handleOnSubmit }) => {
   const initFormData = {
@@ -94,6 +100,8 @@ const MovieForm = ({ handleOnSubmit }) => {
     },
   };
 
+  const dispatch = useDispatch();
+
   const [formData, setFormData] = useState(initFormData);
   const handleOnChange = (value, name) => {
     setFormData((prevData) => ({
@@ -101,43 +109,76 @@ const MovieForm = ({ handleOnSubmit }) => {
       [name]: {
         ...prevData[name],
         value,
+        validate: "",
       },
     }));
-    console.log(formData);
   };
 
   const input = (options) => {
     return displayInput({ formData, handleOnChange, ...options });
   };
 
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    let isInvalid = false;
+
+    const updatedFormData = { ...formData };
+
+    for (const key in updatedFormData) {
+      if (updatedFormData.hasOwnProperty(key)) {
+        if (
+          updatedFormData[key].value === "" ||
+          updatedFormData[key].value?.length === 0
+        ) {
+          isInvalid = true;
+          updatedFormData[key].validate = inputValidateEnum.INVALID;
+        }
+      }
+    }
+
+    if (isInvalid) {
+      dispatch(
+        setMessage({
+          message: "All fields are required.",
+          messageType: notificationMessageEnum.ERROR,
+        })
+      );
+      setFormData(updatedFormData);
+      return;
+    }
+
+    await handleOnSubmit(formData);
+    setFormData(initFormData);
+  };
+
   return (
     <form
       action="submit"
-      onSubmit={handleOnSubmit}
+      onSubmit={onSubmit}
       className="flex flex-col gap-[1rem] p-4 border border-gray-500 rounded bg-[#1f1f1f]"
     >
       <div className="flex flex-wrap gap-4 ">
         <div className="grid flex-[5] gap-4 min-w-[30rem] mobile:min-w-[15rem]">
           {input({ name: "title" })}
-          {input({ name: "movieDetail", type: "text-area" })}
-          {input({ name: "trailerUrl", type: "video" })}
+          {input({ name: "movieDetail", type: inputTypeEnum.TEXT_AREA })}
+          {input({ name: "trailerUrl", type: inputTypeEnum.VIDEO })}
           <div className="flex flex-wrap gap-4">
-            <div className="flex-1 min-w-[23rem] mobile:min-w-[15rem]">
-              {input({ name: "posterUrl", type: "file" })}
+            <div className="flex-1 min-w-[27rem] mobile:min-w-[15rem]">
+              {input({ name: "posterUrl", type: inputTypeEnum.FILE })}
             </div>
-            <div className="flex-1 min-w-[23rem] mobile:min-w-[15rem]">
-              {input({ name: "backgroundUrl", type: "file" })}
+            <div className="flex-1 min-w-[27rem] mobile:min-w-[15rem]">
+              {input({ name: "backgroundUrl", type: inputTypeEnum.FILE })}
             </div>
           </div>
           <div className="flex-[5] min-w-[15rem]">
-            {input({ name: "photos", type: "file" })}
+            {input({ name: "photos", type: inputTypeEnum.FILE })}
           </div>
         </div>
         <div className="grid gap-4 flex-auto min-w-[25rem] mobile:min-w-[15rem]">
           {/*  */}
           <div className="flex items-center flex-wrap gap-4">
             <div className="flex-auto min-w-[5rem]">
-              {input({ name: "rating", type: "select" })}
+              {input({ name: "rating", type: inputTypeEnum.SELECT })}
             </div>
             <div className="flex-[5] w-[7rem]">
               {input({ name: "yearRelease" })}
@@ -149,34 +190,34 @@ const MovieForm = ({ handleOnSubmit }) => {
           {/*  */}
           <div className="flex flex-wrap flex-1 gap-4 items-center">
             <div className="flex-1 w-[15rem]">
-              {input({ name: "country", type: "input-list" })}
+              {input({ name: "country", type: inputTypeEnum.INPUT_LIST })}
             </div>
             <div className="flex-1 w-[15rem]">
-              {input({ name: "language", type: "input-list" })}
+              {input({ name: "language", type: inputTypeEnum.INPUT_LIST })}
             </div>
           </div>
           {/*  */}
           <div className="flex-1">
-            {input({ name: "genre", type: "select" })}
+            {input({ name: "genre", type: inputTypeEnum.SELECT })}
           </div>
           {/*  */}
           <div className="flex-1 min-w-[12rem]">
-            {input({ name: "cast", type: "input-list" })}
+            {input({ name: "cast", type: inputTypeEnum.INPUT_LIST })}
           </div>
           <div className="flex flex-wrap flex-1 gap-4 items-center">
             <div className="flex-[5] w-[20rem] mobile:w-[15rem]">
-              {input({ name: "writer", type: "input-list" })}
+              {input({ name: "writer", type: inputTypeEnum.INPUT_LIST })}
             </div>
             <div className="flex-auto w-[8rem]">
-              {input({ name: "director", type: "input-list" })}
+              {input({ name: "director", type: inputTypeEnum.INPUT_LIST })}
             </div>
           </div>
           <div className="flex flex-wrap flex-1 gap-4 items-center">
             <div className="flex-1">
-              {input({ name: "producer", type: "input-list" })}
+              {input({ name: "producer", type: inputTypeEnum.INPUT_LIST })}
             </div>
             <div className="flex-1">
-              {input({ name: "studio", type: "input-list" })}
+              {input({ name: "studio", type: inputTypeEnum.INPUT_LIST })}
             </div>
           </div>
         </div>

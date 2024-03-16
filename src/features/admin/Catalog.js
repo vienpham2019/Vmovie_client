@@ -3,13 +3,13 @@ import Selection from "../../components/form/Selection";
 import { SlMagnifier } from "react-icons/sl";
 
 const Catalog = () => {
-  const filterOptions = ["Date created", "Rating", "Views"];
-  const [filter, setFilter] = useState([filterOptions[0]]);
-  const handleFilter = (filterVal) => {
-    if (filter.includes(filterVal)) return;
-
-    setFilter([filterVal]);
+  const initFilter = {
+    value: "Date created",
+    validate: "",
+    options: ["Date created", "Rating", "Views"],
   };
+  const [filter, setFilter] = useState(initFilter);
+
   return (
     <div className="p-[1rem]">
       <div className="grid gap-[1rem]">
@@ -21,11 +21,10 @@ const Catalog = () => {
           <div className="flex gap-[1rem] items-center">
             <div className="w-[10rem]">
               <Selection
-                selected={filter}
-                type="string"
-                placeHolder="Select filter"
-                selectOptions={filterOptions}
-                handleSelect={handleFilter}
+                formData={filter}
+                handleOnChange={(value) =>
+                  setFilter((prev) => ({ ...prev, value }))
+                }
               />
             </div>
             <div className="input_group">

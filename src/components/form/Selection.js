@@ -104,7 +104,9 @@ const Selection = ({ formData, handleOnChange, placeHolder = "" }) => {
         <div
           className={`${
             isOpen ? "rounded-t" : "rounded"
-          } text-gray-300 font-thin bg-[#2b2b31] min-h-[3rem] border border-gray-500 hover:border-cyan-500 p-2 flex justify-between items-center cursor-pointer`}
+          } text-gray-300 font-thin bg-[#2b2b31] min-h-[3rem] border ${
+            formData.validate
+          } border-gray-500 hover:border-cyan-500 p-2 flex justify-between items-center cursor-pointer`}
           onClick={() => {
             handleClick(!isOpen);
           }}
