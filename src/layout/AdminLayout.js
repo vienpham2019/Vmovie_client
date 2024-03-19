@@ -12,6 +12,7 @@ import {
 import UserIcon from "../components/UserIcon";
 import { useEffect, useState } from "react";
 import { useLogoutMutation } from "../features/auths/authApiSlice";
+import useAuth from "../hooks/useAuth";
 
 const AdminLayout = () => {
   const initSideBar = {
@@ -22,6 +23,7 @@ const AdminLayout = () => {
     reviews: { active: false, icon: <LuStar />, path: "" },
     tikets: { active: false, icon: <LuTicket />, path: "" },
   };
+  const { username } = useAuth();
   const [sideBar, setSideBar] = useState(initSideBar);
   const [logOut, { isSuccess }] = useLogoutMutation();
   const navigate = useNavigate();
@@ -91,7 +93,7 @@ const AdminLayout = () => {
             <UserIcon userIconUrl={"https://i.pravatar.cc/300?img=47"} />
             <div className="grid">
               <small className="text-[0.8rem] text-gray-300">Admin</small>{" "}
-              <span>John Does</span>
+              <span>{username}</span>
             </div>
           </div>
           <span

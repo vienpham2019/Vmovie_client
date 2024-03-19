@@ -3,15 +3,14 @@ import { useSelector } from "react-redux";
 
 const useAuth = () => {
   const { token } = useSelector((state) => state.auth);
-  let status;
-
+  console.log(token);
   if (token) {
     const decoded = jwtDecode(token);
-    const { username, roles } = decoded.UserInfo;
+    const { username, roles } = decoded;
 
-    return { username, status, roles };
+    return { username, roles };
   }
-  return { username: "", roles: [], status };
+  return { username: "", roles: [] };
 };
 
 export default useAuth;
