@@ -45,6 +45,11 @@ const AdminLayout = () => {
     });
   };
 
+  const handleLogout = async () => {
+    await logOut();
+    navigate("/");
+  };
+
   const displaySideBar = () => {
     return (
       <div className="grid w-full text-gray-400">
@@ -98,7 +103,7 @@ const AdminLayout = () => {
           </div>
           <span
             className="cursor-pointer bg-gray-600 p-2 rounded-lg"
-            onClick={logOut}
+            onClick={handleLogout}
           >
             <LuLogOut />
           </span>

@@ -3,6 +3,7 @@ import usePersist from "../../hooks/usePersist";
 import { useSelector } from "react-redux";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useRefreshTokenMutation } from "./authApiSlice";
+import LoadingScreen from "../../components/LoadingScreen";
 const PersistLogin = () => {
   const [persist] = usePersist();
   const { token } = useSelector((state) => state.auth);
@@ -13,6 +14,7 @@ const PersistLogin = () => {
     const verifyRefreshToken = async () => {
       try {
         await refreshToken();
+        console.log("send request from PersistLogin");
       } catch (error) {
         console.error(error);
       }
@@ -23,9 +25,10 @@ const PersistLogin = () => {
     } else {
       effectRan.current = true;
     }
-  }, [token, persist, refreshToken]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <LoadingScreen />;
   if (isError)
     return <Navigate to="/login" state={{ from: location }} replace />;
   return (

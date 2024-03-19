@@ -19,6 +19,25 @@ const baseQuery = fetchBaseQuery({
 
 const baseQueryWithReauth = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
+
+  // if (result?.error) {
+  //   console.log(result.error);
+  //   if (result?.error.status === 500) {
+  //     console.log("sending refresh token");
+
+  //     // send refresh token to get new access token
+  //     result = await baseQuery("/auth/refresh", api, extraOptions);
+  //     // set refresh token to cookie if token have data
+  //     if (result?.data) {
+  //       // store the new token
+  //       api.dispatch(setCredentials(result.data.metadata));
+
+  //       // retry original query with new access token
+  //       result = await baseQuery(args, api, extraOptions);
+  //     }
+  //   }
+  // }
+
   if (result?.error) {
     api.dispatch(
       setMessage({
@@ -26,28 +45,6 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
         messageType: notificationMessageEnum.ERROR,
       })
     );
-  }
-  // if the access token expired then send the quest for new access token
-  if (result?.error?.status === 403) {
-    console.log("sending refresh token");
-
-    // send refresh token to get new access token
-    const refreshToken = await baseQuery("/auth/refresh", api, extraOptions);
-    console.log(refreshToken);
-    // set refresh token to cookie if token have data
-    if (refreshToken?.data) {
-      // store the new token
-      api.dispatch(setCredentials({ ...refreshToken.data }));
-
-      // retry original query with new access token
-      result = await baseQuery(args, api, extraOptions);
-    } else {
-      // if
-      if (refreshToken?.error?.status === 403) {
-        refreshToken.error.data.message = "Your login has expired.";
-      }
-      return refreshToken;
-    }
   }
   return result;
 };

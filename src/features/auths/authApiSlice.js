@@ -1,5 +1,5 @@
 import { apiSlice } from "../../app/api/apiSlice";
-import { setCredentials } from "./authSlice";
+import { logOut, setCredentials } from "./authSlice";
 
 export const authApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -57,6 +57,19 @@ export const authApiSlice = apiSlice.injectEndpoints({
         url: "/auth/logOut",
         method: "GET",
       }),
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          dispatch(logOut());
+          dispatch(apiSlice.util.resetApiState());
+          // // it help the query take time to clear out cookie and unmount component and reset state
+          // setTimeout(() => {
+          //   dispatch(apiSlice.util.resetApiState());
+          // }, 1000);
+        } catch (error) {
+          console.log(error);
+        }
+      },
     }),
   }),
 });

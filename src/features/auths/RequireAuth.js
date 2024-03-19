@@ -14,9 +14,10 @@ const RequireAuth = ({ allowedRoles }) => {
   const dispatch = useDispatch();
   const allowAccess = roles.some((role) => allowedRoles.includes(role));
   const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    setLoading(false);
-  }, [token]);
+    if (loading) setLoading(false);
+  }, [token, loading]);
 
   if (loading) {
     return null; // or a loading spinner or placeholder
@@ -24,7 +25,7 @@ const RequireAuth = ({ allowedRoles }) => {
 
   if (allowAccess) {
     return <Outlet />;
-  } else {
+  } else if (token) {
     dispatch(
       setMessage({
         message: "Unauthorized access. Please log in to proceed.",
@@ -33,6 +34,7 @@ const RequireAuth = ({ allowedRoles }) => {
     );
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
+  return null;
 };
 
 export default RequireAuth;
