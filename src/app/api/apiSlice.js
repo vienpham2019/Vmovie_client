@@ -3,14 +3,15 @@ import {
   notificationMessageEnum,
   setMessage,
 } from "../../components/notificationMessage/notificationMessageSlice";
+import { setCredentials } from "../../features/auths/authSlice";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: process.env.REACT_APP_BASE_API_URL,
   credentials: "include",
   prepareHeaders: (headers, { getState }) => {
-    const token = getState().auth.token;
+    const { token } = getState().auth;
     if (token) {
-      headers.set("authorization", `Bearer ${token}`);
+      headers.set("athorization", `Bearer ${token}`);
     }
     return headers;
   },
@@ -34,19 +35,19 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
     const refreshToken = await baseQuery("/auth/refresh", api, extraOptions);
     console.log(refreshToken);
     // set refresh token to cookie if token have data
-    // if (refreshToken?.data) {
-    //   // store the new token
-    //   api.dispatch(setCredentials({ ...refreshToken.data }));
+    if (refreshToken?.data) {
+      // store the new token
+      api.dispatch(setCredentials({ ...refreshToken.data }));
 
-    //   // retry original query with new access token
-    //   result = await baseQuery(args, api, extraOptions);
-    // } else {
-    //   // if
-    //   if (refreshToken?.error?.status === 403) {
-    //     refreshToken.error.data.message = "Your login has expired.";
-    //   }
-    //   return refreshToken;
-    // }
+      // retry original query with new access token
+      result = await baseQuery(args, api, extraOptions);
+    } else {
+      // if
+      if (refreshToken?.error?.status === 403) {
+        refreshToken.error.data.message = "Your login has expired.";
+      }
+      return refreshToken;
+    }
   }
   return result;
 };

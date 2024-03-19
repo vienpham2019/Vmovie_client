@@ -6,7 +6,6 @@ import {
   useUploadImageMutation,
 } from "./imageApiSlice";
 import { useEffect, useRef, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
 import { uploadFileStatusEnum } from "./UploadFile";
 
 const UploadFileProgress = ({
@@ -23,14 +22,9 @@ const UploadFileProgress = ({
   useEffect(() => {
     const uploadFile = async () => {
       if (uploadImageFile.status !== uploadFileStatusEnum.LOADING) return;
-      const { file } = uploadImageFile;
+      const { file, originalName } = uploadImageFile;
       const formData = new FormData();
-      const blob = file.slice(0, file.size, file.type);
-      const uuid = uuidv4();
-      const newFile = new File([blob], `${uuid}.${file.type.split("/")[1]}`, {
-        type: file.type,
-      });
-      formData.append("imgFile", newFile);
+      formData.append("imgFile", file);
       isUpload.current = true;
       try {
         const res = await uploadImage({
@@ -44,7 +38,7 @@ const UploadFileProgress = ({
               imageSrc: null,
               status: uploadFileStatusEnum.ERROR,
             },
-            key: file.name,
+            originalName,
           });
         }
         if (res?.data) {
@@ -53,12 +47,12 @@ const UploadFileProgress = ({
               imageSrc: res.data.metadata,
               status: uploadFileStatusEnum.COMPLETED,
             },
-            key: file.name,
+            originalName,
           });
         }
       } catch (error) {
         // Handle error
-        console.error(`Error uploading ${file.name}:`, error);
+        console.error(`Error uploading ${originalName}:`, error);
       }
     };
 
@@ -74,7 +68,7 @@ const UploadFileProgress = ({
       if (uploadImageFile.status === uploadFileStatusEnum.COMPLETED) {
         await deleteImage(uploadImageFile.imageSrc.name);
       }
-      deleteUploadObj(uploadImageFile.file.name);
+      deleteUploadObj(uploadImageFile.originalName);
     } catch (error) {
       console.error(error);
     }
@@ -111,7 +105,7 @@ const UploadFileProgress = ({
       <div className="flex-1 flex flex-col justify-evenly">
         <div className="flex gap-1 text-[0.7rem]">
           <p className="max-w-[12rem] mobile:max-w-[8rem] mobileM:w-[4rem] truncate">
-            {uploadImageFile.file.name}
+            {uploadImageFile.originalName}
           </p>
           <div className="font-bold capitalize mobile:hidden">
             {uploadImageFile.status === uploadFileStatusEnum.ERROR && (

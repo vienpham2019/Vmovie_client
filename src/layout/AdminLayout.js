@@ -1,4 +1,4 @@
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import Logo from "../components/Logo";
 import {
   LuLogOut,
@@ -10,7 +10,8 @@ import {
   LuFilm,
 } from "react-icons/lu";
 import UserIcon from "../components/UserIcon";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useLogoutMutation } from "../features/auths/authApiSlice";
 
 const AdminLayout = () => {
   const initSideBar = {
@@ -22,6 +23,12 @@ const AdminLayout = () => {
     tikets: { active: false, icon: <LuTicket />, path: "" },
   };
   const [sideBar, setSideBar] = useState(initSideBar);
+  const [logOut, { isSuccess }] = useLogoutMutation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isSuccess) navigate("/");
+  }, [isSuccess, navigate]);
 
   const handleClick = (key) => {
     setSideBar((prevState) => {
@@ -35,6 +42,7 @@ const AdminLayout = () => {
       return updatedState;
     });
   };
+
   const displaySideBar = () => {
     return (
       <div className="grid w-full text-gray-400">
@@ -86,7 +94,10 @@ const AdminLayout = () => {
               <span>John Does</span>
             </div>
           </div>
-          <span className="cursor-pointer bg-gray-600 p-2 rounded-lg">
+          <span
+            className="cursor-pointer bg-gray-600 p-2 rounded-lg"
+            onClick={logOut}
+          >
             <LuLogOut />
           </span>
         </div>

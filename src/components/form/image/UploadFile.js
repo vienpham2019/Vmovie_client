@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { IoIosImages, IoMdImages } from "react-icons/io";
 import UploadFileProgress from "./UploadFileProgress";
+import { v4 as uuidv4 } from "uuid";
+import { changeImageName } from "../../../util/file";
 
 const uploadFileStatusEnum = Object.freeze({
   ERROR: "Error",
@@ -11,6 +13,7 @@ const uploadFileStatusEnum = Object.freeze({
 const UploadFile = ({ type, validate, name }) => {
   const [uploadImage, setUploadImage] = useState({});
   const [isDragging, setIsDragging] = useState(false);
+
   const handleDragEnter = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -41,19 +44,27 @@ const UploadFile = ({ type, validate, name }) => {
   };
 
   const handleFiles = (files) => {
-    Object.keys(files).forEach(async (index) => {
-      const file = files[index];
+    const newUploads = {}; // Object to accumulate new uploads
+
+    // Iterate over each file
+    for (const file of files) {
       if (!uploadImage[file.name]) {
-        setUploadImage((prevFile) => ({
-          ...prevFile,
-          [file.name]: {
-            file,
-            imageSrc: null,
-            status: uploadFileStatusEnum.LOADING,
-          },
-        }));
+        const uuid = uuidv4();
+        const newFile = changeImageName(file, `movie_${name}_${uuid}`);
+        newUploads[file.name] = {
+          file: newFile,
+          originalName: file.name,
+          imageSrc: null,
+          status: uploadFileStatusEnum.LOADING,
+        };
       }
-    });
+    }
+
+    // Update the state with all new uploads
+    setUploadImage((prevUploadImage) => ({
+      ...prevUploadImage,
+      ...newUploads,
+    }));
   };
 
   const handleOnchange = async (e) => {
@@ -61,11 +72,11 @@ const UploadFile = ({ type, validate, name }) => {
     handleFiles(files);
   };
 
-  const updateUploadObj = ({ payload, key }) => {
+  const updateUploadObj = ({ payload, originalName }) => {
     setUploadImage((prevUpload) => ({
       ...prevUpload,
-      [key]: {
-        ...prevUpload[key],
+      [originalName]: {
+        ...prevUpload[originalName],
         ...payload,
       },
     }));

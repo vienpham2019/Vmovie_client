@@ -8,6 +8,7 @@ import ResetPassword from "./features/auths/ResetPassword";
 import AdminLayout from "./layout/AdminLayout";
 import Catalog from "./features/admin/Catalog";
 import AddMovie from "./features/admin/AddMovie";
+import PersistLogin from "./features/auths/PersistLogin";
 
 const App = () => {
   return (
@@ -19,13 +20,16 @@ const App = () => {
           <Route path="forgotpassword" element={<ForgotPassword />} />
           <Route path="resetpassword/:token" element={<ResetPassword />} />
         </Route>
-
-        <Route path="admin" element={<AdminLayout />}>
-          <Route path="catalog">
-            <Route path="" element={<Catalog />} />
-            <Route path="addItem" element={<AddMovie />} />
+        {/* Dash */}
+        <Route element={<PersistLogin />}>
+          <Route path="admin" element={<AdminLayout />}>
+            <Route path="catalog">
+              <Route path="" element={<Catalog />} />
+              <Route path="addItem" element={<AddMovie />} />
+            </Route>
           </Route>
-        </Route>
+        </Route>{" "}
+        {/*End Dash */}
       </Route>
     </Routes>
   );

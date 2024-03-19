@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useLoginMutation } from "./authApiSlice";
@@ -10,6 +10,8 @@ import {
   setMessage,
 } from "../../components/notificationMessage/notificationMessageSlice";
 import { separatedWords } from "../../util/string";
+import CheckBox from "../../components/form/CheckBox";
+import usePersist from "../../hooks/usePersist";
 
 const Login = () => {
   const initFormData = {
@@ -18,8 +20,10 @@ const Login = () => {
   };
   const dispatch = useDispatch();
   const [formData, setFormData] = useState(initFormData);
-
   const [login, { isLoading }] = useLoginMutation();
+  const [persist, setPersist] = usePersist();
+  const navigate = useNavigate();
+  const location = useLocation();
   useEffect(() => {
     if (
       formData.email.validate === "invalid" ||
@@ -38,6 +42,10 @@ const Login = () => {
       }));
     }
   }, [formData]);
+
+  const handleCheckboxChange = (event) => {
+    setPersist(event.target.checked);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -58,6 +66,7 @@ const Login = () => {
         email: email.value,
         password: password.value,
       }).unwrap();
+      dispatch(setCredentials(res.metadata));
       setFormData(initFormData);
       dispatch(
         setMessage({
@@ -65,7 +74,7 @@ const Login = () => {
           messageType: notificationMessageEnum.SUCCESS,
         })
       );
-      dispatch(setCredentials(res.metadata));
+      navigate(location.state.from, { replace: true });
     } catch (error) {
       setFormData((prevData) => ({
         email: {
@@ -126,6 +135,13 @@ const Login = () => {
             {name === "password" && passwordType()}
           </div>
         ))}
+        <div className="flex items-center gap-[0.5rem] text-[1rem] text-gray-300 font-thin">
+          <CheckBox
+            isChecked={persist}
+            handleCheckboxChange={handleCheckboxChange}
+          />
+          <span>Remember me</span>
+        </div>
         <button type="submit" className="btn-blue">
           Sign in
         </button>
