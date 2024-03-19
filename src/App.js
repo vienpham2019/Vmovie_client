@@ -9,6 +9,8 @@ import AdminLayout from "./layout/AdminLayout";
 import Catalog from "./features/admin/Catalog";
 import AddMovie from "./features/admin/AddMovie";
 import PersistLogin from "./features/auths/PersistLogin";
+import { RoleEnum } from "./config/roles";
+import RequireAuth from "./features/auths/RequireAuth";
 
 const App = () => {
   return (
@@ -22,10 +24,12 @@ const App = () => {
         </Route>
         {/* Dash */}
         <Route element={<PersistLogin />}>
-          <Route path="admin" element={<AdminLayout />}>
-            <Route path="catalog">
-              <Route path="" element={<Catalog />} />
-              <Route path="addItem" element={<AddMovie />} />
+          <Route element={<RequireAuth allowedRoles={[RoleEnum.ADMIN]} />}>
+            <Route path="admin" element={<AdminLayout />}>
+              <Route path="catalog">
+                <Route path="" element={<Catalog />} />
+                <Route path="addItem" element={<AddMovie />} />
+              </Route>
             </Route>
           </Route>
         </Route>{" "}
