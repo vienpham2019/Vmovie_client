@@ -22,7 +22,8 @@ const UploadFileProgress = ({
   useEffect(() => {
     const uploadFile = async () => {
       if (uploadImageFile.status !== uploadFileStatusEnum.LOADING) return;
-      const { file, originalName } = uploadImageFile;
+      const { file } = uploadImageFile;
+      const fileName = file.name;
       const formData = new FormData();
       formData.append("imgFile", file);
       isUpload.current = true;
@@ -35,24 +36,22 @@ const UploadFileProgress = ({
           setErrorMessage(res.error.message);
           updateUploadObj({
             payload: {
-              imageSrc: null,
               status: uploadFileStatusEnum.ERROR,
             },
-            originalName,
+            fileName,
           });
-        }
-        if (res?.data) {
+        } else if (res?.data) {
           updateUploadObj({
             payload: {
               imageSrc: res.data.metadata,
               status: uploadFileStatusEnum.COMPLETED,
             },
-            originalName,
+            fileName,
           });
         }
       } catch (error) {
         // Handle error
-        console.error(`Error uploading ${originalName}:`, error);
+        console.error(`Error uploading ${fileName}:`, error);
       }
     };
 
@@ -67,8 +66,10 @@ const UploadFileProgress = ({
     try {
       if (uploadImageFile.status === uploadFileStatusEnum.COMPLETED) {
         await deleteImage(uploadImageFile.imageSrc.name);
+        deleteUploadObj(uploadImageFile.imageSrc.name);
+        return;
       }
-      deleteUploadObj(uploadImageFile.originalName);
+      deleteUploadObj(uploadImageFile.file.name);
     } catch (error) {
       console.error(error);
     }
@@ -87,7 +88,7 @@ const UploadFileProgress = ({
   }
 
   return (
-    <div className="h-[4rem] bg-cyan-900 rounded-sm flex gap-2 p-2 mobile:max-w-[15rem]">
+    <div className="h-[4rem] bg-cyan-900 rounded-sm flex gap-2 p-1 mobile:max-w-[15rem]">
       <div className="rounded-sm overflow-hidden w-[4rem] mobile:w-[2rem] flex-none flex items-center justify-center">
         {!uploadImageFile.imageSrc && (
           <span className="text-[2rem]">
@@ -105,7 +106,9 @@ const UploadFileProgress = ({
       <div className="flex-1 flex flex-col justify-evenly">
         <div className="flex gap-1 text-[0.7rem]">
           <p className="max-w-[12rem] mobile:max-w-[8rem] mobileM:w-[4rem] truncate">
-            {uploadImageFile.originalName}
+            {uploadImageFile.imageSrc
+              ? uploadImageFile.imageSrc.name
+              : uploadImageFile.name}
           </p>
           <div className="font-bold capitalize mobile:hidden">
             {uploadImageFile.status === uploadFileStatusEnum.ERROR && (

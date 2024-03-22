@@ -2,14 +2,13 @@ import { apiSlice } from "../../app/api/apiSlice";
 
 export const adminApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    uploadImage: builder.mutation({
-      query: (payload) => ({
-        url: "/image/upload",
-        method: "POST",
-        body: payload,
+    getUncompletedMovie: builder.mutation({
+      query: () => ({
+        url: "/movie/uncompletedMovie",
+        method: "GET",
       }),
     }),
   }),
 });
 
-export const { useUploadImageMutation } = adminApiSlice;
+export const { useGetUncompletedMovieMutation } = adminApiSlice;

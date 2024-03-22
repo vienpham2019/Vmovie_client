@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { displayInput } from "./formUtil";
 import { inputTypeEnum, inputValidateEnum } from "./formEnum";
 import { useDispatch } from "react-redux";
@@ -7,8 +7,8 @@ import {
   setMessage,
 } from "../notificationMessage/notificationMessageSlice";
 
-const MovieForm = ({ handleOnSubmit }) => {
-  const initFormData = {
+const MovieForm = ({ initFormData, handleOnSubmit, setOnChange }) => {
+  const stateFormData = {
     title: {
       value: "",
       validate: "",
@@ -62,12 +62,12 @@ const MovieForm = ({ handleOnSubmit }) => {
       value: "",
       validate: "",
     },
-    backgroundUrl: {
-      value: "",
+    background: {
+      value: {},
       validate: "",
     },
-    posterUrl: {
-      value: "",
+    poster: {
+      value: {},
       validate: "",
     },
     cast: {
@@ -94,15 +94,23 @@ const MovieForm = ({ handleOnSubmit }) => {
       value: [],
       validate: "",
     },
-    trailerUrl: {
+    trailer: {
       value: "",
       validate: "",
     },
   };
-
   const dispatch = useDispatch();
 
-  const [formData, setFormData] = useState(initFormData);
+  const [formData, setFormData] = useState(stateFormData);
+
+  useEffect(() => {
+    const setInitFormData = () => {
+      setFormData(() => ({ ...initFormData, ...stateFormData }));
+    };
+    setInitFormData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleOnChange = (value, name) => {
     setFormData((prevData) => ({
       ...prevData,
@@ -161,13 +169,13 @@ const MovieForm = ({ handleOnSubmit }) => {
         <div className="grid flex-[5] gap-4 min-w-[30rem] mobile:min-w-[15rem]">
           {input({ name: "title" })}
           {input({ name: "movieDetail", type: inputTypeEnum.TEXT_AREA })}
-          {input({ name: "trailerUrl", type: inputTypeEnum.VIDEO })}
+          {input({ name: "trailer", type: inputTypeEnum.VIDEO })}
           <div className="flex flex-wrap gap-4">
             <div className="flex-1 min-w-[27rem] mobile:min-w-[15rem]">
-              {input({ name: "posterUrl", type: inputTypeEnum.FILE })}
+              {input({ name: "poster", type: inputTypeEnum.FILE })}
             </div>
             <div className="flex-1 min-w-[27rem] mobile:min-w-[15rem]">
-              {input({ name: "backgroundUrl", type: inputTypeEnum.FILE })}
+              {input({ name: "background", type: inputTypeEnum.FILE })}
             </div>
           </div>
           <div className="flex-[5] min-w-[15rem]">

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IoIosImages, IoMdImages } from "react-icons/io";
 import UploadFileProgress from "./UploadFileProgress";
 import { v4 as uuidv4 } from "uuid";
@@ -10,9 +10,31 @@ const uploadFileStatusEnum = Object.freeze({
   LOADING: "Loading",
 });
 
-const UploadFile = ({ type, validate, name }) => {
+const UploadFile = ({ type, validate, value, name, setOnChange }) => {
   const [uploadImage, setUploadImage] = useState({});
   const [isDragging, setIsDragging] = useState(false);
+  useEffect(() => {
+    const initUpload = {};
+    if (type === "list") {
+      for (let image of value) {
+        initUpload[image.name] = {
+          file: null,
+          imageSrc: image,
+          status: uploadFileStatusEnum.COMPLETED,
+        };
+      }
+    } else {
+      if (value.name) {
+        initUpload[value.name] = {
+          file: null,
+          imageSrc: value,
+          status: uploadFileStatusEnum.COMPLETED,
+        };
+      }
+    }
+    setUploadImage(initUpload);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleDragEnter = (e) => {
     e.preventDefault();
@@ -45,21 +67,16 @@ const UploadFile = ({ type, validate, name }) => {
 
   const handleFiles = (files) => {
     const newUploads = {}; // Object to accumulate new uploads
-
     // Iterate over each file
     for (const file of files) {
-      if (!uploadImage[file.name]) {
-        const uuid = uuidv4();
-        const newFile = changeImageName(file, `movie_${name}_${uuid}`);
-        newUploads[file.name] = {
-          file: newFile,
-          originalName: file.name,
-          imageSrc: null,
-          status: uploadFileStatusEnum.LOADING,
-        };
-      }
+      const uuid = uuidv4();
+      const newFile = changeImageName(file, uuid);
+      newUploads[newFile.name] = {
+        file: newFile,
+        imageSrc: null,
+        status: uploadFileStatusEnum.LOADING,
+      };
     }
-
     // Update the state with all new uploads
     setUploadImage((prevUploadImage) => ({
       ...prevUploadImage,
@@ -72,22 +89,36 @@ const UploadFile = ({ type, validate, name }) => {
     handleFiles(files);
   };
 
-  const updateUploadObj = ({ payload, originalName }) => {
+  const updateUploadObj = ({ payload, fileName }) => {
+    if (payload.status === uploadFileStatusEnum.COMPLETED) {
+      if (type === "list") {
+        value.push(payload.imageSrc);
+      } else {
+        value = payload.imageSrc;
+      }
+      setOnChange(value);
+    }
     setUploadImage((prevUpload) => ({
       ...prevUpload,
-      [originalName]: {
-        ...prevUpload[originalName],
+      [fileName]: {
+        ...prevUpload[fileName],
         ...payload,
       },
     }));
   };
 
-  const deleteUploadObj = (key) => {
+  const deleteUploadObj = (fileName) => {
+    if (uploadImage[fileName].status === uploadFileStatusEnum.COMPLETED) {
+      if (type === "list") {
+        setOnChange(value.filter((img) => img.name !== fileName));
+      } else {
+        setOnChange({});
+      }
+    }
     setUploadImage((prevUpload) => {
       const updatedUploadImage = { ...prevUpload };
 
-      delete updatedUploadImage[key];
-
+      delete updatedUploadImage[fileName];
       return updatedUploadImage; // Return the updated state object
     });
   };
@@ -124,6 +155,7 @@ const UploadFile = ({ type, validate, name }) => {
                 type="file"
                 className="hidden appearance-none"
                 accept="image/*"
+                name={name}
                 id={`fileInput_${name}_single`}
                 placeholder="Browse files"
                 onChange={handleOnchange}

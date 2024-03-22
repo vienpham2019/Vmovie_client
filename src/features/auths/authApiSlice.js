@@ -62,10 +62,6 @@ export const authApiSlice = apiSlice.injectEndpoints({
           await queryFulfilled;
           dispatch(logOut());
           dispatch(apiSlice.util.resetApiState());
-          // // it help the query take time to clear out cookie and unmount component and reset state
-          // setTimeout(() => {
-          //   dispatch(apiSlice.util.resetApiState());
-          // }, 1000);
         } catch (error) {
           console.log(error);
         }

@@ -20,23 +20,18 @@ const baseQuery = fetchBaseQuery({
 const baseQueryWithReauth = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
 
-  // if (result?.error) {
-  //   console.log(result.error);
-  //   if (result?.error.status === 500) {
-  //     console.log("sending refresh token");
+  if (result?.error?.status === 500) {
+    // send refresh token to get new access token
+    const refreshRes = await baseQuery("/auth/refresh", api, extraOptions);
+    // set refresh token to cookie if token have data
+    if (refreshRes?.data) {
+      // store the new token
+      api.dispatch(setCredentials(refreshRes.data.metadata));
 
-  //     // send refresh token to get new access token
-  //     result = await baseQuery("/auth/refresh", api, extraOptions);
-  //     // set refresh token to cookie if token have data
-  //     if (result?.data) {
-  //       // store the new token
-  //       api.dispatch(setCredentials(result.data.metadata));
-
-  //       // retry original query with new access token
-  //       result = await baseQuery(args, api, extraOptions);
-  //     }
-  //   }
-  // }
+      // retry original query with new access token
+      result = await baseQuery(args, api, extraOptions);
+    }
+  }
 
   if (result?.error) {
     api.dispatch(

@@ -42,10 +42,12 @@ const displayInput = ({
     content = (
       <UploadFile
         name={name}
-        type={typeof formData[name].value === "string" ? "single" : "list"}
+        type={Array.isArray(formData[name].value) ? "list" : "single"}
         value={formData[name].value}
         validate={formData[name].validate}
-        onChange={(e) => handleOnChange(e, name)}
+        setOnChange={(uploadFiles) => {
+          handleOnChange(uploadFiles, name);
+        }}
       />
     );
   } else if (type === inputTypeEnum.VIDEO) {
