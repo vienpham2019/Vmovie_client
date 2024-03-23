@@ -1,5 +1,5 @@
 // import { AiOutlineCloseCircle } from "react-icons/ai";
-import { FaCircleXmark, FaTrash, FaPhotoFilm } from "react-icons/fa6";
+import { FaTrash, FaPhotoFilm } from "react-icons/fa6";
 import { TiWarning } from "react-icons/ti";
 import {
   useDeleteImageMutation,
@@ -12,11 +12,12 @@ const UploadFileProgress = ({
   uploadImageFile,
   updateUploadObj,
   deleteUploadObj,
+  field,
+  db,
 }) => {
   const [uploadImage] = useUploadImageMutation();
   const [deleteImage, { isLoading: deleteLoading }] = useDeleteImageMutation();
 
-  const [progress, setProgress] = useState(0);
   const [errorMessage, setErrorMessage] = useState(null);
   const isUpload = useRef(false);
   useEffect(() => {
@@ -30,10 +31,11 @@ const UploadFileProgress = ({
       try {
         const res = await uploadImage({
           payload: formData,
-          onProgress: setProgress,
+          field,
+          db,
         });
         if (res?.error) {
-          setErrorMessage(res.error.message);
+          setErrorMessage(res.error.data.message);
           updateUploadObj({
             payload: {
               status: uploadFileStatusEnum.ERROR,
@@ -56,16 +58,16 @@ const UploadFileProgress = ({
     };
 
     if (!isUpload.current) uploadFile();
-  }, [uploadImageFile, uploadImage, updateUploadObj]);
-
-  useEffect(() => {
-    setProgress(0);
-  }, []);
+  }, [uploadImageFile, uploadImage, updateUploadObj, db, field]);
 
   const handleRemove = async () => {
     try {
       if (uploadImageFile.status === uploadFileStatusEnum.COMPLETED) {
-        await deleteImage(uploadImageFile.imageSrc.name);
+        await deleteImage({
+          fileName: uploadImageFile.imageSrc.name,
+          field,
+          db,
+        });
         deleteUploadObj(uploadImageFile.imageSrc.name);
         return;
       }
@@ -106,9 +108,9 @@ const UploadFileProgress = ({
       <div className="flex-1 flex flex-col justify-evenly">
         <div className="flex gap-1 text-[0.7rem]">
           <p className="max-w-[12rem] mobile:max-w-[8rem] mobileM:w-[4rem] truncate">
-            {uploadImageFile.imageSrc
+            {uploadImageFile.status === uploadFileStatusEnum.COMPLETED
               ? uploadImageFile.imageSrc.name
-              : uploadImageFile.name}
+              : uploadImageFile.file.name}
           </p>
           <div className="font-bold capitalize mobile:hidden">
             {uploadImageFile.status === uploadFileStatusEnum.ERROR && (
@@ -135,12 +137,9 @@ const UploadFileProgress = ({
           </div>
         )}
         {uploadImageFile.status === uploadFileStatusEnum.LOADING && (
-          <div className="relative w-full h-[0.5rem] bg-gray-200 rounded-full">
-            <div
-              className="absolute top-0 h-full bg-cyan-600 rounded-full"
-              style={{ width: `${progress}%` }}
-            ></div>
-            <span className="text-[0.6rem] text-white">{progress}%</span>
+          <div className="relative w-[10rem] h-[0.5rem] bg-gray-200 rounded-full">
+            <div className="absolute top-0 h-full bg-cyan-600 rounded-full"></div>
+            <span className="text-[0.6rem] text-white">0%</span>
           </div>
         )}
         {uploadImageFile.status === uploadFileStatusEnum.ERROR && (
@@ -156,12 +155,7 @@ const UploadFileProgress = ({
         className="w-[2rem] flex-none flex items-center justify-center text-[1.2rem] cursor-pointer"
         onClick={handleRemove}
       >
-        {uploadImageFile.imageSrc ||
-        uploadImageFile.status === uploadFileStatusEnum.ERROR ? (
-          <FaTrash />
-        ) : (
-          <FaCircleXmark />
-        )}
+        <FaTrash />
       </div>
     </div>
   );

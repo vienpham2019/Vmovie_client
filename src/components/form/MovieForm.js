@@ -7,7 +7,7 @@ import {
   setMessage,
 } from "../notificationMessage/notificationMessageSlice";
 
-const MovieForm = ({ initFormData, handleOnSubmit, setOnChange }) => {
+const MovieForm = ({ initFormData, handleOnSubmit }) => {
   const stateFormData = {
     title: {
       value: "",
@@ -105,25 +105,25 @@ const MovieForm = ({ initFormData, handleOnSubmit, setOnChange }) => {
 
   useEffect(() => {
     const setInitFormData = () => {
-      setFormData(() => ({ ...initFormData, ...stateFormData }));
+      setFormData(() => ({ ...stateFormData, ...initFormData }));
     };
     setInitFormData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [initFormData]);
 
   const handleOnChange = (value, name) => {
-    setFormData((prevData) => ({
-      ...prevData,
+    setFormData((prevFormData) => ({
+      ...prevFormData,
       [name]: {
-        ...prevData[name],
-        value,
+        ...prevFormData[name],
+        value: value,
         validate: "",
       },
     }));
   };
 
   const input = (options) => {
-    return displayInput({ formData, handleOnChange, ...options });
+    return displayInput({ formData, handleOnChange, ...options, db: "movie" });
   };
 
   const onSubmit = async (e) => {
@@ -182,7 +182,7 @@ const MovieForm = ({ initFormData, handleOnSubmit, setOnChange }) => {
             {input({ name: "photos", type: inputTypeEnum.FILE })}
           </div>
         </div>
-        <div className="grid gap-4 flex-auto min-w-[25rem] mobile:min-w-[15rem]">
+        <div className="grid content-start gap-4 flex-auto min-w-[25rem] mobile:min-w-[15rem]">
           {/*  */}
           <div className="flex items-center flex-wrap gap-4">
             <div className="flex-auto min-w-[5rem]">

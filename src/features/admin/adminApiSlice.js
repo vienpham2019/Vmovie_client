@@ -11,4 +11,7 @@ export const adminApiSlice = apiSlice.injectEndpoints({
   }),
 });
 
-export const { useGetUncompletedMovieMutation } = adminApiSlice;
+export const {
+  useGetUncompletedMovieMutation,
+  useUpdateUncompletedMovieMutation,
+} = adminApiSlice;

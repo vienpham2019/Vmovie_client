@@ -3,7 +3,7 @@ import MovieForm from "../../components/form/MovieForm";
 import { useGetUncompletedMovieMutation } from "./adminApiSlice";
 
 const AddMovie = () => {
-  const [uncompletedMovie] = useGetUncompletedMovieMutation();
+  const [getUncompletedMovie] = useGetUncompletedMovieMutation();
   const [initFormData, setInitFormData] = useState({});
   const initialized = useRef(false);
 
@@ -12,7 +12,7 @@ const AddMovie = () => {
       if (initialized.current) return;
       initialized.current = true;
       try {
-        const res = await uncompletedMovie();
+        const res = await getUncompletedMovie();
         let fromData = {};
         Object.keys(res.data.metadata).forEach((key) => {
           fromData[key] = {
@@ -21,17 +21,19 @@ const AddMovie = () => {
           };
         });
         setInitFormData(fromData);
-        console.log(fromData);
       } catch (error) {
         console.error(error);
       }
     };
     getMovie();
-  }, [uncompletedMovie, setInitFormData]);
+  }, [getUncompletedMovie, setInitFormData]);
 
   const handleOnSubmit = (e) => {
     e.preventDefault();
   };
+
+  const handleUpdateMovie = async (formData) => {};
+
   return (
     <div className="p-[1rem]">
       <div className="py-[0.4rem] border-b border-gray-600">
@@ -42,6 +44,7 @@ const AddMovie = () => {
         <MovieForm
           handleOnSubmit={handleOnSubmit}
           initFormData={initFormData}
+          setOnChange={handleUpdateMovie}
         />
       </div>
     </div>

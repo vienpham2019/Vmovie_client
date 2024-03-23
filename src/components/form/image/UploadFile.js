@@ -10,7 +10,7 @@ const uploadFileStatusEnum = Object.freeze({
   LOADING: "Loading",
 });
 
-const UploadFile = ({ type, validate, value, name, setOnChange }) => {
+const UploadFile = ({ type, validate, value, name, setOnChange, db }) => {
   const [uploadImage, setUploadImage] = useState({});
   const [isDragging, setIsDragging] = useState(false);
   useEffect(() => {
@@ -34,7 +34,7 @@ const UploadFile = ({ type, validate, value, name, setOnChange }) => {
     }
     setUploadImage(initUpload);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [value]);
 
   const handleDragEnter = (e) => {
     e.preventDefault();
@@ -79,20 +79,21 @@ const UploadFile = ({ type, validate, value, name, setOnChange }) => {
     }
     // Update the state with all new uploads
     setUploadImage((prevUploadImage) => ({
-      ...prevUploadImage,
       ...newUploads,
+      ...prevUploadImage,
     }));
   };
 
-  const handleOnchange = async (e) => {
+  const handleOnchange = (e) => {
     const files = e.target.files;
+
     handleFiles(files);
   };
 
   const updateUploadObj = ({ payload, fileName }) => {
     if (payload.status === uploadFileStatusEnum.COMPLETED) {
       if (type === "list") {
-        value.push(payload.imageSrc);
+        value = [payload.imageSrc, ...value];
       } else {
         value = payload.imageSrc;
       }
@@ -142,6 +143,8 @@ const UploadFile = ({ type, validate, value, name, setOnChange }) => {
                   uploadImageFile={val}
                   updateUploadObj={updateUploadObj}
                   deleteUploadObj={deleteUploadObj}
+                  field={name}
+                  db={db}
                 />
               </div>
             ))}
@@ -209,6 +212,7 @@ const UploadFile = ({ type, validate, value, name, setOnChange }) => {
             accept="image/*"
             id={`fileInput_${name}_list`}
             placeholder="Browse files"
+            value=""
             onChange={handleOnchange}
             multiple
           />
@@ -232,6 +236,8 @@ const UploadFile = ({ type, validate, value, name, setOnChange }) => {
                 uploadImageFile={val}
                 updateUploadObj={updateUploadObj}
                 deleteUploadObj={deleteUploadObj}
+                field={name}
+                db={db}
               />
             </div>
           ))}

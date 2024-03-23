@@ -11,6 +11,7 @@ const displayInput = ({
   inputType = "text",
   name,
   handleOnChange,
+  db,
 }) => {
   let content;
   if (type === inputTypeEnum.TEXT_AREA) {
@@ -45,6 +46,7 @@ const displayInput = ({
         type={Array.isArray(formData[name].value) ? "list" : "single"}
         value={formData[name].value}
         validate={formData[name].validate}
+        db={db}
         setOnChange={(uploadFiles) => {
           handleOnChange(uploadFiles, name);
         }}
