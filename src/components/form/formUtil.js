@@ -1,9 +1,9 @@
-import { RiFolderVideoFill } from "react-icons/ri";
 import InputList from "./InputList";
 import Selection from "./Selection";
 import UploadFile from "./image/UploadFile";
 import { separatedWords } from "../../util/string";
 import { inputTypeEnum } from "./formEnum";
+import VideoInput from "./VideoInput";
 
 const displayInput = ({
   formData,
@@ -54,17 +54,13 @@ const displayInput = ({
     );
   } else if (type === inputTypeEnum.VIDEO) {
     content = (
-      <>
-        <input
-          type={inputType}
-          className={`input ${formData[name].validate} border-gray-500 pl-[2rem]`}
-          value={formData[name].value}
-          onChange={(e) => handleOnChange(e.target.value, name)}
-        />
-        <div className="input_attachment border-l border-gray-500 text-[1.5rem] cursor-pointer">
-          <RiFolderVideoFill />
-        </div>
-      </>
+      <VideoInput
+        name={name}
+        formData={formData}
+        setOnChange={(videoUrl) => {
+          handleOnChange(videoUrl, name);
+        }}
+      />
     );
   } else {
     content = (

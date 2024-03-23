@@ -1,12 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
 import PrivatePolicy from "../PrivatePolicy";
 import ResetPasswordModal from "../../features/auths/ResetPasswordModal";
+import VideoModal from "../form/VideoModal";
 
 const initState = {
   isModalOpen: false,
   modalContentTitle: null,
   modalParams: null,
 };
+
 export const modalSlice = createSlice({
   name: "modal",
   initialState: initState,
@@ -31,6 +33,7 @@ export const { openModal, closeModal, setModalParams } = modalSlice.actions;
 const modalComponentEnum = Object.freeze({
   PRIVATE_POLICY: "PRIVATE_POLICY",
   RESET_PASSWORD: "RESET_PASSWORD",
+  VIDEO: "VIDEO",
   // Add more roles as needed
 });
 
@@ -44,7 +47,8 @@ const getModalComponent = (modalIdentifier) => {
       );
     case modalComponentEnum.RESET_PASSWORD:
       return <ResetPasswordModal />;
-
+    case modalComponentEnum.VIDEO:
+      return <VideoModal />;
     default:
       return null;
   }

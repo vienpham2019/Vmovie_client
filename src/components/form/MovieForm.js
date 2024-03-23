@@ -234,9 +234,6 @@ const MovieForm = ({ initFormData, handleOnSubmit }) => {
         <button className="btn-blue w-[15rem]" type="submit">
           Submit
         </button>
-        <button className="btn-red w-[15rem]" type="button">
-          Cancel
-        </button>
       </div>
     </form>
   );
