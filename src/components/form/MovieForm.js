@@ -1,136 +1,159 @@
-import { useEffect, useState } from "react";
 import { displayInput } from "./formUtil";
 import { inputTypeEnum, inputValidateEnum } from "./formEnum";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   notificationMessageEnum,
   setMessage,
 } from "../notificationMessage/notificationMessageSlice";
+import {
+  initMovieFormData,
+  resetMovieFormdata,
+  setMovieFormData,
+} from "./formSlice";
 
-const MovieForm = ({ initFormData, handleOnSubmit }) => {
-  const stateFormData = {
-    title: {
-      value: "",
-      validate: "",
-    },
-    yearRelease: {
-      value: "",
-      validate: "",
-    },
-    runtime: {
-      value: "",
-      validate: "",
-    },
-    rating: {
-      value: "",
-      validate: "",
-      options: ["G", "PG", "PG_13", "R", "NC_17"],
-    },
-    genre: {
-      value: [],
-      validate: "",
-      options: [
-        "Action",
-        "Adventure",
-        "Animation",
-        "Comedy",
-        "Crime",
-        "Documentary",
-        "Drama",
-        "Family",
-        "Fantasy",
-        "History",
-        "Horror",
-        "Music",
-        "Mystery",
-        "Romance",
-        "Science Fiction",
-        "Thriller",
-        "War",
-        "Western",
-      ],
-    },
-    country: {
-      value: [],
-      validate: "",
-    },
-    language: {
-      value: [],
-      validate: "",
-    },
-    movieDetail: {
-      value: "",
-      validate: "",
-    },
-    background: {
-      value: {},
-      validate: "",
-    },
-    poster: {
-      value: {},
-      validate: "",
-    },
-    cast: {
-      value: [],
-      validate: "",
-    },
-    director: {
-      value: [],
-      validate: "",
-    },
-    producer: {
-      value: [],
-      validate: "",
-    },
-    writer: {
-      value: [],
-      validate: "",
-    },
-    studio: {
-      value: [],
-      validate: "",
-    },
-    photos: {
-      value: [],
-      validate: "",
-    },
-    trailer: {
-      value: "",
-      validate: "",
-    },
-  };
+const MovieForm = ({ handleOnSubmit }) => {
+  // const stateFormData = {
+  //   title: {
+  //     value: "",
+  //     validate: "",
+  //   },
+  //   dateRelease: {
+  //     value: "",
+  //     validate: "",
+  //   },
+  //   runtime: {
+  //     value: "",
+  //     validate: "",
+  //   },
+  //   rating: {
+  //     value: "",
+  //     validate: "",
+  //     options: ["G", "PG", "PG_13", "R", "NC_17"],
+  //   },
+  //   genre: {
+  //     value: [],
+  //     validate: "",
+  //     options: [
+  //       "Action",
+  //       "Adventure",
+  //       "Animation",
+  //       "Comedy",
+  //       "Crime",
+  //       "Documentary",
+  //       "Drama",
+  //       "Family",
+  //       "Fantasy",
+  //       "History",
+  //       "Horror",
+  //       "Music",
+  //       "Mystery",
+  //       "Romance",
+  //       "Science Fiction",
+  //       "Thriller",
+  //       "War",
+  //       "Western",
+  //     ],
+  //   },
+  //   country: {
+  //     value: [],
+  //     validate: "",
+  //   },
+  //   language: {
+  //     value: [],
+  //     validate: "",
+  //   },
+  //   movieDetail: {
+  //     value: "",
+  //     validate: "",
+  //   },
+  //   background: {
+  //     value: {},
+  //     validate: "",
+  //   },
+  //   poster: {
+  //     value: {},
+  //     validate: "",
+  //   },
+  //   cast: {
+  //     value: [],
+  //     validate: "",
+  //   },
+  //   director: {
+  //     value: [],
+  //     validate: "",
+  //   },
+  //   producer: {
+  //     value: [],
+  //     validate: "",
+  //   },
+  //   writer: {
+  //     value: [],
+  //     validate: "",
+  //   },
+  //   studio: {
+  //     value: [],
+  //     validate: "",
+  //   },
+  //   photos: {
+  //     value: [],
+  //     validate: "",
+  //   },
+  //   trailer: {
+  //     value: "",
+  //     validate: "",
+  //   },
+  // };
   const dispatch = useDispatch();
+  const { movieFormData } = useSelector((state) => state.form);
+  // const [formData, setFormData] = useState(movieFormData);
 
-  const [formData, setFormData] = useState(stateFormData);
-
-  useEffect(() => {
-    const setInitFormData = () => {
-      setFormData(() => ({ ...stateFormData, ...initFormData }));
-    };
-    setInitFormData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initFormData]);
-
+  // useEffect(() => {
+  //   const setInitFormData = () => {
+  //     console.log(movieFormData);
+  //     // let mergeFormData = { ...movieFormData };
+  //     for (let key in initFormData) {
+  //       // movieFormData[key].value = initFormData[key].value;
+  //       setMovieFormData({
+  //         name: key,
+  //         value: { ...movieFormData[key], value: initFormData[key].value },
+  //       });
+  //     }
+  //     // initMovieFormData(mergeFormData);
+  //   };
+  //   setInitFormData();
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [initFormData]);
   const handleOnChange = (value, name) => {
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      [name]: {
-        ...prevFormData[name],
-        value: value,
-        validate: "",
-      },
-    }));
+    // setFormData((prevFormData) => ({
+    //   ...prevFormData,
+    //   [name]: {
+    //     ...prevFormData[name],
+    //     value: value,
+    //     validate: "",
+    //   },
+    // }));
+    dispatch(
+      setMovieFormData({
+        name,
+        value: { ...movieFormData[name], value, validate: "" },
+      })
+    );
   };
 
   const input = (options) => {
-    return displayInput({ formData, handleOnChange, ...options, db: "movie" });
+    return displayInput({
+      formData: movieFormData,
+      handleOnChange,
+      ...options,
+      db: "movie",
+    });
   };
 
   const onSubmit = async (e) => {
     e.preventDefault();
     let isInvalid = false;
 
-    const updatedFormData = { ...formData };
+    const updatedFormData = { ...movieFormData };
 
     for (const key in updatedFormData) {
       if (updatedFormData.hasOwnProperty(key)) {
@@ -151,12 +174,12 @@ const MovieForm = ({ initFormData, handleOnSubmit }) => {
           messageType: notificationMessageEnum.ERROR,
         })
       );
-      setFormData(updatedFormData);
+      initMovieFormData(updatedFormData);
       return;
     }
 
-    await handleOnSubmit(formData);
-    setFormData(initFormData);
+    await handleOnSubmit();
+    resetMovieFormdata();
   };
 
   return (
@@ -189,7 +212,7 @@ const MovieForm = ({ initFormData, handleOnSubmit }) => {
               {input({ name: "rating", type: inputTypeEnum.SELECT })}
             </div>
             <div className="flex-[5] w-[7rem]">
-              {input({ name: "yearRelease" })}
+              {input({ name: "dateRelease" })}
             </div>
             <div className="flex-[5] w-[7rem]">
               {input({ name: "runtime" })}

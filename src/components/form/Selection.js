@@ -7,15 +7,14 @@ const Selection = ({ formData, handleOnChange, placeHolder = "" }) => {
   const [options, setOptions] = useState(formData.options);
   const containerRef = useRef(null);
 
-  const scrollToBottom = () => {
-    if (typeof formData.value === "object" && formData.value.length > 0) {
-      containerRef.current.scrollTop = containerRef.current.scrollHeight;
-    }
-  };
-
   useEffect(() => {
+    const scrollToBottom = () => {
+      if (typeof formData.value === "object" && formData.value.length > 0) {
+        containerRef.current.scrollTop = containerRef.current.scrollHeight;
+      }
+    };
     scrollToBottom();
-  });
+  }, [formData, containerRef]);
 
   const handleOutsideClick = () => {
     if (isOpen) handleClick(false);

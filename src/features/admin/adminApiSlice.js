@@ -8,6 +8,13 @@ export const adminApiSlice = apiSlice.injectEndpoints({
         method: "GET",
       }),
     }),
+    updateUncompletedMovie: builder.mutation({
+      query: (payload) => ({
+        url: "/movie/uncompletedMovie",
+        method: "PATCH",
+        body: payload,
+      }),
+    }),
   }),
 });
 

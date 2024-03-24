@@ -7,6 +7,7 @@ const VideoModal = () => {
       <iframe
         className="w-full aspect-video rounded-md"
         src={modalParams.videoUrl}
+        title={modalParams.videoUrl}
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
         allowFullScreen
       ></iframe>

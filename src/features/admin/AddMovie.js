@@ -1,38 +1,39 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import MovieForm from "../../components/form/MovieForm";
-import { useGetUncompletedMovieMutation } from "./adminApiSlice";
+import {
+  useGetUncompletedMovieMutation,
+  useUpdateUncompletedMovieMutation,
+} from "./adminApiSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { initMovieFormData } from "../../components/form/formSlice";
 
 const AddMovie = () => {
   const [getUncompletedMovie] = useGetUncompletedMovieMutation();
-  const [initFormData, setInitFormData] = useState({});
+  const [updateUncompletedMovie] = useUpdateUncompletedMovieMutation();
   const initialized = useRef(false);
-
+  const { movieFormData } = useSelector((state) => state.form);
+  const dispatch = useDispatch();
   useEffect(() => {
     const getMovie = async () => {
       if (initialized.current) return;
       initialized.current = true;
       try {
         const res = await getUncompletedMovie();
-        let fromData = {};
+        let formData = JSON.parse(JSON.stringify(movieFormData));
         Object.keys(res.data.metadata).forEach((key) => {
-          fromData[key] = {
-            value: res.data.metadata[key],
-            validate: "",
-          };
+          formData[key].value = res.data.metadata[key];
         });
-        setInitFormData(fromData);
+        dispatch(initMovieFormData(formData));
       } catch (error) {
         console.error(error);
       }
     };
     getMovie();
-  }, [getUncompletedMovie, setInitFormData]);
+  }, [getUncompletedMovie, movieFormData, dispatch]);
 
-  const handleOnSubmit = (e) => {
-    e.preventDefault();
+  const handleOnSubmit = async () => {
+    await updateUncompletedMovie(movieFormData);
   };
-
-  const handleUpdateMovie = async (formData) => {};
 
   return (
     <div className="p-[1rem]">
@@ -41,11 +42,7 @@ const AddMovie = () => {
       </div>
       {/* Body */}
       <div className="p-2">
-        <MovieForm
-          handleOnSubmit={handleOnSubmit}
-          initFormData={initFormData}
-          setOnChange={handleUpdateMovie}
-        />
+        <MovieForm handleOnSubmit={handleOnSubmit} />
       </div>
     </div>
   );

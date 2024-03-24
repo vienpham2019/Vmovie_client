@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { FiX } from "react-icons/fi";
+import { isArrayString, stringToArray } from "../../util/string";
 const InputList = ({
   listValues = [],
   validate = "",
@@ -22,7 +23,12 @@ const InputList = ({
   const handleAdd = (e) => {
     if (listVal === "") return;
     if (e.keyCode === 13) {
-      handleOnChange([...listValues, listVal.trim()]);
+      if (isArrayString(listVal)) {
+        console.log(stringToArray(listVal));
+        handleOnChange([...listValues, ...stringToArray(listVal)]);
+      } else {
+        handleOnChange([...listValues, listVal.trim()]);
+      }
       setListVal("");
       e.preventDefault();
     }
@@ -57,7 +63,7 @@ const InputList = ({
     >
       <div
         ref={containerRef}
-        className={`flex flex-wrap gap-1 m-2 ${height} rounded-md overflow-y-auto border bg-[#1e1e1e] border-gray-500`}
+        className={`flex flex-wrap gap-1 m-2 min-h-[3rem] max-h-[5rem] rounded-md overflow-y-auto border bg-[#1e1e1e] border-gray-500`}
       >
         {displayList()}
       </div>

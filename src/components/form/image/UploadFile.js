@@ -151,7 +151,7 @@ const UploadFile = ({ type, validate, value, name, setOnChange, db }) => {
           </div>
         ) : (
           <div
-            className={`flex flex-1 justify-around ${validate} items-center px-4`}
+            className={`flex flex-1 gap-2 justify-around ${validate} items-center px-4`}
           >
             <div className="grid gap-[2px] justify-items-center ">
               <input
@@ -174,8 +174,8 @@ const UploadFile = ({ type, validate, value, name, setOnChange, db }) => {
                 Drag image here to upload
               </span>
             </div>
-            <div className="text-gray-500 grid text-[0.8rem] gap-[0.3rem] mobile:hidden">
-              <span>Support JPEG, JPG, PNG.</span>
+            <div className="text-gray-500 grid text-[0.7rem] gap-[0.3rem] mobile:hidden">
+              <span>Support JPEG, JPG, PNG, WEBP.</span>
               <span>Maximim file size is 5MB.</span>
             </div>
           </div>
@@ -224,7 +224,7 @@ const UploadFile = ({ type, validate, value, name, setOnChange, db }) => {
           </label>
         </div>
         <div className="text-gray-500 grid text-[0.8rem] gap-[0.3rem]">
-          <span>Support JPEG, JPG, PNG.</span>
+          <span>Support JPEG, JPG, PNG, WEBP.</span>
           <span>Maximim file size is 5MB.</span>
         </div>
       </div>

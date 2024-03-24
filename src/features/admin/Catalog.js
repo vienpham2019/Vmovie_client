@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Selection from "../../components/form/Selection";
 import { SlMagnifier } from "react-icons/sl";
+import { Link } from "react-router-dom";
 
 const Catalog = () => {
   const initFilter = {
@@ -37,7 +38,11 @@ const Catalog = () => {
         </div>
       </div>
       {/* Body */}
-      <div className="h-full py-2"></div>
+      <div className="h-full py-2">
+        <Link to={"addItem"} className="text-cyan-500">
+          Add Movie
+        </Link>
+      </div>
     </div>
   );
 };
