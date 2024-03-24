@@ -1,13 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { FiX } from "react-icons/fi";
 import { isArrayString, stringToArray } from "../../util/string";
-const InputList = ({
-  listValues = [],
-  validate = "",
-  handleOnChange,
-  height = "h-[5rem]",
-}) => {
-  // const [listOutput, setListOutput] = useState(list);
+const InputList = ({ listValues = [], validate = "", handleOnChange }) => {
   const [listVal, setListVal] = useState("");
   const containerRef = useRef(null);
 

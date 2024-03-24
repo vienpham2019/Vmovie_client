@@ -136,7 +136,7 @@ const UploadFile = ({ type, validate, value, name, setOnChange, db }) => {
         } border-gray-500 ${validate} rounded-md h-[5rem] min-w-[15rem] items-center`}
       >
         {Object.keys(uploadImage).length !== 0 ? (
-          <div className="text-white w-full pl-2">
+          <div className="text-white w-full pl-2 flex justify-center">
             {Object.entries(uploadImage).map(([key, val]) => (
               <div key={key}>
                 <UploadFileProgress

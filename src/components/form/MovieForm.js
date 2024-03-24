@@ -12,126 +12,10 @@ import {
 } from "./formSlice";
 
 const MovieForm = ({ handleOnSubmit }) => {
-  // const stateFormData = {
-  //   title: {
-  //     value: "",
-  //     validate: "",
-  //   },
-  //   dateRelease: {
-  //     value: "",
-  //     validate: "",
-  //   },
-  //   runtime: {
-  //     value: "",
-  //     validate: "",
-  //   },
-  //   rating: {
-  //     value: "",
-  //     validate: "",
-  //     options: ["G", "PG", "PG_13", "R", "NC_17"],
-  //   },
-  //   genre: {
-  //     value: [],
-  //     validate: "",
-  //     options: [
-  //       "Action",
-  //       "Adventure",
-  //       "Animation",
-  //       "Comedy",
-  //       "Crime",
-  //       "Documentary",
-  //       "Drama",
-  //       "Family",
-  //       "Fantasy",
-  //       "History",
-  //       "Horror",
-  //       "Music",
-  //       "Mystery",
-  //       "Romance",
-  //       "Science Fiction",
-  //       "Thriller",
-  //       "War",
-  //       "Western",
-  //     ],
-  //   },
-  //   country: {
-  //     value: [],
-  //     validate: "",
-  //   },
-  //   language: {
-  //     value: [],
-  //     validate: "",
-  //   },
-  //   movieDetail: {
-  //     value: "",
-  //     validate: "",
-  //   },
-  //   background: {
-  //     value: {},
-  //     validate: "",
-  //   },
-  //   poster: {
-  //     value: {},
-  //     validate: "",
-  //   },
-  //   cast: {
-  //     value: [],
-  //     validate: "",
-  //   },
-  //   director: {
-  //     value: [],
-  //     validate: "",
-  //   },
-  //   producer: {
-  //     value: [],
-  //     validate: "",
-  //   },
-  //   writer: {
-  //     value: [],
-  //     validate: "",
-  //   },
-  //   studio: {
-  //     value: [],
-  //     validate: "",
-  //   },
-  //   photos: {
-  //     value: [],
-  //     validate: "",
-  //   },
-  //   trailer: {
-  //     value: "",
-  //     validate: "",
-  //   },
-  // };
   const dispatch = useDispatch();
   const { movieFormData } = useSelector((state) => state.form);
-  // const [formData, setFormData] = useState(movieFormData);
 
-  // useEffect(() => {
-  //   const setInitFormData = () => {
-  //     console.log(movieFormData);
-  //     // let mergeFormData = { ...movieFormData };
-  //     for (let key in initFormData) {
-  //       // movieFormData[key].value = initFormData[key].value;
-  //       setMovieFormData({
-  //         name: key,
-  //         value: { ...movieFormData[key], value: initFormData[key].value },
-  //       });
-  //     }
-  //     // initMovieFormData(mergeFormData);
-  //   };
-  //   setInitFormData();
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [initFormData]);
   const handleOnChange = (value, name) => {
-    // setFormData((prevFormData) => ({
-    //   ...prevFormData,
-    //   [name]: {
-    //     ...prevFormData[name],
-    //     value: value,
-    //     validate: "",
-    //   },
-    // }));
     dispatch(
       setMovieFormData({
         name,
@@ -153,13 +37,14 @@ const MovieForm = ({ handleOnSubmit }) => {
     e.preventDefault();
     let isInvalid = false;
 
-    const updatedFormData = { ...movieFormData };
+    let updatedFormData = JSON.parse(JSON.stringify(movieFormData));
 
     for (const key in updatedFormData) {
       if (updatedFormData.hasOwnProperty(key)) {
         if (
           updatedFormData[key].value === "" ||
-          updatedFormData[key].value?.length === 0
+          updatedFormData[key].value?.length === 0 ||
+          Object.keys(updatedFormData[key].value).length === 0
         ) {
           isInvalid = true;
           updatedFormData[key].validate = inputValidateEnum.INVALID;
@@ -168,13 +53,13 @@ const MovieForm = ({ handleOnSubmit }) => {
     }
 
     if (isInvalid) {
+      dispatch(initMovieFormData(updatedFormData));
       dispatch(
         setMessage({
           message: "All fields are required.",
           messageType: notificationMessageEnum.ERROR,
         })
       );
-      initMovieFormData(updatedFormData);
       return;
     }
 
@@ -189,7 +74,7 @@ const MovieForm = ({ handleOnSubmit }) => {
       className="flex flex-col gap-[1rem] p-4 border border-gray-500 rounded bg-[#1f1f1f]"
     >
       <div className="flex flex-wrap gap-4 ">
-        <div className="grid flex-[5] gap-4 min-w-[30rem] mobile:min-w-[15rem]">
+        <div className="grid flex-auto gap-4 w-[50rem] mobile:min-w-[15rem]">
           {input({ name: "title" })}
           {input({ name: "movieDetail", type: inputTypeEnum.TEXT_AREA })}
           {input({ name: "trailer", type: inputTypeEnum.VIDEO })}

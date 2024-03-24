@@ -20,7 +20,7 @@ const displayInput = ({
         name={name}
         value={formData[name].value}
         onChange={(e) => handleOnChange(e.target.value, name)}
-        className={`text-area h-[6rem] pt-2 resize-none ${formData[name].validate} border-gray-500`}
+        className={`text-area h-[9rem] pt-2 resize-none ${formData[name].validate} border-gray-500`}
       ></textarea>
     );
   } else if (type === inputTypeEnum.SELECT) {

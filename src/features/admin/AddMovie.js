@@ -5,7 +5,14 @@ import {
   useUpdateUncompletedMovieMutation,
 } from "./adminApiSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { initMovieFormData } from "../../components/form/formSlice";
+import {
+  initMovieFormData,
+  resetMovieFormdata,
+} from "../../components/form/formSlice";
+import {
+  notificationMessageEnum,
+  setMessage,
+} from "../../components/notificationMessage/notificationMessageSlice";
 
 const AddMovie = () => {
   const [getUncompletedMovie] = useGetUncompletedMovieMutation();
@@ -32,7 +39,28 @@ const AddMovie = () => {
   }, [getUncompletedMovie, movieFormData, dispatch]);
 
   const handleOnSubmit = async () => {
-    await updateUncompletedMovie(movieFormData);
+    try {
+      let submitFormData = {};
+      Object.keys(movieFormData).forEach((key) => {
+        submitFormData[key] = movieFormData[key].value;
+      });
+      console.log(submitFormData);
+      const res = await updateUncompletedMovie(submitFormData);
+      dispatch(
+        setMessage({
+          message: res.data.message,
+          messageType: notificationMessageEnum.SUCCESS,
+        })
+      );
+      dispatch(resetMovieFormdata());
+    } catch (error) {
+      dispatch(
+        setMessage({
+          message: error,
+          messageType: notificationMessageEnum.ERROR,
+        })
+      );
+    }
   };
 
   return (
