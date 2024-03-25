@@ -11,28 +11,14 @@ const Modal = () => {
   const contentRef = useRef(null);
   return (
     <div
-      className="z-50 absolute w-full h-full bg-[rgba(0,0,0,0.3)] cursor-pointer flex justify-center items-center"
+      className="z-50 absolute w-full h-full bg-[rgba(0,0,0,0.8)] cursor-pointer flex justify-center items-center"
       onClick={(e) => {
         if (contentRef.current && !contentRef.current.contains(e.target)) {
           dispatch(closeModal());
         }
       }}
     >
-      <div
-        className=" p-[1rem] rounded-lg bg-white cursor-default"
-        ref={contentRef}
-      >
-        <div className="flex justify-between pb-[1rem]">
-          <h2 className="text-lg capitalize text-gray-700">
-            {modalContentTitle?.toLowerCase().replace(/_/g, " ")}
-          </h2>
-          <span
-            className="cursor-pointer text-lg"
-            onClick={() => dispatch(closeModal())}
-          >
-            <RxCross2 />
-          </span>
-        </div>
+      <div className="rounded-sm cursor-default bg-white" ref={contentRef}>
         <div className="overflow-auto">
           {getModalComponent(modalContentTitle)}
         </div>

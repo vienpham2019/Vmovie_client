@@ -41,7 +41,7 @@ const getModalComponent = (modalIdentifier) => {
   switch (modalIdentifier) {
     case modalComponentEnum.PRIVATE_POLICY:
       return (
-        <div className="max-w-[50rem] max-h-[50rem]">
+        <div className="max-w-[50rem] max-h-[50rem] p-[1rem]">
           <PrivatePolicy />
         </div>
       );
