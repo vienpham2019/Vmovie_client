@@ -83,7 +83,7 @@ const MovieForm = ({ handleOnSubmit }) => {
               {input({ name: "poster", type: inputTypeEnum.FILE })}
             </div>
             <div className="flex-1 min-w-[27rem] mobile:min-w-[15rem]">
-              {input({ name: "background", type: inputTypeEnum.FILE })}
+              {input({ name: "thumbnail", type: inputTypeEnum.FILE })}
             </div>
           </div>
           <div className="flex-[5] min-w-[15rem]">

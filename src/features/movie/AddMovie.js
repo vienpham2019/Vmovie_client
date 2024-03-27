@@ -3,7 +3,7 @@ import MovieForm from "../../components/form/MovieForm";
 import {
   useGetUncompletedMovieMutation,
   useUpdateUncompletedMovieMutation,
-} from "./adminApiSlice";
+} from "../movie/movieApiSlice";
 import { useDispatch, useSelector } from "react-redux";
 import {
   initMovieFormData,
@@ -13,6 +13,7 @@ import {
   notificationMessageEnum,
   setMessage,
 } from "../../components/notificationMessage/notificationMessageSlice";
+import { Link } from "react-router-dom";
 
 const AddMovie = () => {
   const [getUncompletedMovie] = useGetUncompletedMovieMutation();
@@ -20,6 +21,7 @@ const AddMovie = () => {
   const initialized = useRef(false);
   const { movieFormData } = useSelector((state) => state.form);
   const dispatch = useDispatch();
+
   useEffect(() => {
     const getMovie = async () => {
       if (initialized.current) return;
@@ -65,8 +67,12 @@ const AddMovie = () => {
 
   return (
     <div className="p-[1rem]">
-      <div className="py-[0.4rem] border-b border-gray-600">
-        <h2 className="admin_page_title">Add new movie</h2>
+      <div className="py-[0.4rem] border-b border-gray-600 flex items-center gap-2 text-white font-thin">
+        <Link className="text-cyan-500 text-[1.5rem]" to="/admin/catalog">
+          Catalog
+        </Link>
+        <span className="text-gray-400">-</span>
+        <h2 className="text-[1.5rem] capitalize">Add new movie</h2>
       </div>
       {/* Body */}
       <div className="p-2">

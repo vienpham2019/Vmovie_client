@@ -2,9 +2,6 @@ import { useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { closeModal, getModalComponent } from "./ModalSlice";
 
-// Icon
-import { RxCross2 } from "react-icons/rx";
-
 const Modal = () => {
   const { modalContentTitle } = useSelector((state) => state.modal);
   const dispatch = useDispatch();

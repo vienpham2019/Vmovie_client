@@ -55,7 +55,7 @@ const initState = {
       value: "",
       validate: "",
     },
-    background: {
+    thumbnail: {
       value: {},
       validate: "",
     },

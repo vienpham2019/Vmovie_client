@@ -7,10 +7,10 @@ import ForgotPassword from "./features/auths/ForgotPassword";
 import ResetPassword from "./features/auths/ResetPassword";
 import AdminLayout from "./layout/AdminLayout";
 import Catalog from "./features/admin/Catalog";
-import AddMovie from "./features/admin/AddMovie";
 import PersistLogin from "./features/auths/PersistLogin";
 import { RoleEnum } from "./config/roles";
 import RequireAuth from "./features/auths/RequireAuth";
+import AddMovie from "./features/movie/AddMovie";
 
 const App = () => {
   return (
@@ -28,7 +28,7 @@ const App = () => {
             <Route path="admin" element={<AdminLayout />}>
               <Route path="catalog">
                 <Route path="" element={<Catalog />} />
-                <Route path="addItem" element={<AddMovie />} />
+                <Route path="addMovie" element={<AddMovie />} />
               </Route>
             </Route>
           </Route>
