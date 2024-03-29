@@ -50,6 +50,9 @@ ol ol > li:before {
 /* End Skeleton */
 
 /* Button */
+.pagination-btn {
+  @apply text-white min-h-[38px] min-w-[38px] py-2 px-2.5 flex justify-center items-center rounded-lg hover:bg-gray-500;
+}
 .btn-disabled {
   @apply opacity-50 cursor-not-allowed;
 }
@@ -105,7 +108,7 @@ ol ol > li:before {
 
 .password_type,
 .input_attachment {
-  @apply absolute top-0 right-0 h-[2.5rem] flex items-center p-2 text-gray-300;
+  @apply absolute top-0 right-0 h-full flex items-center p-2 text-gray-300;
 }
 
 .password_type {
@@ -251,9 +254,23 @@ ol ol > li:before {
 }
 
 .tooltip {
-  @apply absolute hidden text-white max-h-[3rem] text-[.8rem] border border-gray-700 -bottom-full left-0 p-1 rounded-md bg-[rgb(36,36,36)];
+  @apply absolute hidden text-white max-h-[3rem] text-nowrap text-[.8rem] border border-gray-700 p-1 rounded-md bg-[rgb(36,36,36)];
+}
+
+.tooltip.tooltip_bottom {
+  @apply -bottom-full left-0;
+}
+.tooltip.tooltip_top {
+  @apply -top-full left-0;
 }
 
 .tooltip_container:hover .tooltip {
-  @apply block;
+  @apply flex;
 }
+/* end Tool tip */
+
+/* SVG */
+.hide_svg svg {
+  @apply hidden;
+}
+/* SVG */
