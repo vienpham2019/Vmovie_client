@@ -55,6 +55,10 @@ const initState = {
       value: "",
       validate: "",
     },
+    awards: {
+      value: "N/A",
+      validate: "",
+    },
     thumbnail: {
       value: {},
       validate: "",

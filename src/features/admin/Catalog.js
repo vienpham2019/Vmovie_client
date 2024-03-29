@@ -31,9 +31,19 @@ const Catalog = () => {
   );
 
   const handleDisplayMovie = () => {
-    const duplicatedMovies = Object.entries(movies.entities).flatMap(
-      ([_, movie]) => Array.from({ length: 10 }, () => ({ ...movie }))
-    );
+    const duplicatedMovies = movies.entries;
+    // const duplicatedMovies = Object.entries(movies.entities).flatMap(
+    //   ([_, movie]) => Array.from({ length: 10 }, () => ({ ...movie }))
+    // );
+
+    if (!duplicatedMovies) {
+      return (
+        <div className="h-[30vh] flex justify-center items-center text-white">
+          No movie
+        </div>
+      );
+    }
+
     const headers = [
       "id",
       "poster",
@@ -104,16 +114,18 @@ const Catalog = () => {
       {/* Body */}
       <div className="h-full py-4 grid justify-center gap-3">
         <div className="flex flex-wrap items-center gap-3 justify-end px-[1rem]">
-          <div className="input_group">
-            <input
-              type="text"
-              className="input py-[1.4rem]"
-              placeholder="Find moive"
-            />
-            <div className="input_attachment">
-              <SlMagnifier />
+          {movies.entries && (
+            <div className="input_group">
+              <input
+                type="text"
+                className="input py-[1.4rem]"
+                placeholder="Find moive"
+              />
+              <div className="input_attachment">
+                <SlMagnifier />
+              </div>
             </div>
-          </div>
+          )}
           <div className="flex flex-wrap gap-[1rem] items-center">
             <button
               className="text-cyan-300 flex gap-1 items-center px-5 border border-gray-500 rounded-md py-[0.7rem]"
@@ -126,12 +138,14 @@ const Catalog = () => {
         </div>
         {/* Movie List */}
         {handleDisplayMovie()}
-        <div className="flex justify-between items-center">
-          <div className="text-gray-300 font-thin text-[0.8rem] border border-gray-700 bg-slate-800 flex items-center h-[2rem] px-2 rounded-md">
-            Showing 10 of 120
+        {movies.entries && Object.keys(movies.entries).length > 10 && (
+          <div className="flex justify-between items-center">
+            <div className="text-gray-300 font-thin text-[0.8rem] border border-gray-700 bg-slate-800 flex items-center h-[2rem] px-2 rounded-md">
+              Showing 10 of 120
+            </div>
+            <Pagination />
           </div>
-          <Pagination />
-        </div>
+        )}
       </div>
     </div>
   );
