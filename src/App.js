@@ -11,6 +11,7 @@ import PersistLogin from "./features/auths/PersistLogin";
 import { RoleEnum } from "./config/roles";
 import RequireAuth from "./features/auths/RequireAuth";
 import AddMovie from "./features/movie/AddMovie";
+import EditMovie from "./features/movie/EditMovie";
 
 const App = () => {
   return (
@@ -29,6 +30,7 @@ const App = () => {
               <Route path="catalog">
                 <Route path="" element={<Catalog />} />
                 <Route path="addMovie" element={<AddMovie />} />
+                <Route path="editMovie/:movieId" element={<EditMovie />} />
               </Route>
             </Route>
           </Route>

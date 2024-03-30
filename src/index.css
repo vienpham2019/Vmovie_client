@@ -254,7 +254,7 @@ ol ol > li:before {
 }
 
 .tooltip {
-  @apply absolute hidden text-white max-h-[3rem] text-nowrap text-[.8rem] border border-gray-700 p-1 rounded-md bg-[rgb(36,36,36)];
+  @apply absolute z-10 hidden text-white max-h-[3rem] text-nowrap text-[.8rem] border border-gray-700 p-1 rounded-md bg-[rgb(16,16,16)];
 }
 
 .tooltip.tooltip_bottom {

@@ -7,6 +7,7 @@ import {
 } from "./imageApiSlice";
 import { useEffect, useRef, useState } from "react";
 import { uploadFileStatusEnum } from "./UploadFile";
+import { useSelector } from "react-redux";
 
 const UploadFileProgress = ({
   uploadImageFile,
@@ -17,7 +18,7 @@ const UploadFileProgress = ({
 }) => {
   const [uploadImage] = useUploadImageMutation();
   const [deleteImage, { isLoading: deleteLoading }] = useDeleteImageMutation();
-
+  const { id } = useSelector((state) => state.form);
   const [errorMessage, setErrorMessage] = useState(null);
   const isUpload = useRef(false);
   useEffect(() => {
@@ -33,6 +34,7 @@ const UploadFileProgress = ({
           payload: formData,
           field,
           db,
+          id,
         });
         if (res?.error) {
           setErrorMessage(res.error.data.message);
@@ -67,6 +69,7 @@ const UploadFileProgress = ({
           fileName: uploadImageFile.imageSrc.name,
           field,
           db,
+          id,
         });
         deleteUploadObj(uploadImageFile.imageSrc.name);
         return;

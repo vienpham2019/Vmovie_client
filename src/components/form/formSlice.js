@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initState = {
+  id: null,
   movieFormData: {
     title: {
       value: "",
@@ -102,15 +103,47 @@ export const formSlice = createSlice({
   name: "form",
   initialState: initState,
   reducers: {
+    setFormDataId: (state, action) => {
+      state.id = action.payload;
+    },
     initMovieFormData: (state, action) => {
-      state.movieFormData = { ...action.payload };
+      let formData = JSON.parse(JSON.stringify(initState.movieFormData));
+      let id = state.id;
+      if (action.payload._id) {
+        id = action.payload._id.value;
+        delete action.payload._id;
+      }
+      Object.keys(action.payload).forEach((key) => {
+        formData[key] = { ...formData[key], ...action.payload[key] };
+      });
+
+      return {
+        ...state,
+        id,
+        movieFormData: formData,
+      };
     },
     setMovieFormData: (state, action) => {
       const { name, value } = action.payload;
-      state.movieFormData = { ...state.movieFormData, [name]: value };
+      const updatedFormData = JSON.parse(JSON.stringify(state.movieFormData));
+
+      for (const key in updatedFormData) {
+        updatedFormData[key].validate = "";
+      }
+
+      updatedFormData[name].value = value;
+
+      return {
+        ...state,
+        movieFormData: updatedFormData,
+      };
     },
     resetMovieFormdata: (state, _) => {
-      state.movieFormData = { ...initState.movieFormData };
+      return {
+        ...state,
+        id: null,
+        movieFormData: initState.movieFormData,
+      };
     },
   },
 });

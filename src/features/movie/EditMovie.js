@@ -1,41 +1,47 @@
 import { useEffect } from "react";
 import MovieForm from "../../components/form/MovieForm";
 import {
-  useGetUncompletedMovieMutation,
+  useGetMovieByIdQuery,
   useUpdateUncompletedMovieMutation,
 } from "../movie/movieApiSlice";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  initMovieFormData,
-  resetMovieFormdata,
-} from "../../components/form/formSlice";
+import { initMovieFormData } from "../../components/form/formSlice";
 import {
   notificationMessageEnum,
   setMessage,
 } from "../../components/notificationMessage/notificationMessageSlice";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
-const AddMovie = () => {
-  const [getUncompletedMovie] = useGetUncompletedMovieMutation();
+const EditMovie = () => {
+  const { movieId } = useParams(); // Extract movieId from route params
+
+  const {
+    data: movie,
+    isLoading,
+    isSuccess,
+  } = useGetMovieByIdQuery(
+    { movieId },
+    {
+      refertchOnFocus: true, // data will fetch when page on focus
+      refetchOnMountOrArgChange: true, // it will refresh data when remount component
+    }
+  );
   const [updateUncompletedMovie] = useUpdateUncompletedMovieMutation();
   const { movieFormData, id } = useSelector((state) => state.form);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   useEffect(() => {
-    const getMovie = async () => {
-      try {
-        const res = await getUncompletedMovie();
-        const initMovieForm = {};
-        Object.keys(res.data.metadata).forEach((key) => {
-          initMovieForm[key] = { value: res.data.metadata[key] };
-        });
-        dispatch(initMovieFormData(initMovieForm));
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    getMovie();
-  }, [getUncompletedMovie, dispatch]);
+    if (isSuccess) {
+      const initMovieForm = {};
+      Object.keys(movie.metadata).forEach((key) => {
+        initMovieForm[key] = { value: movie.metadata[key] };
+      });
+      dispatch(initMovieFormData(initMovieForm));
+    }
+  }, [movie, isSuccess, dispatch]);
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   const handleOnSubmit = async () => {
     try {
@@ -69,7 +75,7 @@ const AddMovie = () => {
           Catalog
         </Link>
         <span className="text-gray-400">-</span>
-        <h2 className="text-[1.5rem] capitalize">Add new movie</h2>
+        <h2 className="text-[1.5rem] capitalize">Edit movie</h2>
       </div>
       {/* Body */}
       <div className="p-2">
@@ -79,4 +85,4 @@ const AddMovie = () => {
   );
 };
 
-export default AddMovie;
+export default EditMovie;

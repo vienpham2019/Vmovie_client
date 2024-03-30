@@ -170,8 +170,8 @@ const UploadFile = ({ type, validate, value, name, setOnChange, db }) => {
                 Choose image
               </label>
               <span className="text-gray-500 text-[10px]">Or</span>
-              <span className="text-gray-300 text-[13px]">
-                Drag image here to upload
+              <span className="text-gray-300 text-[13px] font-thin">
+                Drag image here
               </span>
             </div>
             <div className="text-gray-500 grid text-[0.7rem] gap-[0.3rem] mobile:hidden">

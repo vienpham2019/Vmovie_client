@@ -19,7 +19,7 @@ const MovieForm = ({ handleOnSubmit }) => {
     dispatch(
       setMovieFormData({
         name,
-        value: { ...movieFormData[name], value, validate: "" },
+        value,
       })
     );
   };
@@ -39,7 +39,7 @@ const MovieForm = ({ handleOnSubmit }) => {
 
     let updatedFormData = JSON.parse(JSON.stringify(movieFormData));
 
-    for (const key in updatedFormData) {
+    for (const key in movieFormData) {
       if (updatedFormData.hasOwnProperty(key)) {
         if (
           updatedFormData[key].value === "" ||
@@ -64,7 +64,7 @@ const MovieForm = ({ handleOnSubmit }) => {
     }
 
     await handleOnSubmit();
-    resetMovieFormdata();
+    dispatch(resetMovieFormdata());
   };
 
   return (

@@ -34,7 +34,7 @@ const displayInput = ({
     content = (
       <InputList
         height="h-[2.2rem]"
-        listValues={formData[name].value}
+        listValues={formData[name].value || []}
         validate={formData[name].validate}
         handleOnChange={(value) => handleOnChange(value, name)}
       />

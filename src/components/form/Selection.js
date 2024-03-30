@@ -44,7 +44,6 @@ const Selection = ({ formData, handleOnChange, placeHolder = "" }) => {
     if (formData.value?.length === 0) {
       return <span>{placeHolder}</span>;
     }
-
     return (
       <div
         ref={containerRef}

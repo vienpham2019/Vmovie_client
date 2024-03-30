@@ -57,7 +57,7 @@ const InputList = ({ listValues = [], validate = "", handleOnChange }) => {
     >
       <div
         ref={containerRef}
-        className={`flex flex-wrap gap-1 m-2 min-h-[3rem] max-h-[5rem] rounded-md overflow-y-auto border bg-[#1e1e1e] border-gray-500`}
+        className={`flex flex-wrap gap-1 p-1 m-2 min-h-[3rem] max-h-[5rem] rounded-sm overflow-y-auto border bg-[#1e1e1e] border-gray-500`}
       >
         {displayList()}
       </div>

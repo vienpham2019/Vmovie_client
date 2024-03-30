@@ -3,6 +3,7 @@ import { RiEdit2Fill } from "react-icons/ri";
 import { IoIosArrowDown } from "react-icons/io";
 import { useEffect, useRef, useState } from "react";
 import { useMediaQuery } from "react-responsive";
+import { Link } from "react-router-dom";
 
 const indexContent = (index) => <div className="text-center">{index}</div>;
 const posterContent = (poster) => (
@@ -61,10 +62,13 @@ const actionsContent = (movie) => {
         <FaEye className="text-[rgb(168,111,248)]" />
         <div className="tooltip tooltip_bottom">Preview</div>
       </div>
-      <div className="tooltip_container w-[2rem] aspect-square rounded-md flex items-center justify-center cursor-pointer bg-[rgba(135,189,255,0.4)]">
+      <Link
+        to={`/admin/catalog/editMovie/${movie._id}`}
+        className="tooltip_container w-[2rem] aspect-square rounded-md flex items-center justify-center cursor-pointer bg-[rgba(135,189,255,0.4)]"
+      >
         <RiEdit2Fill className="text-[rgb(135,189,255)]" />
         <div className="tooltip tooltip_bottom">Edit</div>
-      </div>
+      </Link>
       <div className="tooltip_container w-[2rem] aspect-square rounded-md flex items-center justify-center cursor-pointer bg-[rgba(255,99,99,0.2)]">
         <FaTrash className="text-[rgb(250,117,117)]" />
         <div className="tooltip tooltip_bottom">Delete</div>

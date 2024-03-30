@@ -29,6 +29,11 @@ export const movieApiSlice = apiSlice.injectEndpoints({
         } else return [{ type: "Movie", id: "LIST" }];
       },
     }),
+    getMovieById: builder.query({
+      query: ({ movieId }) => ({
+        url: `/movie/details/${movieId}`,
+      }),
+    }),
     getUncompletedMovie: builder.mutation({
       query: () => ({
         url: "/movie/uncompletedMovie",
@@ -48,6 +53,7 @@ export const movieApiSlice = apiSlice.injectEndpoints({
 export const {
   useGetUncompletedMovieMutation,
   useGetAllMovieByAdminQuery,
+  useGetMovieByIdQuery,
   useUpdateUncompletedMovieMutation,
 } = movieApiSlice;
 

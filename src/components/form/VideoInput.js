@@ -21,7 +21,8 @@ const VideoInput = ({ formData, name, setOnChange }) => {
         onChange={(e) => setOnChange(e.target.value)}
       />
       <div
-        className="input_attachment border-l border-gray-500 text-[1.5rem] cursor-pointer"
+        className="input_attachment rounded-sm bg-gray-700 border border-l-0 border-gray-500 text-[1.5rem] cursor-pointer"
+        style={{ height: "2.5rem" }}
         onClick={handleClick}
       >
         <RiFolderVideoFill />
