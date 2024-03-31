@@ -60,7 +60,7 @@ const UploadFileProgress = ({
     };
 
     if (!isUpload.current) uploadFile();
-  }, [uploadImageFile, uploadImage, updateUploadObj, db, field]);
+  }, [uploadImageFile, uploadImage, updateUploadObj, db, field, id]);
 
   const handleRemove = async () => {
     try {

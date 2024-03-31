@@ -6,27 +6,37 @@ const initState = moviesAdapter.getInitialState();
 export const movieApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getAllMovieByAdmin: builder.query({
-      query: ({ page, limit }) => ({
-        url: `/movie/allMovieByAdmin?page=${page}&limit=${limit}`,
+      query: ({ page, limit, sortBy, sortDir }) => ({
+        url: `/movie/allMovieByAdmin?page=${page}&limit=${limit}&sortBy=${sortBy}&sortDir=${sortDir}`,
         validateStatus: (res, result) => {
           return res.status >= 200 && res.status < 300;
         },
       }),
       //keepUnusedDataFor: 5, default 60s
       transformResponse: (resData) => {
-        const loadedMovies = resData.metadata.map((movie) => {
+        const loadedMovies = resData.metadata.movies.map((movie) => {
           movie.id = movie._id;
           return movie;
         });
-        return moviesAdapter.setAll(initState, loadedMovies);
+        const totalMovies = resData.metadata.totalMovies; // Assuming this property exists in the response
+
+        return {
+          movies: moviesAdapter.setAll(initState, loadedMovies),
+          totalMovies: totalMovies,
+        };
       },
       providesTags: (result, error, arg) => {
         if (result?.ids) {
           return [
             { type: "Movie", id: "LIST" },
             ...result.ids.map((id) => ({ type: "Movie", id })),
+            { type: "Movie", id: "TOTAL_COUNT" },
           ];
-        } else return [{ type: "Movie", id: "LIST" }];
+        } else
+          return [
+            { type: "Movie", id: "LIST" },
+            { type: "Movie", id: "TOTAL_COUNT" },
+          ];
       },
     }),
     getMovieById: builder.query({
@@ -46,6 +56,20 @@ export const movieApiSlice = apiSlice.injectEndpoints({
         method: "PATCH",
         body: payload,
       }),
+      invalidatesTags: (result, err, arg) => [
+        { type: "Movie", id: arg._id },
+        { type: "Movie", id: "TOTAL_COUNT" },
+      ],
+    }),
+    deleteMovieById: builder.mutation({
+      query: ({ movieId }) => ({
+        url: `/movie/${movieId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (result, err, arg) => [
+        { type: "Movie", id: arg.movieId },
+        { type: "Movie", id: "TOTAL_COUNT" },
+      ],
     }),
   }),
 });
@@ -55,6 +79,7 @@ export const {
   useGetAllMovieByAdminQuery,
   useGetMovieByIdQuery,
   useUpdateUncompletedMovieMutation,
+  useDeleteMovieByIdMutation,
 } = movieApiSlice;
 
 // Return the query result object

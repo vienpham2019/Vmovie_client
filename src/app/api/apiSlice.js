@@ -33,7 +33,7 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
     }
   }
 
-  if (result?.error) {
+  if (result?.error?.data?.message) {
     api.dispatch(
       setMessage({
         message: result.error.data.message,

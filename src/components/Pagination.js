@@ -6,8 +6,7 @@ import {
   MdOutlineKeyboardDoubleArrowRight,
 } from "react-icons/md";
 
-const Pagination = ({ totalPage = 10 }) => {
-  const [currentPage, setCurrentPage] = useState(4);
+const Pagination = ({ totalPage = 10, currentPage = 1, setCurrentPage }) => {
   const [paginationPage, setPaginationPage] = useState([1]);
   useEffect(() => {
     function generatePaginationArray() {
@@ -38,7 +37,7 @@ const Pagination = ({ totalPage = 10 }) => {
       setPaginationPage(newPaginationPage);
     }
     generatePaginationArray();
-  }, [currentPage]);
+  }, [currentPage, totalPage]);
 
   const handlePageButton = () => {
     return paginationPage.map((value, index) => (

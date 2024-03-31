@@ -5,10 +5,7 @@ import {
   useUpdateUncompletedMovieMutation,
 } from "../movie/movieApiSlice";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  initMovieFormData,
-  resetMovieFormdata,
-} from "../../components/form/formSlice";
+import { initMovieFormData } from "../../components/form/formSlice";
 import {
   notificationMessageEnum,
   setMessage,

@@ -4,6 +4,12 @@ import { IoIosArrowDown } from "react-icons/io";
 import { useEffect, useRef, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import { Link } from "react-router-dom";
+import { useDeleteMovieByIdMutation } from "../movie/movieApiSlice";
+import { useDispatch } from "react-redux";
+import {
+  notificationMessageEnum,
+  setMessage,
+} from "../../components/notificationMessage/notificationMessageSlice";
 
 const indexContent = (index) => <div className="text-center">{index}</div>;
 const posterContent = (poster) => (
@@ -13,8 +19,8 @@ const posterContent = (poster) => (
   </div>
 );
 const titleContent = (title) => (
-  <div className="flex gap-4 items-center justify-between p-2">
-    <span className="min-w-[15rem] mobile:min-w-[6rem]">{title}</span>
+  <div className="flex gap-4 items-center justify-between p-2  flex-1">
+    <span className="w-[15rem] mobile:w-[8rem]">{title}</span>
     <IoIosArrowDown className="mobile:block hidden" />
   </div>
 );
@@ -44,7 +50,7 @@ const statusContent = (status) => {
     );
   }
 };
-const actionsContent = (movie) => {
+const actionsContent = ({ movie, handleDelete }) => {
   return (
     <div className="flex gap-4 min-w-[15rem] justify-center">
       {movie["isPublished"] ? (
@@ -69,7 +75,10 @@ const actionsContent = (movie) => {
         <RiEdit2Fill className="text-[rgb(135,189,255)]" />
         <div className="tooltip tooltip_bottom">Edit</div>
       </Link>
-      <div className="tooltip_container w-[2rem] aspect-square rounded-md flex items-center justify-center cursor-pointer bg-[rgba(255,99,99,0.2)]">
+      <div
+        onClick={handleDelete}
+        className="tooltip_container w-[2rem] aspect-square rounded-md flex items-center justify-center cursor-pointer bg-[rgba(255,99,99,0.2)]"
+      >
         <FaTrash className="text-[rgb(250,117,117)]" />
         <div className="tooltip tooltip_bottom">Delete</div>
       </div>
@@ -87,11 +96,25 @@ const updatedAtContent = (updatedAt) => (
 );
 
 const CatalogMovie = ({ movie, movieIndex }) => {
-  const isLoading = false;
   const [open, setOpen] = useState(false);
   const isLaptop = useMediaQuery({ maxWidth: 1024 });
   const ref = useRef(null);
   const extand_ref = useRef(null);
+  const [deleteMovie, { isLoading }] = useDeleteMovieByIdMutation();
+  const dispatch = useDispatch();
+
+  const handleDelete = async () => {
+    const res = await deleteMovie({ movieId: movie._id });
+    if (!res?.error) {
+      dispatch(
+        setMessage({
+          message: "Delete movie success",
+          messageType: notificationMessageEnum.SUCCESS,
+        })
+      );
+    }
+  };
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -119,7 +142,7 @@ const CatalogMovie = ({ movie, movieIndex }) => {
     status: statusContent(movie["isPublished"]),
     createdAt: createdAtContent(movie["createdAt"]),
     updatedAt: updatedAtContent(movie["updatedAt"]),
-    actions: actionsContent(movie),
+    actions: actionsContent({ movie, handleDelete }),
   };
 
   if (isLoading)

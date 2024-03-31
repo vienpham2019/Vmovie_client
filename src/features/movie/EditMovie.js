@@ -44,28 +44,19 @@ const EditMovie = () => {
   }
 
   const handleOnSubmit = async () => {
-    try {
-      let submitFormData = {};
-      Object.keys(movieFormData).forEach((key) => {
-        submitFormData[key] = movieFormData[key].value;
-      });
-      submitFormData._id = id;
-      const res = await updateUncompletedMovie(submitFormData);
-      dispatch(
-        setMessage({
-          message: res.data.message,
-          messageType: notificationMessageEnum.SUCCESS,
-        })
-      );
-      navigate("/admin/catalog");
-    } catch (error) {
-      dispatch(
-        setMessage({
-          message: error,
-          messageType: notificationMessageEnum.ERROR,
-        })
-      );
-    }
+    let submitFormData = {};
+    Object.keys(movieFormData).forEach((key) => {
+      submitFormData[key] = movieFormData[key].value;
+    });
+    submitFormData._id = id;
+    const res = await updateUncompletedMovie(submitFormData);
+    dispatch(
+      setMessage({
+        message: res.data.message,
+        messageType: notificationMessageEnum.SUCCESS,
+      })
+    );
+    navigate("/admin/catalog");
   };
 
   return (
