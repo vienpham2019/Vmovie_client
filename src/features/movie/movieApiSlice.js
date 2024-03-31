@@ -6,8 +6,8 @@ const initState = moviesAdapter.getInitialState();
 export const movieApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getAllMovieByAdmin: builder.query({
-      query: ({ page, limit, sortBy, sortDir }) => ({
-        url: `/movie/allMovieByAdmin?page=${page}&limit=${limit}&sortBy=${sortBy}&sortDir=${sortDir}`,
+      query: ({ page, limit, sortBy, sortDir, filter }) => ({
+        url: `/movie/allMovieByAdmin?page=${page}&limit=${limit}&sortBy=${sortBy}&sortDir=${sortDir}&filter=${filter}`,
         validateStatus: (res, result) => {
           return res.status >= 200 && res.status < 300;
         },

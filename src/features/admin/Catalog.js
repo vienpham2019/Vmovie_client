@@ -9,21 +9,23 @@ import AdminSkeleton from "./AdminSkeleton";
 import CatalogMovie from "./CatalogMovie";
 import Pagination from "../../components/Pagination";
 import { useState } from "react";
+import Selection from "../../components/form/Selection";
 
 const Catalog = () => {
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [sortBy, setSortBy] = useState("updatedAt");
   const [sortDir, setSortDir] = useState(-1);
+  const [filter, setFilter] = useState("All");
   const limit = 10;
   const { data, isLoading } = useGetAllMovieByAdminQuery(
-    { page, limit, sortBy, sortDir },
+    { page, limit, sortBy, sortDir, filter },
     {
       pollingInterval: 120000, // 2min the data will fetch again
       refertchOnFocus: true, // data will fetch when page on focus
       refetchOnMountOrArgChange: true, // it will refresh data when remount component
       // Set the query key to include the page so it updates when the page changes
-      queryKey: ["getAllMovieByAdmin", { page, sortBy, sortDir }],
+      queryKey: ["getAllMovieByAdmin", { page, sortBy, sortDir, filter }],
     }
   );
 
@@ -80,23 +82,20 @@ const Catalog = () => {
                   key={header + "attach"}
                 >
                   {header === "actions" ? "" : header}{" "}
-                  {!["id", "actions", "status", "poster"].includes(header) &&
-                    (header === sortBy && sortDir === -1 ? (
-                      <FaArrowDownWideShort
-                        className="cursor-pointer"
-                        onClick={() => handleSortClick(header)}
-                      />
-                    ) : header === sortBy && sortDir === 1 ? (
-                      <FaArrowUpShortWide
-                        className="cursor-pointer"
-                        onClick={() => handleSortClick(header)}
-                      />
-                    ) : (
-                      <LuArrowDownUp
-                        className="cursor-pointer"
-                        onClick={() => handleSortClick(header)}
-                      />
-                    ))}
+                  {!["id", "actions", "status", "poster"].includes(header) && (
+                    <div
+                      className="cursor-pointer"
+                      onClick={() => handleSortClick(header)}
+                    >
+                      {header === sortBy && sortDir === -1 ? (
+                        <FaArrowDownWideShort />
+                      ) : header === sortBy && sortDir === 1 ? (
+                        <FaArrowUpShortWide />
+                      ) : (
+                        <LuArrowDownUp />
+                      )}
+                    </div>
+                  )}
                 </div>
               </th>
             ))}
@@ -131,20 +130,33 @@ const Catalog = () => {
       <div className="flex justify-center">
         <div className="h-full py-4 grid justify-center gap-3 w-fit p-4 mt-4 rounded-md ">
           <div className="flex flex-wrap items-center gap-3 justify-end px-[1rem]">
-            {data.movies?.entries &&
-              Object.keys(data.movies.entries).length && (
-                <div className="input_group">
-                  <input
-                    type="text"
-                    className="input py-[1.4rem]"
-                    placeholder="Find moive"
-                  />
-                  <div className="input_attachment">
-                    <SlMagnifier />
-                  </div>
+            <div className="w-[8rem] mobile:w-full">
+              <div className="input_group">
+                <Selection
+                  formData={{
+                    value: filter,
+                    options: ["All", "Draft", "Published"],
+                  }}
+                  handleOnChange={(value) => setFilter(value)}
+                />
+                <div className={`input_title`}>
+                  <span>Filter By Status</span>
                 </div>
-              )}
-            <div className="flex flex-wrap gap-[1rem] items-center">
+              </div>
+            </div>
+            {/* Search */}
+            <div className="input_group mobile:w-full">
+              <input
+                type="text"
+                className="input py-[1.4rem]"
+                placeholder="Find moive"
+              />
+              <div className="input_attachment ">
+                <SlMagnifier />
+              </div>
+            </div>
+            {/* Add movie */}
+            <div className="flex flex-wrap gap-[1rem] items-center ">
               <button
                 className="text-cyan-300 flex gap-1 items-center px-5 border border-gray-500 rounded-md py-[0.7rem]"
                 onClick={() => navigate("addMovie")}
@@ -163,7 +175,7 @@ const Catalog = () => {
               </div>
               <Pagination
                 currentPage={page}
-                totalPage={Math.floor(data.totalMovies / 10)}
+                totalPage={Math.ceil(data.totalMovies / 10)}
                 setCurrentPage={(page) => setPage(page)}
               />
             </div>
