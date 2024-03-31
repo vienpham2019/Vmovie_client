@@ -17,15 +17,19 @@ const Catalog = () => {
   const [sortBy, setSortBy] = useState("updatedAt");
   const [sortDir, setSortDir] = useState(-1);
   const [filter, setFilter] = useState("All");
+  const [search, setSearch] = useState("");
   const limit = 10;
   const { data, isLoading } = useGetAllMovieByAdminQuery(
-    { page, limit, sortBy, sortDir, filter },
+    { search, page, limit, sortBy, sortDir, filter },
     {
       pollingInterval: 120000, // 2min the data will fetch again
       refertchOnFocus: true, // data will fetch when page on focus
       refetchOnMountOrArgChange: true, // it will refresh data when remount component
       // Set the query key to include the page so it updates when the page changes
-      queryKey: ["getAllMovieByAdmin", { page, sortBy, sortDir, filter }],
+      queryKey: [
+        "getAllMovieByAdmin",
+        { search, page, sortBy, sortDir, filter },
+      ],
     }
   );
 
@@ -154,6 +158,8 @@ const Catalog = () => {
                 type="text"
                 className="input py-[1.4rem]"
                 placeholder="Find moive"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
               />
               <div className="input_attachment ">
                 <SlMagnifier />
