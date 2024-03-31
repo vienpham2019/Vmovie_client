@@ -50,6 +50,22 @@ export const movieApiSlice = apiSlice.injectEndpoints({
         method: "GET",
       }),
     }),
+    publishedMovie: builder.mutation({
+      query: (payload) => ({
+        url: "/movie/published",
+        method: "PATCH",
+        body: payload,
+      }),
+      invalidatesTags: (result, err, arg) => [{ type: "Movie", id: arg._id }],
+    }),
+    draftMovie: builder.mutation({
+      query: (payload) => ({
+        url: "/movie/draft",
+        method: "PATCH",
+        body: payload,
+      }),
+      invalidatesTags: (result, err, arg) => [{ type: "Movie", id: arg._id }],
+    }),
     updateUncompletedMovie: builder.mutation({
       query: (payload) => ({
         url: "/movie/uncompletedMovie",
@@ -78,6 +94,8 @@ export const {
   useGetUncompletedMovieMutation,
   useGetAllMovieByAdminQuery,
   useGetMovieByIdQuery,
+  usePublishedMovieMutation,
+  useDraftMovieMutation,
   useUpdateUncompletedMovieMutation,
   useDeleteMovieByIdMutation,
 } = movieApiSlice;

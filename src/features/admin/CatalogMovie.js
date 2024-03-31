@@ -4,7 +4,11 @@ import { IoIosArrowDown } from "react-icons/io";
 import { useEffect, useRef, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import { Link } from "react-router-dom";
-import { useDeleteMovieByIdMutation } from "../movie/movieApiSlice";
+import {
+  useDeleteMovieByIdMutation,
+  useDraftMovieMutation,
+  usePublishedMovieMutation,
+} from "../movie/movieApiSlice";
 import { useDispatch } from "react-redux";
 import {
   notificationMessageEnum,
@@ -50,16 +54,27 @@ const statusContent = (status) => {
     );
   }
 };
-const actionsContent = ({ movie, handleDelete }) => {
+const actionsContent = ({
+  movie,
+  handleDelete,
+  handlePublished,
+  handleDraft,
+}) => {
   return (
     <div className="flex gap-4 min-w-[15rem] justify-center">
       {movie["isPublished"] ? (
-        <div className="tooltip_container w-[2rem] aspect-square rounded-md flex items-center justify-center cursor-pointer bg-[rgba(250,139,117,0.2)]">
+        <div
+          onClick={handleDraft}
+          className="tooltip_container w-[2rem] aspect-square rounded-md flex items-center justify-center cursor-pointer bg-[rgba(250,139,117,0.2)]"
+        >
           <FaLock className="text-[rgb(250,139,117)]" />
           <div className="tooltip tooltip_bottom">Draft</div>
         </div>
       ) : (
-        <div className="tooltip_container w-[2rem] aspect-square rounded-md flex items-center justify-center cursor-pointer bg-[rgba(87,213,123,0.2)]">
+        <div
+          onClick={handlePublished}
+          className="tooltip_container w-[2rem] aspect-square rounded-md flex items-center justify-center cursor-pointer bg-[rgba(87,213,123,0.2)]"
+        >
           <FaLockOpen className="text-[rgb(87,213,123)]" />
           <div className="tooltip tooltip_bottom">Public</div>
         </div>
@@ -100,7 +115,11 @@ const CatalogMovie = ({ movie, movieIndex }) => {
   const isLaptop = useMediaQuery({ maxWidth: 1024 });
   const ref = useRef(null);
   const extand_ref = useRef(null);
-  const [deleteMovie, { isLoading }] = useDeleteMovieByIdMutation();
+  const [deleteMovie, { isLoading: deleteLoading }] =
+    useDeleteMovieByIdMutation();
+  const [publishedMovie, { isLoading: publishedLoading }] =
+    usePublishedMovieMutation();
+  const [draftMovie, { isLoading: draftLoading }] = useDraftMovieMutation();
   const dispatch = useDispatch();
 
   const handleDelete = async () => {
@@ -109,6 +128,30 @@ const CatalogMovie = ({ movie, movieIndex }) => {
       dispatch(
         setMessage({
           message: "Delete movie success",
+          messageType: notificationMessageEnum.SUCCESS,
+        })
+      );
+    }
+  };
+
+  const handlePublished = async () => {
+    const res = await publishedMovie({ movieId: movie._id });
+    if (!res?.error) {
+      dispatch(
+        setMessage({
+          message: "Published movie success",
+          messageType: notificationMessageEnum.SUCCESS,
+        })
+      );
+    }
+  };
+
+  const handleDraft = async () => {
+    const res = await draftMovie({ movieId: movie._id });
+    if (!res?.error) {
+      dispatch(
+        setMessage({
+          message: "Draft movie success",
           messageType: notificationMessageEnum.SUCCESS,
         })
       );
@@ -142,10 +185,15 @@ const CatalogMovie = ({ movie, movieIndex }) => {
     status: statusContent(movie["isPublished"]),
     createdAt: createdAtContent(movie["createdAt"]),
     updatedAt: updatedAtContent(movie["updatedAt"]),
-    actions: actionsContent({ movie, handleDelete }),
+    actions: actionsContent({
+      movie,
+      handleDelete,
+      handlePublished,
+      handleDraft,
+    }),
   };
 
-  if (isLoading)
+  if (deleteLoading || publishedLoading || draftLoading)
     return (
       <tr
         className={`flex justify-center items-center animate-pulse h-[6rem] bg-[rgb(36,36,41)] px-4`}

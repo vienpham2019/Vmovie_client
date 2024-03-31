@@ -52,7 +52,7 @@ const Catalog = () => {
       "id",
       "poster",
       "title",
-      "rating",
+      "ratingScores",
       "reviews",
       "status",
       "createdAt",
@@ -81,7 +81,11 @@ const Catalog = () => {
                   }`}
                   key={header + "attach"}
                 >
-                  {header === "actions" ? "" : header}{" "}
+                  {header === "actions"
+                    ? ""
+                    : header === "ratingScores"
+                    ? "rating"
+                    : header}{" "}
                   {!["id", "actions", "status", "poster"].includes(header) && (
                     <div
                       className="cursor-pointer"
