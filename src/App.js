@@ -12,6 +12,7 @@ import { RoleEnum } from "./config/roles";
 import RequireAuth from "./features/auths/RequireAuth";
 import AddMovie from "./features/movie/AddMovie";
 import EditMovie from "./features/movie/EditMovie";
+import MovieDetails from "./features/movie/MovieDetails";
 
 const App = () => {
   return (
@@ -23,6 +24,7 @@ const App = () => {
           <Route path="forgotpassword" element={<ForgotPassword />} />
           <Route path="resetpassword/:token" element={<ResetPassword />} />
         </Route>
+        <Route path="movie/:movieId" element={<MovieDetails />} />
         {/* Dash */}
         <Route element={<PersistLogin />}>
           <Route element={<RequireAuth allowedRoles={[RoleEnum.ADMIN]} />}>
