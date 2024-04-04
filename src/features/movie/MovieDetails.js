@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useGetMovieByIdQuery } from "./movieApiSlice";
 import { TbAwardFilled } from "react-icons/tb";
+import Slider from "../../components/Slider";
 
 const MovieDetails = () => {
   const { movieId } = useParams();
@@ -43,7 +44,7 @@ const MovieDetails = () => {
           </div>
         </div>
 
-        <div className="absolute bottom-0 tablet:top-[10%] w-full flex flex-wrap gap-[2rem] justify-center px-3">
+        <div className="absolute bottom-0 tablet:relative w-full flex flex-wrap gap-[2rem] justify-center px-3">
           <div className="relative">
             <img
               className="max-w-[20rem] mobile:max-w-[18rem] rounded-lg shadow-[20px_20px_20px_-20px_rgba(255,255,255,0.5)]"
@@ -65,7 +66,7 @@ const MovieDetails = () => {
               </div>
             </div>
           </div>
-          <div className="flex-1 flex flex-col gap-[1.2rem] p-1 text-white tablet:items-center px-2">
+          <div className="flex-1 flex flex-col justify-end gap-[1.2rem] p-1 text-white tablet:items-center px-2">
             <h1 className="text-[3rem] tablet:text-[2rem] font-bold">
               {movie.title}
             </h1>
@@ -136,7 +137,7 @@ const MovieDetails = () => {
               </div>
             )}
             <div className="flex flex-col gap-4 text-[0.8rem]">
-              <div className="grid gap-4">
+              <div className="grid gap-2">
                 <div className="grid grid-cols-[5rem_20rem] mobile:grid-cols-[5rem_10rem] gap-4">
                   <div className="text-nowrap text-gray-400 font-bold">
                     Directed By
@@ -149,8 +150,6 @@ const MovieDetails = () => {
                   </div>
                   <div>{movie.writer.join(",")}</div>
                 </div>
-              </div>
-              <div className="grid gap-4 max-w-[30rem]">
                 <div className="grid grid-cols-[5rem_20rem] mobile:grid-cols-[5rem_10rem] gap-4">
                   <div className="text-nowrap text-gray-400 font-bold">
                     Studio
@@ -168,7 +167,14 @@ const MovieDetails = () => {
           </div>
         </div>
 
-        <div className="border h-[4rem]"></div>
+        <div className="h-[5rem] rounded-lg flex bg-[#172532]">
+          <div className="text-gray-300 items-center gap-2 flex px-4">
+            <span>Date</span>
+          </div>
+        </div>
+        <div className="max-w-[40rem] border ">
+          <Slider />
+        </div>
       </div>
     </div>
   );
