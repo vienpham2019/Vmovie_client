@@ -1,7 +1,9 @@
 import { useParams } from "react-router-dom";
 import { useGetMovieByIdQuery } from "./movieApiSlice";
 import { TbAwardFilled } from "react-icons/tb";
-import Slider from "../../components/Slider";
+import DateSlider from "../../components/slider/DateSlider";
+import { IoTicketSharp } from "react-icons/io5";
+import Selection from "../../components/form/Selection";
 
 const MovieDetails = () => {
   const { movieId } = useParams();
@@ -12,21 +14,7 @@ const MovieDetails = () => {
       refetchOnMountOrArgChange: true, // it will refresh data when remount component
     }
   );
-  //   useEffect(() => {
-  //     const getColor = async () => {
-  //       if (!movie?.thumbnail?.url) return;
-  //       const palette = await Vibrant.from(movie.thumbnail.url).getPalette();
-  //       // Get the dominant color from the palette
-  //       const mainColors = Object.values(palette)
-  //         .filter((color) => color !== null)
-  //         .sort((a, b) => b.population - a.population)
-  //         .slice(0, 2)
-  //         .map((color) => color.getHex());
-  //       console.log(palette.getHex());
-  //     };
 
-  //     getColor();
-  //   }, [movie]);
   if (isLoading || !movie) return <div>Loading</div>;
   return (
     <div className="w-screen bg-black h-screen flex justify-center overflow-x-hidden font-sans">
@@ -167,13 +155,60 @@ const MovieDetails = () => {
           </div>
         </div>
 
-        <div className="h-[5rem] rounded-lg flex bg-[#172532]">
-          <div className="text-gray-300 items-center gap-2 flex px-4">
-            <span>Date</span>
+        <div className="py-2 rounded flex bg-[#172532]">
+          <div className="text-gray-300 items-center gap-4 flex flex-wrap tablet:flex-col justify-around w-full px-4">
+            <div>
+              <span className="text-[0.9rem] font-thin">Chose Date</span>
+              <div className="mx-[1.5rem]">
+                <DateSlider
+                  dates={[
+                    "Apr-12-Mon",
+                    "Apr-13-Tue",
+                    "Apr-14-Wed",
+                    "Apr-15-th",
+                    "Apr-16-Thu",
+                    "Apr-17-Fri",
+                    "Apr-18-Sat",
+                    "Apr-19-Sun",
+                    "Apr-20-Mon",
+                    "Apr-21-Tue",
+                  ]}
+                />
+              </div>
+            </div>
+            <div>
+              <span className="text-[0.9rem] font-thin">Chose Time</span>
+              <div className="mx-[1.5rem]">
+                <DateSlider
+                  dates={[
+                    "-08:20-AM",
+                    "-10:20-AM",
+                    "-11:40-AM",
+                    "-12:20-PM",
+                    "-14:30-PM",
+                    "-20:20-PM",
+                    "-22:50-PM",
+                  ]}
+                />
+              </div>
+            </div>
+            <div className="w-[12rem] flex-auto">
+              <Selection
+                formData={{
+                  value: "",
+                  options: ["2D", "3D", "IMAX", "IMAX 3D"],
+                }}
+                placeHolder="Select Type"
+                border={"border border-gray-600"}
+                background={""}
+                handleOnChange={(value) => console.log(value)}
+              />
+            </div>
+            <button className="btn-blue w-[12rem] flex justify-center items-center gap-2 flex-auto">
+              <span>Get Ticket</span>
+              <IoTicketSharp className="text-black text-[1.2rem]" />
+            </button>
           </div>
-        </div>
-        <div className="max-w-[40rem] border ">
-          <Slider />
         </div>
       </div>
     </div>

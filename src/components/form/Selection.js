@@ -2,7 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import { FiChevronDown, FiChevronUp, FiX } from "react-icons/fi";
 import OutsideClickDetector from "../OutsideClickDetector";
 
-const Selection = ({ formData, handleOnChange, placeHolder = "" }) => {
+const Selection = ({
+  formData,
+  handleOnChange,
+  placeHolder = "",
+  border = "border border-gray-500 hover:border-cyan-500",
+  background = "bg-[#2b2b31]",
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [options, setOptions] = useState(formData.options);
   const containerRef = useRef(null);
@@ -47,7 +53,7 @@ const Selection = ({ formData, handleOnChange, placeHolder = "" }) => {
     return (
       <div
         ref={containerRef}
-        className="flex flex-wrap h-[3rem] gap-1 overflow-y-auto mx-2 border rounded-sm bg-[#1e1e1e] p-1 border-gray-500"
+        className="flex flex-wrap h-[3rem] gap-1 overflow-y-auto mx-2 rounded-sm p-1 border bg-[#1e1e1e] border-gray-500"
       >
         {formData.value.map((select) => (
           <div
@@ -102,9 +108,9 @@ const Selection = ({ formData, handleOnChange, placeHolder = "" }) => {
         <div
           className={`${
             isOpen ? "rounded-t" : "rounded"
-          } text-gray-300 font-thin bg-[#2b2b31] min-h-[3rem] border ${
+          } text-gray-300 font-thin min-h-[3rem] ${
             formData.validate
-          } border-gray-500 hover:border-cyan-500 p-2 flex justify-between items-center cursor-pointer`}
+          } ${border} ${background} p-2 flex justify-between items-center cursor-pointer`}
           onClick={() => {
             handleClick(!isOpen);
           }}
