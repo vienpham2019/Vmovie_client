@@ -74,7 +74,7 @@ const Catalog = () => {
              ${header === "actions" && "laptop:hidden"} ${
                   ["updatedAt", "createdAt"].includes(header) && "tablet:hidden"
                 } ${
-                  ["rating", "reviews", "status"].includes(header) &&
+                  ["ratingScores", "reviews", "status"].includes(header) &&
                   "mobile:hidden"
                 }`}
                 key={header}

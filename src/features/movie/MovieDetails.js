@@ -4,6 +4,8 @@ import { TbAwardFilled } from "react-icons/tb";
 import DateSlider from "../../components/slider/DateSlider";
 import { IoTicketSharp } from "react-icons/io5";
 import Selection from "../../components/form/Selection";
+import MovieSlider from "../../components/slider/MovieSlider";
+import MovieReviewSlider from "../../components/slider/MovieReviewSlider";
 
 const MovieDetails = () => {
   const { movieId } = useParams();
@@ -210,6 +212,16 @@ const MovieDetails = () => {
             </button>
           </div>
         </div>
+
+        <div className="flex justify-center">
+          <MovieSlider />
+        </div>
+
+        <div className="flex justify-center">
+          <MovieReviewSlider />
+        </div>
+
+        <div className="h-[40rem]"></div>
       </div>
     </div>
   );

@@ -8,6 +8,11 @@ const DateSlider = ({ dates = [] }) => {
       items: 5,
       slidesToSlide: 5,
     },
+    tablet: {
+      breakpoint: { max: 768, min: 425 },
+      items: 5,
+      slidesToSlide: 5,
+    },
     mobile: {
       breakpoint: { max: 425, min: 0 },
       items: 3,

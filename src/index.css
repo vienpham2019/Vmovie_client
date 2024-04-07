@@ -49,6 +49,37 @@ ol ol > li:before {
 }
 /* End Skeleton */
 
+/* Text */
+.text-stroke-white {
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke-color: white;
+  -webkit-text-stroke-width: 2px;
+}
+.text-stroke-black {
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke-color: black;
+  -webkit-text-stroke-width: 2px;
+}
+.ellipsis-multiline {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.ellipsis-2line {
+  -webkit-line-clamp: 2;
+}
+.ellipsis-3line {
+  -webkit-line-clamp: 3;
+}
+.ellipsis-4line {
+  -webkit-line-clamp: 4;
+}
+.ellipsis-5line {
+  -webkit-line-clamp: 5;
+}
+/* Text */
+
 /* Button */
 .pagination-btn {
   @apply text-white min-h-[38px] min-w-[38px] py-2 px-2.5 flex justify-center items-center rounded-lg hover:bg-gray-500;
