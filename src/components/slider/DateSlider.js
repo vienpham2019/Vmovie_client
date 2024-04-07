@@ -37,10 +37,7 @@ const DateSlider = ({ dates = [] }) => {
   return (
     <div className={`w-[${width * 5}rem] mobile:w-[12rem]`}>
       <Slider
-        displayAmount={5}
         totalAmount={10}
-        minWidth={"20rem"}
-        dots={false}
         handleDisplay={handleDisplay}
         responsive={responsive}
       />

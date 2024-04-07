@@ -234,10 +234,7 @@ const MovieSlider = ({
   return (
     <div className="w-[75rem] laptop:w-[80vw] mobile:max-w-[15rem]">
       <Slider
-        displayAmount={5}
         totalAmount={movies.length}
-        minWidth={`w-[75rem]`}
-        dots={false}
         handleDisplay={handleDisplay}
         responsive={responsive}
       />

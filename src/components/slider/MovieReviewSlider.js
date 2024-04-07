@@ -84,6 +84,11 @@ const MovieReviewSlider = ({
     },
     laptop: {
       breakpoint: { max: 1024, min: 768 },
+      items: 4,
+      slidesToSlide: 4,
+    },
+    tablet: {
+      breakpoint: { max: 768, min: 425 },
       items: 3,
       slidesToSlide: 3,
     },
@@ -159,10 +164,7 @@ const MovieReviewSlider = ({
   return (
     <div className="w-[75rem] laptop:w-[80vw] mobile:max-w-[15rem]">
       <Slider
-        displayAmount={5}
         totalAmount={reviews.length}
-        minWidth={`w-[75rem]`}
-        dots={false}
         handleDisplay={handleDisplay}
         responsive={responsive}
       />

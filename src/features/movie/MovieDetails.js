@@ -6,6 +6,7 @@ import { IoTicketSharp } from "react-icons/io5";
 import Selection from "../../components/form/Selection";
 import MovieSlider from "../../components/slider/MovieSlider";
 import MovieReviewSlider from "../../components/slider/MovieReviewSlider";
+import PhotoSlider from "../../components/slider/PhotoSlider";
 
 const MovieDetails = () => {
   const { movieId } = useParams();
@@ -103,7 +104,7 @@ const MovieDetails = () => {
                   />
                   <span className="text-[0.7rem]">78%</span>
                 </div>
-                <div className="flex items-center gap-1 ">
+                <div className="flex items-center gap-1">
                   <img
                     className="h-[0.7rem]"
                     src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_square_1-5bdc75aaebeb75dc7ae79426ddd9be3b2be1e342510f8202baf6bffa71d7f5c4.svg"
@@ -213,15 +214,40 @@ const MovieDetails = () => {
           </div>
         </div>
 
-        <div className="flex justify-center">
-          <MovieSlider />
-        </div>
+        <div className="text-white flex flex-col gap-10 mt-10">
+          <div className="flex flex-col gap-2 items-center">
+            <div className="flex gap-1 items-center uppercase w-full px-[3%] laptop:px-[10%] mobile:w-[20rem] mobile:text-[0.8rem]">
+              <div className="w-[3rem] mobile:hidden h-[1px] bg-gray-500"></div>
+              <span>Current Play</span>
+              <div className="flex-1 h-[1px] bg-gray-500"></div>
+            </div>
+            <div className="flex justify-center">
+              <MovieSlider />
+            </div>
+          </div>
 
-        <div className="flex justify-center">
-          <MovieReviewSlider />
-        </div>
+          <div className="flex flex-col items-center">
+            <div className="flex gap-1 items-center uppercase  w-full px-[3%] laptop:px-[10%] mobile:w-[20rem] mobile:text-[0.8rem]">
+              <div className="w-[3rem] mobile:hidden h-[1px] bg-gray-500"></div>
+              <span>Reviews</span>
+              <div className="flex-1 h-[1px] bg-gray-500"></div>
+            </div>
+            <div className="flex justify-center">
+              <MovieReviewSlider />
+            </div>
+          </div>
 
-        <div className="h-[40rem]"></div>
+          <div className="flex flex-col items-center">
+            <div className="flex gap-1 items-center uppercase  w-full px-[3%] laptop:px-[10%] mobile:w-[20rem] mobile:text-[0.8rem]">
+              <div className="w-[3rem] mobile:hidden h-[1px] bg-gray-500"></div>
+              <span>Photos</span>
+              <div className="flex-1 h-[1px] bg-gray-500"></div>
+            </div>
+            <div className="flex justify-center">
+              <PhotoSlider />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
