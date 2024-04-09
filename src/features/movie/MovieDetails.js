@@ -214,12 +214,12 @@ const MovieDetails = () => {
           </div>
         </div>
 
-        <div className="text-white flex flex-col gap-10 mt-10">
+        <div className="text-gray-300 flex flex-col gap-10 mt-10">
           <div className="flex flex-col gap-2 items-center">
             <div className="flex gap-1 items-center uppercase w-full px-[3%] laptop:px-[10%] mobile:w-[20rem] mobile:text-[0.8rem]">
-              <div className="w-[3rem] mobile:hidden h-[1px] bg-gray-500"></div>
+              <div className="w-[3rem] mobile:hidden h-[1px] bg-gray-700"></div>
               <span>Current Play</span>
-              <div className="flex-1 h-[1px] bg-gray-500"></div>
+              <div className="flex-1 h-[1px] bg-gray-700"></div>
             </div>
             <div className="flex justify-center">
               <MovieSlider />
@@ -228,9 +228,9 @@ const MovieDetails = () => {
 
           <div className="flex flex-col items-center">
             <div className="flex gap-1 items-center uppercase  w-full px-[3%] laptop:px-[10%] mobile:w-[20rem] mobile:text-[0.8rem]">
-              <div className="w-[3rem] mobile:hidden h-[1px] bg-gray-500"></div>
+              <div className="w-[3rem] mobile:hidden h-[1px] bg-gray-700"></div>
               <span>Reviews</span>
-              <div className="flex-1 h-[1px] bg-gray-500"></div>
+              <div className="flex-1 h-[1px] bg-gray-700"></div>
             </div>
             <div className="flex justify-center">
               <MovieReviewSlider />
@@ -239,9 +239,9 @@ const MovieDetails = () => {
 
           <div className="flex flex-col items-center">
             <div className="flex gap-1 items-center uppercase  w-full px-[3%] laptop:px-[10%] mobile:w-[20rem] mobile:text-[0.8rem]">
-              <div className="w-[3rem] mobile:hidden h-[1px] bg-gray-500"></div>
+              <div className="w-[3rem] mobile:hidden h-[1px] bg-gray-700"></div>
               <span>Photos</span>
-              <div className="flex-1 h-[1px] bg-gray-500"></div>
+              <div className="flex-1 h-[1px] bg-gray-700"></div>
             </div>
             <div className="flex justify-center">
               <PhotoSlider />

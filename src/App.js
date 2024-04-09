@@ -13,6 +13,7 @@ import RequireAuth from "./features/auths/RequireAuth";
 import AddMovie from "./features/movie/AddMovie";
 import EditMovie from "./features/movie/EditMovie";
 import MovieDetails from "./features/movie/MovieDetails";
+import MovieTicket from "./features/movie/MovieTicket";
 
 const App = () => {
   return (
@@ -24,13 +25,16 @@ const App = () => {
           <Route path="forgotpassword" element={<ForgotPassword />} />
           <Route path="resetpassword/:token" element={<ResetPassword />} />
         </Route>
-        <Route path="movie/:movieId" element={<MovieDetails />} />
+        <Route path="movie/:movieId">
+          <Route index element={<MovieDetails />} />
+          <Route path="getTicket" element={<MovieTicket />} />
+        </Route>
         {/* Dash */}
         <Route element={<PersistLogin />}>
           <Route element={<RequireAuth allowedRoles={[RoleEnum.ADMIN]} />}>
             <Route path="admin" element={<AdminLayout />}>
               <Route path="catalog">
-                <Route path="" element={<Catalog />} />
+                <Route index element={<Catalog />} />
                 <Route path="addMovie" element={<AddMovie />} />
                 <Route path="editMovie/:movieId" element={<EditMovie />} />
               </Route>
