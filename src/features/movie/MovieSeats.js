@@ -1,6 +1,10 @@
 import { FaWheelchair } from "react-icons/fa6";
 
-const MovieSeats = ({ sitLayOut = [], selectedSeats = [] }) => {
+const MovieSeats = ({
+  sitLayOut = [],
+  selectedSeats = [],
+  selectSeat = [],
+}) => {
   const disPlaySitLayOut = () => {
     return Object.keys(sitLayOut).map((key, index) => {
       if (key.startsWith("Hall")) {
@@ -45,6 +49,8 @@ const MovieSeats = ({ sitLayOut = [], selectedSeats = [] }) => {
       "w-[2rem] aspect-square rounded-md flex justify-center items-center cursor-pointer";
     if (selectedSeats.includes(sitNumber)) {
       sitClass += " bg-black ";
+    } else if (selectSeat.includes(sitNumber)) {
+      sitClass += " bg-cyan-600 ";
     } else {
       sitClass += " hover:bg-cyan-600 border border-gray-400";
     }
@@ -60,7 +66,7 @@ const MovieSeats = ({ sitLayOut = [], selectedSeats = [] }) => {
     );
   };
   return (
-    <div className=" overflow-x-scroll tablet:max-w-[47rem] mobile:w-[19rem] px-5 bg-[#172532] rounded-md">
+    <div className="overflow-x-scroll tablet:max-w-[47rem] mobile:w-[19rem] mobile px-5 bg-[#172532] rounded-md">
       <div className="flex flex-col gap-1 py-2 min-w-[40rem]">
         <div className="flex flex-col items-center m-2 pl-[2rem]">
           <div className="w-[30rem] h-[5rem] screen-container ">
@@ -83,7 +89,7 @@ const MovieSeats = ({ sitLayOut = [], selectedSeats = [] }) => {
             <span>Handicap</span>
           </div>
           <div className="flex gap-2 items-center text-gray-300">
-            <div className="w-[2rem] bg-cyan-600 aspect-square border border-gray-400 rounded-md flex justify-center items-center cursor-pointer hover:bg-cyan-500"></div>
+            <div className="w-[2rem] bg-cyan-600 aspect-square rounded-md flex justify-center items-center cursor-pointer hover:bg-cyan-500"></div>
             <span>Selected</span>
           </div>
           <div className="flex gap-2 items-center text-gray-300">

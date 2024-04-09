@@ -3,6 +3,7 @@ import { useGetMovieByIdQuery } from "./movieApiSlice";
 import DateSlider from "../../components/slider/DateSlider";
 import Selection from "../../components/form/Selection";
 import MovieSeats from "./MovieSeats";
+import { RxCross2 } from "react-icons/rx";
 
 const MovieTicket = () => {
   const { movieId } = useParams();
@@ -46,6 +47,21 @@ const MovieTicket = () => {
     "D7",
     "D8",
     "D9",
+  ];
+
+  const selectSeat = [
+    "G7",
+    "G8",
+    "G9",
+    "H7",
+    "H8",
+    "H9",
+    "E1",
+    "E2",
+    "E3",
+    "E6",
+    "E7",
+    "E8",
   ];
 
   if (isLoading || !movie) return <div>Loading</div>;
@@ -120,9 +136,68 @@ const MovieTicket = () => {
             </div>
           </div>
 
-          {/* Sit */}
-          <MovieSeats sitLayOut={sitLayOut} selectedSeats={selectedSeats} />
-          {/* Sit */}
+          <div className="flex flex-wrap-reverse gap-4 w-full justify-center">
+            <div
+              className={`flex flex-col gap-2 font-thin ${
+                selectSeat.length === 0 && "opacity-0"
+              }`}
+            >
+              <div className="w-[12rem] tablet:w-full max-h-[30rem] overflow-y-scroll flex flex-wrap justify-center gap-2 boder p-2">
+                {selectSeat.map((seat) => (
+                  <div
+                    key={"select seat " + seat}
+                    className="p-2 w-[12rem] rounded-sm flex justify-between items-center bg-[#172532]"
+                  >
+                    <span>Seat: {seat}</span>
+                    <span>15$</span>
+                    <span className="cursor-pointer">
+                      <RxCross2 />
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <div className="flex justify-end items-center gap-2">
+                <span className="text-gray-400 text-[0.9rem]">ToTal</span>
+                <span className="text-[1.2rem] font-normal">
+                  {" "}
+                  ${selectSeat.length * 15}
+                </span>
+              </div>
+              <div className="flex gap-1">
+                <button className="border border-red-800 text-red-500 uppercase text-[0.9rem] p-2 flex-1">
+                  Cancle
+                </button>
+                <button className="border border-cyan-800 text-cyan-500 uppercase text-[0.9rem] p-2 flex-1">
+                  Next
+                </button>
+              </div>
+            </div>
+            {/* Sit */}
+            <MovieSeats
+              sitLayOut={sitLayOut}
+              selectedSeats={selectedSeats}
+              selectSeat={selectSeat}
+            />
+            {/* Sit */}
+            <div className="flex flex-col gap-4 font-thin laptop:hidden">
+              <div className="w-[5rem]">
+                <span className="text-gray-400">Date</span>
+                <div className="flex flex-col items-center border border-gray-500">
+                  <span className="text-[2rem] font-normal">14</span>
+                  <span className="uppercase">Dec</span>
+                </div>
+              </div>
+
+              <div className="flex flex-col w-[5rem]">
+                <span className="text-gray-400">Time</span>
+                <span className="font-normal">08:20 AM</span>
+              </div>
+              <div className="flex flex-col w-[5rem]">
+                <span className="text-gray-400">Type</span>
+                <span className="font-normal">2D</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
