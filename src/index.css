@@ -305,3 +305,25 @@ ol ol > li:before {
   @apply hidden;
 }
 /* SVG */
+
+/* Screen */
+.screen-container {
+  position: relative;
+  perspective: 30rem;
+}
+.screen {
+  padding: 50px;
+  position: absolute;
+  transform-style: preserve-3d;
+  transform: rotateX(-55deg);
+  box-shadow: 0 3px 10px rgba(255, 255, 255, 0.7);
+}
+.screen-shadow {
+  padding: 50px;
+  position: absolute;
+  top: -1.1rem;
+  transform-style: preserve-3d;
+  transform: rotateX(45deg);
+  /* box-shadow: 0 3px 10px rgba(255, 255, 255, 0.7); */
+}
+/* Screen */
