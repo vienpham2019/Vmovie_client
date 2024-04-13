@@ -4,64 +4,82 @@ import { RxCrossCircled } from "react-icons/rx";
 import { GoPencil } from "react-icons/go";
 import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
 import { MdOutlineLocalDrink } from "react-icons/md";
+import { useDispatch, useSelector } from "react-redux";
+import { ImSpoonKnife } from "react-icons/im";
+
+import {
+  modalComponentEnum,
+  openModal,
+  setModalParams,
+} from "../../components/modal/ModalSlice";
+import { deleteFoodAndDrink } from "./movieSlice";
 
 const productIcons = {
   Popcorn: <GiPopcorn />,
   Fountain_Drinks: <MdOutlineLocalDrink />,
+  Combo: <ImSpoonKnife />,
 };
 
 const MovieFoodAndDrink = () => {
-  const [ticketTotal, setTicketTotal] = useState(15);
-  const [foodAndDrinkTotal, setFoodAndDrinkTotal] = useState(40.2);
   const [openMenu, setOpenMenu] = useState("Popcorn");
-  const [itemsList, setItemList] = useState({
-    tickets: [
-      {
-        item: "G7, G8, G9, H7, H8, H9, E1, E2, E3, E6, E7, E8",
-        count: 12,
-        price: 15,
-      },
-    ],
-    food_drink: [
-      {
-        item: "Popcorn Tub",
-        count: 2,
-        price: 8.1,
-        options: ["Layered Butter"],
-      },
-      {
-        item: "XL Refillable Popcorn",
-        count: 2,
-        price: 9.95,
-        options: ["Layered Butter"],
-      },
-      {
-        item: "Medium Drink",
-        count: 1,
-        price: 5.55,
-        options: ["Diet Coke", "Light Ice"],
-      },
-      {
-        item: "Free Refill – Large Drink",
-        count: 1,
-        price: 6.2,
-        options: ["Powerade Mountain Blast", "Regular Ice"],
-      },
-      {
-        item: "Medium Drink",
-        count: 1,
-        price: 5.55,
-        options: ["Diet Coke", "Light Ice"],
-      },
-      {
-        item: "Free Refill – Large Drink",
-        count: 1,
-        price: 6.2,
-        options: ["Powerade Mountain Blast", "Regular Ice"],
-      },
-    ],
-  });
+  const { tickets, foodAndDrink, subTotal } = useSelector(
+    (state) => state.movie
+  );
+
   const products = {
+    Combo: [
+      {
+        title: "Large Popcorn & Drink Combo",
+        price: 14.8,
+        describe:
+          "Tub of buttered Orville Redenbacher's light and fluffy popcorn & a Large fountain beverage of your choice from a variety of Coca-Cola® products.",
+        img: "https://www.cinemark.com/media/76011403/400x225-siat-combo1.jpg",
+        butter_options: ["No Added Butter", "Regular Butter", "Layered Butter"],
+        fountain_flavors: [
+          "Coca-Cola",
+          "Diet Coke",
+          "Dr Pepper",
+          "Sprite",
+          "Coke Zero",
+          "Cherry Coke",
+          `Barq's Root Beer`,
+          "Powerade Mountain Blast",
+          "Fanta Orange",
+          "Hi-C Fruit Punch",
+        ],
+        ice_options: ["Regular Ice", "No Ice", "Light Ice", "Extra Ice"],
+      },
+      {
+        title: "Large Popcorn & 2 Large Drinks Combo",
+        price: 21.25,
+        describe:
+          "Tub of buttered Orville Redenbacher's light and fluffy popcorn & two Large fountain beverages of your choice from a variety of Coca-Cola® products.",
+        img: "https://www.cinemark.com/media/76011400/400x225-siat-combo2.jpg",
+        butter_options: ["No Added Butter", "Regular Butter", "Layered Butter"],
+        fountain_flavors: [
+          "Coca-Cola",
+          "Diet Coke",
+          "Dr Pepper",
+          "Sprite",
+          "Coke Zero",
+          "Cherry Coke",
+          `Barq's Root Beer`,
+          "Powerade Mountain Blast",
+          "Fanta Orange",
+          "Hi-C Fruit Punch",
+        ],
+        ice_options: ["Regular Ice", "No Ice", "Light Ice", "Extra Ice"],
+      },
+      {
+        title: "Large Popcorn & Large ICEE Combo",
+        price: 15.0,
+        describe:
+          "Tub of buttered Orville Redenbacher's light and fluffy popcorn & a Large ICEE flavor of choice in a to-go cup with lid and straw.",
+        img: "https://www.cinemark.com/media/76011401/400x225-siat-combo3.jpg",
+        butter_options: ["No Added Butter", "Regular Butter", "Layered Butter"],
+        ICEE_flavors: ["ICEE Coke", "ICEE Cherry", "ICEE Blue Raspberry"],
+      },
+    ],
     Popcorn: [
       {
         title: "XL Refillable Popcorn",
@@ -107,10 +125,65 @@ const MovieFoodAndDrink = () => {
         describe:
           "Cool things down with an ICEE flavor of choice in a to-go cup with lid and straw.",
         img: "https://www.cinemark.com/media/75992305/siat-400x225_0003_blue-icee.jpg",
-        fountain_flavors: ["ICEE Coke", "ICEE Cherry", "ICEE Blue Raspberry"],
+        ICEE_flavors: ["ICEE Coke", "ICEE Cherry", "ICEE Blue Raspberry"],
       },
     ],
   };
+
+  const dispatch = useDispatch();
+
+  const handleOpenModal = (item) => {
+    let food = { ...item };
+    food.butter_selection = item?.butter_options?.[0] || food.butter_selection;
+    food.fountain_flavor_selection =
+      item?.fountain_flavors?.[0] || food.fountain_flavor_selection;
+    food.ice_selection = item?.ice_options?.[0] || food.ice_selection;
+    food.ICEE_flavor_selection =
+      item?.ICEE_flavors?.[0] || food.ICEE_flavor_selection;
+    food.amount = 1;
+    dispatch(setModalParams({ food, type: "Add" }));
+    dispatch(openModal(modalComponentEnum.FOOD_AND_DRINK));
+  };
+
+  const getProductByTitle = (title) => {
+    for (const category in products) {
+      const productsInCategory = products[category];
+      const product = productsInCategory.find(
+        (product) => product.title === title
+      );
+      if (product) {
+        return product;
+      }
+    }
+    return null; // If no product found with the given title
+  };
+
+  const handleOpenEditModal = (item) => {
+    let food = getProductByTitle(item.item);
+
+    const foodOptions = {
+      butter_options: "butter_selection",
+      fountain_flavors: "fountain_flavor_selection",
+      ice_options: "ice_selection",
+      ICEE_flavors: "ICEE_flavor_selection",
+    };
+
+    for (const [optionsKey, selectionKey] of Object.entries(foodOptions)) {
+      if (
+        food?.[optionsKey] &&
+        food[optionsKey].some((option) => item.options.includes(option))
+      ) {
+        food[selectionKey] = food[optionsKey].find((option) =>
+          item.options.includes(option)
+        );
+      }
+    }
+
+    food.amount = item.count;
+    dispatch(setModalParams({ food, type: "Edit", editItem: item }));
+    dispatch(openModal(modalComponentEnum.FOOD_AND_DRINK));
+  };
+
   return (
     <div className="w-full flex flex-col gap-2 mb-[2rem]">
       <div className="flex flex-wrap-reverse gap-[2rem] w-full tablet:justify-center justify-start">
@@ -119,58 +192,80 @@ const MovieFoodAndDrink = () => {
           <small>April 11, 2024 at 7:25 PM</small>
           <div className="flex flex-col gap-2 font-thin p-1 w-[15rem] fixed rounded bg-[#172532]">
             <div className="max-h-[30rem] overflow-y-scroll flex flex-wrap justify-center gap-2 boder p-2">
-              <div className="flex flex-col gap-1 items-center">
-                <div className="flex justify-between items-center w-full p-1">
-                  <div className="flex items-center gap-2 font-bold">
-                    <GiTicket /> <span>{itemsList["tickets"][0].count}</span>{" "}
-                    <span>Tickets</span>
-                  </div>
-                  <span>${ticketTotal.toFixed(2)}</span>
-                </div>
-                <span className="w-[90%] text-[0.8rem]">
-                  G7, G8, G9, H7, H8, H9, E1, E2, E3, E6, E7, E8
-                </span>
-              </div>
-              <div className="flex flex-col flex-1 gap-1 items-center">
-                <div className="flex w-full justify-between items-center p-1">
-                  <div className="flex items-center gap-2 font-bold">
-                    <GiPopcorn />
-                    <span>Food & Drink</span>
-                  </div>
-                  <span>${foodAndDrinkTotal.toFixed(2)}</span>
-                </div>
-                <div className="text-[0.8rem] grid gap-2 w-full">
-                  {itemsList["food_drink"].map((value, index) => (
-                    <div
-                      key={"food" + index}
-                      className="flex flex-col border-b border-gray-500"
-                    >
-                      <div className="flex justify-between flex-1">
-                        <span className="font-bold w-[80%] pr-2">
-                          {value["item"]} Lorem ipsum
-                        </span>
-                        <div className="flex gap-2 text-[1rem]">
-                          <GoPencil className="cursor-pointer" />
-                          <RxCrossCircled className="cursor-pointer" />
-                        </div>
-                      </div>
-                      <div className="flex justify-between items-end">
-                        <span>{value["options"].join(", ")}</span>
-                        <div className="flex gap-1">
-                          <span>{value["count"]}</span>
-                          <span>x</span>
-                          <span>${value["price"].toFixed(2)}</span>
-                        </div>
-                      </div>
+              {" "}
+              {tickets && (
+                <div className="flex flex-col gap-1 items-center border-b border-gray-500">
+                  <div className="flex justify-between items-center w-full p-1">
+                    <div className="flex items-center gap-2 font-bold">
+                      <GiTicket />
+                      <span>Tickets</span>
                     </div>
-                  ))}
+                    <span>${tickets.subTotal.toFixed(2) || ""}</span>
+                  </div>
+                  <div className="flex items-end">
+                    <span className="w-[80%] text-[0.8rem]">
+                      {tickets.item}
+                    </span>
+                    <div className="flex gap-1 text-[0.8rem]">
+                      <span>{tickets.count}</span>
+                      <span>x</span>
+                      <span>${tickets.price.toFixed(2)}</span>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              )}
+              {foodAndDrink && (
+                <div className="flex flex-col flex-1 gap-1 items-center">
+                  <div className="flex w-full justify-between items-center p-1">
+                    <div className="flex items-center gap-2 font-bold">
+                      <GiPopcorn />
+                      <span>Food & Drink</span>
+                    </div>
+                    {foodAndDrink.subTotal > 0 && (
+                      <span>${foodAndDrink.subTotal.toFixed(2)}</span>
+                    )}
+                  </div>
+                  <div className="text-[0.8rem] grid gap-2 w-full">
+                    {foodAndDrink.products.map((value, index) => (
+                      <div
+                        key={"food" + index}
+                        className="flex flex-col border-b border-gray-500"
+                      >
+                        <div className="flex justify-between flex-1">
+                          <span className="font-bold w-[80%] pr-2">
+                            {value["item"]}
+                          </span>
+                          <div className="flex gap-2 text-[1rem]">
+                            <GoPencil
+                              className="cursor-pointer"
+                              onClick={() => handleOpenEditModal(value)}
+                            />
+                            <RxCrossCircled
+                              className="cursor-pointer"
+                              onClick={() =>
+                                dispatch(deleteFoodAndDrink(value))
+                              }
+                            />
+                          </div>
+                        </div>
+                        <div className="flex justify-between items-end">
+                          <span>{value["options"].join(", ")}</span>
+                          <div className="flex gap-1">
+                            <span>{value["count"]}</span>
+                            <span>x</span>
+                            <span>${value["price"].toFixed(2)}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
             <div className="flex justify-end items-center gap-2">
-              <span className="text-gray-400 text-[0.9rem]">Grand ToTal</span>
+              <span className="text-gray-400 text-[0.9rem]">Subtotal -</span>
               <span className="text-[1.2rem] font-normal">
-                ${(ticketTotal + foodAndDrinkTotal).toFixed(2)}
+                ${subTotal.toFixed(2)}
               </span>
             </div>
             <div className="flex gap-1">
@@ -192,7 +287,7 @@ const MovieFoodAndDrink = () => {
                 className="flex-1 gap-2 flex flex-col border p-2 rounded border-gray-500 "
               >
                 <div
-                  className="flex items-center justify-between cursor-pointer"
+                  className="flex items-center justify-between cursor-pointer "
                   onClick={() => setOpenMenu(key)}
                 >
                   <div className="flex items-center gap-2">
@@ -204,10 +299,13 @@ const MovieFoodAndDrink = () => {
                   {openMenu === key ? <FaAngleUp /> : <FaAngleDown />}
                 </div>
                 {openMenu === key && (
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2 ">
                     {items.map((item, index) => (
                       <div
                         key={"item " + key + index}
+                        onClick={() => {
+                          handleOpenModal(item);
+                        }}
                         className="flex flex-col justify-between gap-1 font-thin rounded w-[10rem] border border-gray-500 cursor-pointer"
                       >
                         <div className="grid gap-1">

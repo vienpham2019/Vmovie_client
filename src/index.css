@@ -166,6 +166,7 @@ ol ol > li:before {
 .animate__animated {
   animation-duration: 1s;
   animation-fill-mode: forwards;
+  animation-timing-function: ease-in-out;
 }
 
 .animate__animated_paused {
