@@ -2,8 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initState = {
   tickets: {
-    item: "G7, G8, G9, H7, H8, H9, E1, E2, E3, E6, E7, E8",
-    count: 12,
+    item_name: "G7, G8, G9, H7, H8, H9, E1, E2, E3, E6, E7, E8",
+    amount: 12,
     price: 15,
     subTotal: 180,
   },
@@ -15,12 +15,14 @@ const initState = {
 };
 
 const findExistingProduct = (products, payload) => {
-  const { item: pl_item, options: pl_options } = payload;
+  const { item_name: pl_item_name, options: pl_options } = payload;
   return products.findIndex(
-    ({ item: p_item, options: p_options }) =>
-      p_item === pl_item &&
+    ({ item_name: p_item_name, options: p_options }) =>
+      pl_item_name === p_item_name &&
       p_options.length === pl_options.length &&
-      p_options.every((option, index) => option === pl_options[index])
+      p_options.every(
+        (option, index) => option.selection === pl_options[index].selection
+      )
   );
 };
 
@@ -44,18 +46,18 @@ const movieSlice = createSlice({
       if (existingProductIndex !== -1) {
         const existingProduct =
           updateFoodAndDrink.products[existingProductIndex];
-        const updateCount = Math.min(
+        const updateAmount = Math.min(
           10,
-          existingProduct.count + action.payload.count
+          existingProduct.amount + action.payload.amount
         );
         updateFoodAndDrink.subTotal -=
-          existingProduct.count * existingProduct.price;
-        existingProduct.count = updateCount;
-        updateFoodAndDrink.subTotal += action.payload.price * updateCount;
+          existingProduct.amount * existingProduct.price;
+        existingProduct.amount = updateAmount;
+        updateFoodAndDrink.subTotal += action.payload.price * updateAmount;
       } else {
         updateFoodAndDrink.products.push(action.payload);
         updateFoodAndDrink.subTotal +=
-          action.payload.price * action.payload.count;
+          action.payload.price * action.payload.amount;
       }
 
       return {
@@ -75,7 +77,7 @@ const movieSlice = createSlice({
       if (existingProductIndex === -1) return { ...state };
 
       updateFoodAndDrink.subTotal -=
-        action.payload.price * action.payload.count;
+        action.payload.price * action.payload.amount;
 
       updateFoodAndDrink.products.splice(existingProductIndex, 1);
 

@@ -50,102 +50,88 @@ const MovieFoodAndDrinkModal = () => {
     setFood((prevFood) => ({ ...prevFood, [key]: value }));
   };
 
+  const handleSetFoodOPT = (name, value) => {
+    const updateOPT = food.OPT.map((opt) => {
+      if (opt.name === name) {
+        return {
+          ...opt,
+          selection: value,
+        };
+      }
+      return opt;
+    });
+    setFood((prevFood) => ({ ...prevFood, ["OPT"]: updateOPT }));
+  };
+
   const handleCloseModal = () => {
     dispatch(closeModal());
   };
 
   const handleAddProduct = () => {
-    const {
-      title,
-      amount,
-      price,
-      fountain_flavor_selection,
-      ICEE_flavor_selection,
-      butter_selection,
-      ice_selection,
-    } = food;
-    const options = [];
-    if (fountain_flavor_selection) options.push(fountain_flavor_selection);
-    if (ICEE_flavor_selection) options.push(ICEE_flavor_selection);
-    if (butter_selection) options.push(butter_selection);
-    if (ice_selection) options.push(ice_selection);
+    const { item_name, amount, price, OPT } = food;
     if (type === "Edit") {
       dispatch(deleteFoodAndDrink(modalParams.editItem));
     }
 
-    dispatch(addFoodAndDrink({ item: title, count: amount, price, options }));
+    dispatch(
+      addFoodAndDrink({
+        item_name,
+        amount,
+        price,
+        options: OPT.map(({ name, selection }) => ({ name, selection })),
+      })
+    );
     dispatch(closeModal());
   };
 
-  const displayIceOptions = () => {
-    if (!food?.ice_options) return;
-    const { ice_options, ice_selection } = food;
-    return (
-      <div>
-        <span className="capitalize font-bold">Ice Options</span>
-        <Selection
-          formData={{
-            value: ice_selection,
-            options: ice_options,
-          }}
-          border={"border border-gray-600"}
-          handleOnChange={(value) => handleSetFood("ice_options", value)}
-        />
-      </div>
-    );
+  const handleDisplayOptions = () => {
+    return food.OPT.map((option) => {
+      if (option.name.includes("flavor")) {
+        return displayFlavors(option);
+      }
+      return displaySelectOptions(option);
+    });
   };
-  const displayButter = () => {
-    if (!food?.butter_options) return;
-    const { butter_options, butter_selection } = food;
+
+  const displaySelectOptions = (option) => {
+    const { options, name, selection } = option;
     return (
       <div>
-        <span className="capitalize font-bold">Butter Options</span>
+        <span className="capitalize font-bold">
+          {name.split("_").join(" ")}
+        </span>
         <Selection
           formData={{
-            value: butter_selection,
-            options: butter_options,
+            value: selection,
+            options: options,
           }}
           border={"border border-gray-600"}
-          handleOnChange={(value) => handleSetFood("butter_selection", value)}
+          handleOnChange={(value) => handleSetFoodOPT(name, value)}
         />
       </div>
     );
   };
 
-  const displayFlavors = () => {
-    if (!food?.fountain_flavors && !food?.ICEE_flavors) return;
-    const {
-      fountain_flavors,
-      ICEE_flavors,
-      fountain_flavor_selection,
-      ICEE_flavor_selection,
-    } = food;
-    const favors = fountain_flavors || ICEE_flavors;
-    const selectOtp = fountain_flavor_selection || ICEE_flavor_selection;
+  const displayFlavors = (option) => {
+    const { options, name, selection } = option;
+
     return (
       <div className="flex flex-col gap-2">
         <div className="flex flex-col">
           <span className="capitalize font-bold">
-            {fountain_flavors ? "Fountain Flavors" : "ICEE Flavors"}
+            {name.split("_").join(" ")}
           </span>
-          <small>{selectOtp}</small>
+          <small>{selection}</small>
         </div>
 
         <div className="flex flex-wrap gap-2">
-          {favors.map((flavor, index) => (
+          {options.map((flavor, index) => (
             <div
               key={"flavor " + index}
               className={`w-[3rem] aspect-square rounded-full cursor-pointer ${
-                selectOtp === flavor && "border border-red-500"
+                selection === flavor && "border border-red-500"
               } p-[2px]`}
-              onClick={() =>
-                handleSetFood(
-                  fountain_flavor_selection
-                    ? "fountain_flavor_selection"
-                    : "ICEE_flavor_selection",
-                  flavor
-                )
-              }
+              onClick={() => handleSetFoodOPT(name, flavor)}
             >
               <img
                 src={flavor_img[flavor]}
@@ -160,10 +146,10 @@ const MovieFoodAndDrinkModal = () => {
   };
 
   return (
-    <div className="w-[20rem] bg-white rounded flex flex-col gap-2 p-2">
+    <div className="w-[20rem] max-h-[95vh] overflow-y-scroll bg-white rounded flex flex-col gap-2 p-2">
       <div className="flex flex-col gap-4">
         <h2 className="text-[1.2rem] font-bold py-2 border-b border-gray-400">
-          {food.title}
+          {food.item_name}
         </h2>
         <div>
           {" "}
@@ -174,9 +160,7 @@ const MovieFoodAndDrinkModal = () => {
           />
           <p className="text-[0.9rem]">{food.describe}</p>
         </div>
-        {displayButter()}
-        {displayIceOptions()}
-        {displayFlavors()}
+        {handleDisplayOptions()}
         <div className="flex justify-between">
           <div className="flex gap-2 items-center">
             <div
