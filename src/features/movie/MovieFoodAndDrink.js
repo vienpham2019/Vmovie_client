@@ -1,7 +1,5 @@
 import { useState } from "react";
 import { GiPopcorn, GiTicket } from "react-icons/gi";
-import { RxCrossCircled } from "react-icons/rx";
-import { GoPencil } from "react-icons/go";
 import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
 import { TbBottleFilled } from "react-icons/tb";
 import { MdOutlineLocalDrink } from "react-icons/md";
@@ -9,13 +7,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { ImSpoonKnife } from "react-icons/im";
 import { LuCandy } from "react-icons/lu";
 import { IoIceCreamOutline } from "react-icons/io5";
+import { GiChipsBag } from "react-icons/gi";
+import { GoPencil } from "react-icons/go";
+import { RxCrossCircled } from "react-icons/rx";
+import { deleteFoodAndDrink } from "./movieSlice";
 
 import {
   modalComponentEnum,
   openModal,
   setModalParams,
 } from "../../components/modal/ModalSlice";
-import { deleteFoodAndDrink } from "./movieSlice";
 
 const productIcons = {
   Popcorn: <GiPopcorn />,
@@ -24,6 +25,7 @@ const productIcons = {
   Bottled_Drinks: <TbBottleFilled />,
   Candy: <LuCandy />,
   Ice_Cream: <IoIceCreamOutline />,
+  Snacks: <GiChipsBag />,
 };
 
 const fountain_OPT = [
@@ -44,9 +46,6 @@ const ICEE_OPT = ["ICEE Coke", "ICEE Cherry", "ICEE Blue Raspberry"];
 
 const MovieFoodAndDrink = () => {
   const [openMenu, setOpenMenu] = useState("Popcorn");
-  const { tickets, foodAndDrink, subTotal } = useSelector(
-    (state) => state.movie
-  );
 
   const products = {
     Combo: [
@@ -205,6 +204,24 @@ const MovieFoodAndDrink = () => {
         OPT: [],
       },
     ],
+    Snacks: [
+      {
+        item_name: "Cheetos Crunchy",
+        price: 4.65,
+        describe:
+          "Bring a cheesy, delicious crunch to snack time with a bag of CHEETOS® Crunchy Cheese-Flavored Snacks. Made with real cheese for maximum flavor.",
+        img: "https://www.cinemark.com/media/76010730/hot-august-2023_3rd-party-resizes_cheetoscnk-mo_400x225.jpg",
+        OPT: [],
+      },
+      {
+        item_name: "Rico's Jalapeno Pouch",
+        price: 0.65,
+        describe:
+          "Crisp and zesty jalapenos grown in Mexico. A great addition to your meal, and the best tasting peppers available anywhere!",
+        img: "https://www.cinemark.com/media/75979228/400x225_ricos-jalapenos.jpg",
+        OPT: [],
+      },
+    ],
     Ice_Cream: [
       {
         item_name: "Dibs",
@@ -226,16 +243,9 @@ const MovieFoodAndDrink = () => {
   };
 
   const dispatch = useDispatch();
-
-  const handleOpenModal = (item) => {
-    let food = { ...item };
-    for (let opt of food.OPT) {
-      opt["selection"] = opt.options[0];
-    }
-    food.amount = 1;
-    dispatch(setModalParams({ food, type: "Add" }));
-    dispatch(openModal(modalComponentEnum.FOOD_AND_DRINK));
-  };
+  const { tickets, foodAndDrink, subTotal } = useSelector(
+    (state) => state.movie
+  );
 
   const getProductByTitle = (item_name) => {
     for (const category in products) {
@@ -251,15 +261,28 @@ const MovieFoodAndDrink = () => {
   };
 
   const handleOpenEditModal = (item) => {
-    let food = getProductByTitle(item.item_name);
-    food["amount"] = item.amount;
-
-    for (let i = 0; i < food.OPT.length; i++) {
-      const opt = food.OPT[i];
-      const { selection } = item.options.find((o) => o.name === opt.name);
-      food.OPT[i]["selection"] = selection;
-    }
+    const food = {
+      ...getProductByTitle(item.item_name),
+      amount: item.amount,
+      OPT: getProductByTitle(item.item_name).OPT.map((option) => {
+        const foundOption = item.options.find((o) => o.name === option.name);
+        return foundOption
+          ? { ...option, selection: foundOption.selection }
+          : option;
+      }),
+    };
     dispatch(setModalParams({ food, type: "Edit", editItem: item }));
+    dispatch(openModal(modalComponentEnum.FOOD_AND_DRINK));
+  };
+
+  const handleOpenModal = (item) => {
+    const food = {
+      ...item,
+      amount: 1,
+      OPT: item.OPT.map((opt) => ({ ...opt, selection: opt.options[0] })),
+    };
+
+    dispatch(setModalParams({ food, type: "Add" }));
     dispatch(openModal(modalComponentEnum.FOOD_AND_DRINK));
   };
 

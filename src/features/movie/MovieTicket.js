@@ -4,6 +4,7 @@ import { useGetMovieByIdQuery } from "./movieApiSlice";
 import MovieReservedSeating from "./MovieReservedSeating";
 import { useState } from "react";
 import MovieFoodAndDrink from "./MovieFoodAndDrink";
+import MovieCheckOut from "./MovieCheckOut";
 
 const menuSchema = Object.freeze({
   RESERVED_SEATING: "Reserved seating",
@@ -15,7 +16,7 @@ const menuSchema = Object.freeze({
 const MovieTicket = () => {
   const { movieId } = useParams();
   const menu = Object.entries(menuSchema).map(([_, value]) => value);
-  const [selectedMenu, setSelectedMenu] = useState(menuSchema.FOOD_AND_DRINKS);
+  const [selectedMenu, setSelectedMenu] = useState(menuSchema.CHECK_OUT);
   const { data: { metadata: movie } = {}, isLoading } = useGetMovieByIdQuery(
     { movieId },
     {
@@ -63,6 +64,7 @@ const MovieTicket = () => {
             <MovieReservedSeating />
           )}
           {selectedMenu === menuSchema.FOOD_AND_DRINKS && <MovieFoodAndDrink />}
+          {selectedMenu === menuSchema.CHECK_OUT && <MovieCheckOut />}
         </div>
       </div>
     </div>
