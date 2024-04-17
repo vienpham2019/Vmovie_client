@@ -8,10 +8,39 @@ const initState = {
     subTotal: 180,
   },
   foodAndDrink: {
-    products: [],
-    subTotal: 0,
+    products: [
+      {
+        item_name: "XL Refillable Popcorn",
+        amount: 4,
+        price: 9.95,
+        options: [{ name: "butter_options", selection: "Regular Butter" }],
+      },
+      {
+        item_name: "Large Popcorn & Drink Combo",
+        amount: 1,
+        price: 14.8,
+        options: [
+          { name: "butter_options", selection: "No Added Butter" },
+          { name: "ice_options", selection: "No Ice" },
+          { name: "fountain_flavors", selection: "Dr Pepper" },
+        ],
+      },
+      {
+        item_name: "Large Popcorn & 2 Large Drinks Combo",
+        amount: 1,
+        price: 21.25,
+        options: [
+          { name: "butter_options", selection: "No Added Butter" },
+          { name: "ice_options#1", selection: "Light Ice" },
+          { name: "fountain_flavors#1", selection: "Hi-C Fruit Punch" },
+          { name: "ice_options#2", selection: "Light Ice" },
+          { name: "fountain_flavors#2", selection: "Hi-C Fruit Punch" },
+        ],
+      },
+    ],
+    subTotal: 75.85,
   },
-  subTotal: 180,
+  subTotal: 255.85,
 };
 
 const findExistingProduct = (products, payload) => {

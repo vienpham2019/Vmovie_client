@@ -7,6 +7,7 @@ import { FaCcDiscover } from "react-icons/fa";
 import {
   modalComponentEnum,
   openModal,
+  setModalParams,
 } from "../../components/modal/ModalSlice";
 
 const MovieCheckOut = () => {
@@ -14,15 +15,9 @@ const MovieCheckOut = () => {
     (state) => state.movie
   );
   const dispatch = useDispatch();
+
   const onlineFees = 5.67;
   const tax = subTotal * 0.3;
-
-  const cartType = {
-    VISA: "https://www.cinemark.com/images/cc_visa.png",
-    MASTER_CARD: "https://www.cinemark.com/images/cc_mastercard.png",
-    AMERICA_EXPRESS: "https://www.cinemark.com/images/cc_amex.png",
-    DISCOVER: "https://www.cinemark.com/images/cc_discover.png",
-  };
 
   return (
     <div className="w-full flex flex-col gap-2 mb-[2rem]">
@@ -32,19 +27,24 @@ const MovieCheckOut = () => {
           <small>April 11, 2024 at 7:25 PM</small>
           <div className="flex flex-col gap-2 font-thin p-1 w-[19rem] rounded bg-[#172532]">
             <div className="max-h-[30rem] overflow-y-scroll flex flex-col gap-2 boder p-2">
-              <h2 className="font-bold">Summary</h2>
+              <div className="flex gap-2 items-center">
+                <h2 className="font-bold">Summary</h2>
+                <FiPlusCircle
+                  className="cursor-pointer text-red-600"
+                  onClick={() => {
+                    dispatch(
+                      setModalParams({ products: { tickets, foodAndDrink } })
+                    );
+                    dispatch(openModal(modalComponentEnum.CHECKOUT_SUMMARY));
+                  }}
+                />
+              </div>
               <div className="flex justify-between">
-                <div className="flex gap-2 items-center">
-                  <span>Tickets</span>
-                  <FiPlusCircle className="cursor-pointer text-red-600" />
-                </div>
+                <span>Tickets</span>
                 <span>${tickets.subTotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
-                <div className="flex gap-2 items-center">
-                  <span>Food & Drink</span>
-                  <FiPlusCircle className="cursor-pointer text-red-600" />
-                </div>
+                <span>Food & Drink</span>
                 <span>${foodAndDrink.subTotal.toFixed(2)}</span>
               </div>
 
@@ -108,10 +108,10 @@ const MovieCheckOut = () => {
             <h2 className="border-b border-gray-500">Card Details</h2>
             <div className="flex flex-wrap gap-[2rem] relative">
               {/* Card */}
-              <div className=" bg-gradient-to-r from-cyan-700 to-[#3a5167] text-[0.9rem] text-gray-200 p-1 w-[15rem] h-[10rem] rounded shadow-lg flex flex-col justify-between">
+              <div className=" bg-gradient-to-r from-cyan-700 to-[#0c1d2d] text-[0.9rem] text-gray-300 p-1 w-[15rem] h-[10rem] rounded shadow-lg flex flex-col justify-between">
                 <div className="flex justify-end p-2">
                   <img
-                    src={cartType.DISCOVER}
+                    src="https://www.cinemark.com/images/cc_visa.png"
                     alt="card type"
                     className="w-[5rem] rounded"
                   />
@@ -124,7 +124,7 @@ const MovieCheckOut = () => {
                 </div>
                 <div className="flex justify-between px-4 items-end">
                   <div>
-                    <span className="text-[0.7rem] text-gray-300">
+                    <span className="text-[0.7rem] text-gray-400">
                       Card holder
                     </span>
                     <h3>Jack Daniel</h3>

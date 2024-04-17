@@ -247,6 +247,7 @@ const MovieFoodAndDrink = () => {
     (state) => state.movie
   );
 
+  console.log(JSON.stringify(foodAndDrink));
   const getProductByTitle = (item_name) => {
     for (const category in products) {
       const productsInCategory = products[category];

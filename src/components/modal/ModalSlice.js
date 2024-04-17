@@ -3,6 +3,7 @@ import PrivatePolicy from "../PrivatePolicy";
 import ResetPasswordModal from "../../features/auths/ResetPasswordModal";
 import VideoModal from "../form/VideoModal";
 import MovieFoodAndDrinkModal from "../../features/movie/MovieFoodAndDrinkModal";
+import MovieCheckOutSummaryModal from "../../features/movie/MovieCheckOutSummaryModal";
 
 const initState = {
   isModalOpen: false,
@@ -36,6 +37,7 @@ const modalComponentEnum = Object.freeze({
   RESET_PASSWORD: "RESET_PASSWORD",
   VIDEO: "VIDEO",
   FOOD_AND_DRINK: "FOOD_AND_DRINK",
+  CHECKOUT_SUMMARY: "CHECKOUT_SUMMARY",
   // Add more roles as needed
 });
 
@@ -53,6 +55,8 @@ const getModalComponent = (modalIdentifier) => {
       return <VideoModal />;
     case modalComponentEnum.FOOD_AND_DRINK:
       return <MovieFoodAndDrinkModal />;
+    case modalComponentEnum.CHECKOUT_SUMMARY:
+      return <MovieCheckOutSummaryModal />;
     default:
       return null;
   }
