@@ -16,7 +16,7 @@ const menuSchema = Object.freeze({
 const MovieTicket = () => {
   const { movieId } = useParams();
   const menu = Object.entries(menuSchema).map(([_, value]) => value);
-  const [selectedMenu, setSelectedMenu] = useState(menuSchema.CHECK_OUT);
+  const [selectedMenu, setSelectedMenu] = useState(menuSchema.FOOD_AND_DRINKS);
   const { data: { metadata: movie } = {}, isLoading } = useGetMovieByIdQuery(
     { movieId },
     {

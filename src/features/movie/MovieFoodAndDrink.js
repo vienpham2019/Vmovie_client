@@ -28,7 +28,7 @@ const productIcons = {
   Snacks: <GiChipsBag />,
 };
 
-const fountain_OPT = [
+const fountain_PO = [
   "Coca-Cola",
   "Diet Coke",
   "Dr Pepper",
@@ -40,9 +40,9 @@ const fountain_OPT = [
   "Fanta Orange",
   "Hi-C Fruit Punch",
 ];
-const butter_OPT = ["No Added Butter", "Regular Butter", "Layered Butter"];
-const ice_OPT = ["Regular Ice", "No Ice", "Light Ice", "Extra Ice"];
-const ICEE_OPT = ["ICEE Coke", "ICEE Cherry", "ICEE Blue Raspberry"];
+const butter_PO = ["No Added Butter", "Regular Butter", "Layered Butter"];
+const ice_PO = ["Regular Ice", "No Ice", "Light Ice", "Extra Ice"];
+const ICEE_PO = ["ICEE Coke", "ICEE Cherry", "ICEE Blue Raspberry"];
 
 const MovieFoodAndDrink = () => {
   const [openMenu, setOpenMenu] = useState("Popcorn");
@@ -55,18 +55,18 @@ const MovieFoodAndDrink = () => {
         describe:
           "Tub of buttered Orville Redenbacher's light and fluffy popcorn & a Large fountain beverage of your choice from a variety of Coca-Cola® products.",
         img: "https://www.cinemark.com/media/76011403/400x225-siat-combo1.jpg",
-        OPT: [
+        PO: [
           {
             name: "butter_options",
-            options: butter_OPT,
+            options: butter_PO,
           },
           {
             name: "ice_options",
-            options: ice_OPT,
+            options: ice_PO,
           },
           {
             name: "fountain_flavors",
-            options: fountain_OPT,
+            options: fountain_PO,
           },
         ],
       },
@@ -76,26 +76,26 @@ const MovieFoodAndDrink = () => {
         describe:
           "Tub of buttered Orville Redenbacher's light and fluffy popcorn & two Large fountain beverages of your choice from a variety of Coca-Cola® products.",
         img: "https://www.cinemark.com/media/76011400/400x225-siat-combo2.jpg",
-        OPT: [
+        PO: [
           {
             name: "butter_options",
-            options: butter_OPT,
+            options: butter_PO,
           },
           {
             name: "ice_options#1",
-            options: ice_OPT,
+            options: ice_PO,
           },
           {
             name: "fountain_flavors#1",
-            options: fountain_OPT,
+            options: fountain_PO,
           },
           {
             name: "ice_options#2",
-            options: ice_OPT,
+            options: ice_PO,
           },
           {
             name: "fountain_flavors#2",
-            options: fountain_OPT,
+            options: fountain_PO,
           },
         ],
       },
@@ -105,14 +105,14 @@ const MovieFoodAndDrink = () => {
         describe:
           "Tub of buttered Orville Redenbacher's light and fluffy popcorn & a Large ICEE flavor of choice in a to-go cup with lid and straw.",
         img: "https://www.cinemark.com/media/76011401/400x225-siat-combo3.jpg",
-        OPT: [
+        PO: [
           {
             name: "butter_options",
-            options: butter_OPT,
+            options: butter_PO,
           },
           {
             name: "ICEE_flavors",
-            options: ICEE_OPT,
+            options: ICEE_PO,
           },
         ],
       },
@@ -124,10 +124,10 @@ const MovieFoodAndDrink = () => {
         describe:
           "Bring home a taste of the movies with our signature light ‘n fluffy popcorn. Pair it with one or more of our many candy options for a sweet and salty snack mix. Comes with 1 free same day refill.",
         img: "https://www.cinemark.com/media/76001745/siat-popcornxl-desktop-768x432.png",
-        OPT: [
+        PO: [
           {
             name: "butter_options",
-            options: butter_OPT,
+            options: butter_PO,
           },
         ],
       },
@@ -137,10 +137,10 @@ const MovieFoodAndDrink = () => {
         describe:
           "Bring home a taste of the movies with our signature light ‘n fluffy popcorn. Pair it with one or more of our many candy options for a sweet and salty snack mix.",
         img: "https://www.cinemark.com/media/76010048/siat-concession-resize-large-popcorn-400x225.png",
-        OPT: [
+        PO: [
           {
             name: "butter_options",
-            options: butter_OPT,
+            options: butter_PO,
           },
         ],
       },
@@ -152,14 +152,14 @@ const MovieFoodAndDrink = () => {
         describe:
           "Choose from a variety of Coca-Cola® fountain beverages, including Coke®, Diet Coke®, Coke Zero® Sugar, Sprite®, and more!",
         img: "https://www.cinemark.com/media/76010045/siat-concession-resize-large-cup-400x225.png",
-        OPT: [
+        PO: [
           {
             name: "ice_options",
-            options: ice_OPT,
+            options: ice_PO,
           },
           {
             name: "fountain_flavors",
-            options: fountain_OPT,
+            options: fountain_PO,
           },
         ],
       },
@@ -169,10 +169,10 @@ const MovieFoodAndDrink = () => {
         describe:
           "Cool things down with an ICEE flavor of choice in a to-go cup with lid and straw.",
         img: "https://www.cinemark.com/media/75992305/siat-400x225_0003_blue-icee.jpg",
-        OPT: [
+        PO: [
           {
             name: "ICEE_flavors",
-            options: ICEE_OPT,
+            options: ICEE_PO,
           },
         ],
       },
@@ -183,7 +183,7 @@ const MovieFoodAndDrink = () => {
         price: 5.75,
         describe: "DASANI Purified Water Bottle",
         img: "https://www.cinemark.com/media/75978617/400x225_dasani.jpg",
-        OPT: [],
+        PO: [],
       },
       {
         item_name: "16oz Monster Energy",
@@ -191,7 +191,7 @@ const MovieFoodAndDrink = () => {
         describe:
           "Tear into a can of one of the meanest energy drinks on the planet, Monster OG. Monster Energy OG is a smooth, refreshing blend of sweet and salty exotic citrus flavors with a hint of pure adrenaline packing 160MG of caffeine. Unleash the beast with Monster OG!",
         img: "https://www.cinemark.com/media/76009567/siat-image-16ozmonsteroriginal-mobile-400x225.png",
-        OPT: [],
+        PO: [],
       },
     ],
     Candy: [
@@ -201,7 +201,7 @@ const MovieFoodAndDrink = () => {
         describe:
           "A sweeter way to crunch! Enjoy the same great taste of a classic Nestle Crunch bar, but in the shape of perfectly munchable pieces.",
         img: "https://www.cinemark.com/media/75963105/bunchacrunch_400x225.jpg",
-        OPT: [],
+        PO: [],
       },
     ],
     Snacks: [
@@ -211,7 +211,7 @@ const MovieFoodAndDrink = () => {
         describe:
           "Bring a cheesy, delicious crunch to snack time with a bag of CHEETOS® Crunchy Cheese-Flavored Snacks. Made with real cheese for maximum flavor.",
         img: "https://www.cinemark.com/media/76010730/hot-august-2023_3rd-party-resizes_cheetoscnk-mo_400x225.jpg",
-        OPT: [],
+        PO: [],
       },
       {
         item_name: "Rico's Jalapeno Pouch",
@@ -219,7 +219,7 @@ const MovieFoodAndDrink = () => {
         describe:
           "Crisp and zesty jalapenos grown in Mexico. A great addition to your meal, and the best tasting peppers available anywhere!",
         img: "https://www.cinemark.com/media/75979228/400x225_ricos-jalapenos.jpg",
-        OPT: [],
+        PO: [],
       },
     ],
     Ice_Cream: [
@@ -229,7 +229,7 @@ const MovieFoodAndDrink = () => {
         describe:
           "Bite-sized bliss! With a Crispy Nestle Crunch coating filled with creamy vanilla, it’s one sweet way to snack.",
         img: "https://www.cinemark.com/media/76008586/hot-may-23-ice-cream-candy-siat-ue-resizes_dibs-new768-x-432_siat.jpg",
-        OPT: [],
+        PO: [],
       },
       {
         item_name: "M&M's Vanilla Ice Cream Sandwich",
@@ -237,7 +237,7 @@ const MovieFoodAndDrink = () => {
         describe:
           "Treat yourself to a cool and colorful ice-cream sandwich. Velvety vanilla ice cream between two sugar cookies, covered in classic M&M’s.",
         img: "https://www.cinemark.com/media/76008608/hot-may-23-ice-cream-candy-siat-ue-resizes_mm-ice-cream-sandwitch400-x-225_siat.jpg",
-        OPT: [],
+        PO: [],
       },
     ],
   };
@@ -265,7 +265,7 @@ const MovieFoodAndDrink = () => {
     const food = {
       ...getProductByTitle(item.item_name),
       amount: item.amount,
-      OPT: getProductByTitle(item.item_name).OPT.map((option) => {
+      PO: getProductByTitle(item.item_name).PO.map((option) => {
         const foundOption = item.options.find((o) => o.name === option.name);
         return foundOption
           ? { ...option, selection: foundOption.selection }
@@ -280,7 +280,7 @@ const MovieFoodAndDrink = () => {
     const food = {
       ...item,
       amount: 1,
-      OPT: item.OPT.map((opt) => ({ ...opt, selection: opt.options[0] })),
+      PO: item.PO.map((opt) => ({ ...opt, selection: opt.options[0] })),
     };
 
     dispatch(setModalParams({ food, type: "Add" }));

@@ -97,7 +97,64 @@ const initState = {
       validate: "",
     },
   },
+  productFormData: {
+    item_name: {
+      value: "",
+      validate: "",
+    },
+    price: {
+      value: "",
+      validate: "",
+    },
+    describe: {
+      value: "",
+      validate: "",
+    },
+    img: {
+      value: {},
+      validate: "",
+    },
+    PO: {
+      value: [],
+      validate: "",
+    },
+    type: {
+      value: "",
+      validate: "",
+      options: [
+        "Combo",
+        "Popcorn",
+        "Fountain_Drinks",
+        "Bottled_Drinks",
+        "Candy",
+        "Snacks",
+        "Ice_Cream",
+      ],
+    },
+  },
 };
+
+//   //   {
+//     item_name: "Large Popcorn & Drink Combo",
+//     price: 14.8,
+//     describe:
+//       "Tub of buttered Orville Redenbacher's light and fluffy popcorn & a Large fountain beverage of your choice from a variety of Coca-Cola® products.",
+//     img: "https://www.cinemark.com/media/76011403/400x225-siat-combo1.jpg",
+//     OPT: [
+//       {
+//         name: "butter_options",
+//         options: butter_OPT,
+//       },
+//       {
+//         name: "ice_options",
+//         options: ice_OPT,
+//       },
+//       {
+//         name: "fountain_flavors",
+//         options: fountain_OPT,
+//       },
+//     ],
+//   },
 
 export const formSlice = createSlice({
   name: "form",

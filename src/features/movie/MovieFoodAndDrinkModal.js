@@ -50,8 +50,8 @@ const MovieFoodAndDrinkModal = () => {
     setFood((prevFood) => ({ ...prevFood, [key]: value }));
   };
 
-  const handleSetFoodOPT = (name, value) => {
-    const updateOPT = food.OPT.map((opt) => {
+  const handleSetFoodPO = (name, value) => {
+    const updatePO = food.PO.map((opt) => {
       if (opt.name === name) {
         return {
           ...opt,
@@ -60,7 +60,7 @@ const MovieFoodAndDrinkModal = () => {
       }
       return opt;
     });
-    setFood((prevFood) => ({ ...prevFood, ["OPT"]: updateOPT }));
+    setFood((prevFood) => ({ ...prevFood, ["PO"]: updatePO }));
   };
 
   const handleCloseModal = () => {
@@ -68,7 +68,7 @@ const MovieFoodAndDrinkModal = () => {
   };
 
   const handleAddProduct = () => {
-    const { item_name, amount, price, OPT } = food;
+    const { item_name, amount, price, PO } = food;
     if (type === "Edit") {
       dispatch(deleteFoodAndDrink(modalParams.editItem));
     }
@@ -78,14 +78,14 @@ const MovieFoodAndDrinkModal = () => {
         item_name,
         amount,
         price,
-        options: OPT.map(({ name, selection }) => ({ name, selection })),
+        options: PO.map(({ name, selection }) => ({ name, selection })),
       })
     );
     dispatch(closeModal());
   };
 
   const handleDisplayOptions = () => {
-    return food.OPT.map((option) => {
+    return food.PO.map((option) => {
       if (option.name.includes("flavor")) {
         return displayFlavors(option);
       }
@@ -106,7 +106,7 @@ const MovieFoodAndDrinkModal = () => {
             options: options,
           }}
           border={"border border-gray-600"}
-          handleOnChange={(value) => handleSetFoodOPT(name, value)}
+          handleOnChange={(value) => handleSetFoodPO(name, value)}
         />
       </div>
     );
@@ -131,7 +131,7 @@ const MovieFoodAndDrinkModal = () => {
               className={`w-[3rem] aspect-square rounded-full cursor-pointer ${
                 selection === flavor && "border border-red-500"
               } p-[2px]`}
-              onClick={() => handleSetFoodOPT(name, flavor)}
+              onClick={() => handleSetFoodPO(name, flavor)}
             >
               <img
                 src={flavor_img[flavor]}

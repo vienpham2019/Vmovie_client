@@ -14,6 +14,8 @@ import AddMovie from "./features/movie/AddMovie";
 import EditMovie from "./features/movie/EditMovie";
 import MovieDetails from "./features/movie/MovieDetails";
 import MovieTicket from "./features/movie/MovieTicket";
+import AddProduct from "./features/product/AddProduct";
+import Product from "./features/admin/Product";
 
 const App = () => {
   return (
@@ -37,6 +39,10 @@ const App = () => {
                 <Route index element={<Catalog />} />
                 <Route path="addMovie" element={<AddMovie />} />
                 <Route path="editMovie/:movieId" element={<EditMovie />} />
+              </Route>
+              <Route path="product">
+                <Route index element={<Product />} />
+                <Route path="addProduct" element={<AddProduct />} />
               </Route>
             </Route>
           </Route>
