@@ -30,7 +30,7 @@ const ProductOptionsModal = () => {
         </div>
       </div>
 
-      <button className="min-w-[15rem] border flex justify-center border-gray-500 text-gray-300 rounded py-2 cursor-pointer">
+      <button className="min-w-[15rem] border flex justify-center hover:bg-gray-500 border-gray-500 text-gray-300 rounded py-2 cursor-pointer">
         Add
       </button>
     </div>

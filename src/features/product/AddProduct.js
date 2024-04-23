@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import ProductForm from "../../components/form/ProductForm";
+import ProductForm from "./ProductForm";
 
 const AddProduct = () => {
   return (
