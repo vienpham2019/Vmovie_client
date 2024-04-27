@@ -13,12 +13,13 @@ import {
   resetMovieFormdata,
 } from "../../components/form/formSlice";
 
-import { AiOutlinePlus } from "react-icons/ai";
+import { RxCross2 } from "react-icons/rx";
 
 import Selection from "../../components/form/Selection";
 
 import { useEffect, useState } from "react";
 import ProductFormOptions from "./ProductFormOptions";
+import { useGetAllProductOptionTypesQuery } from "./productApiSlice";
 
 const fountain_PO = [
   "Coca-Cola",
@@ -65,7 +66,16 @@ const ProductForm = ({ handleOnSubmit }) => {
   const dispatch = useDispatch();
   const { productFormData } = useSelector((state) => state.form);
   const [productOptions, setProductOptions] = useState([]);
-  const [selectAddOption, setSelectAddOption] = useState("Butter");
+  const [newOptionType, setNewOptionType] = useState("");
+  const { data: { metadata: productOptionTypes } = [] } =
+    useGetAllProductOptionTypesQuery();
+  const [selectAddOption, setSelectAddOption] = useState("");
+
+  useEffect(() => {
+    if (productOptionTypes?.length) {
+      setSelectAddOption(productOptionTypes[0]);
+    }
+  }, [productOptionTypes]);
 
   const handleOnChange = (value, name) => {
     // dispatch(
@@ -85,63 +95,42 @@ const ProductForm = ({ handleOnSubmit }) => {
     });
   };
 
-  const handleAddOpions = () => {
-    const OP = {
-      Butter: butter_PO,
-      Ice: ice_PO,
-      "Fountain flavors": fountain_PO,
-      "ICEE flavors": ICEE_PO,
-    };
-
+  const handleAddOpions = (type) => {
     setProductOptions((prevOptions) => {
       let newOptions = [
         {
-          key: selectAddOption,
-          options: OP[selectAddOption].map((op) => ({
-            name: op,
-            img: selectAddOption.toLowerCase().includes("flavors")
-              ? flavor_img[op]
-              : null,
-            selected: true,
-          })),
+          type: type || selectAddOption,
+          selected: [],
+          // subOptions: {
+          //   Ice: [],
+          // },
         },
         ...prevOptions,
       ];
 
-      if (selectAddOption === "Fountain flavors") {
-        newOptions.unshift({
-          key: "Ice",
-          options: OP["Ice"].map((op) => ({
-            name: op,
-            img: null,
-            selected: true,
-          })),
-        });
-      }
+      // let firstAddOptionIndex = null;
+      // let haveMoreThanOne = false;
+      // let count = 1;
+      // for (let i = newOptions.length - 1; i >= 0; i--) {
+      //   if (newOptions[i].type.startsWith(selectAddOption)) {
+      //     if (firstAddOptionIndex === null) {
+      //       firstAddOptionIndex = i;
+      //     } else {
+      //       haveMoreThanOne = true;
+      //       newOptions[i].type = `${selectAddOption}_${++count}`;
+      //       // if (selectAddOption === "Fountain flavors") {
+      //       //   newOptions[i - 1].key = `${"Ice"}_${count}`;
+      //       // }
+      //     }
+      //   }
+      // }
 
-      let firstAddOptionIndex = null;
-      let haveMoreThanOne = false;
-      let count = 1;
-      for (let i = newOptions.length - 1; i >= 0; i--) {
-        if (newOptions[i].key.startsWith(selectAddOption)) {
-          if (firstAddOptionIndex === null) {
-            firstAddOptionIndex = i;
-          } else {
-            haveMoreThanOne = true;
-            newOptions[i].key = `${selectAddOption}_${++count}`;
-            if (selectAddOption === "Fountain flavors") {
-              newOptions[i - 1].key = `${"Ice"}_${count}`;
-            }
-          }
-        }
-      }
-
-      if (haveMoreThanOne) {
-        newOptions[firstAddOptionIndex].key = `${selectAddOption}_1`;
-        if (selectAddOption === "Fountain flavors") {
-          newOptions[firstAddOptionIndex - 1].key = `${"Ice"}_1`;
-        }
-      }
+      // if (haveMoreThanOne) {
+      //   newOptions[firstAddOptionIndex].type = `${selectAddOption}_1`;
+      //   // if (selectAddOption === "Fountain flavors") {
+      //   //   newOptions[firstAddOptionIndex - 1].key = `${"Ice"}_1`;
+      //   // }
+      // }
 
       return [...newOptions];
     });
@@ -150,37 +139,38 @@ const ProductForm = ({ handleOnSubmit }) => {
   const handleDeleteOptions = (option, index) => {
     setProductOptions((prevOptions) => {
       let updatedOptions = [...prevOptions];
-      if (option.startsWith("Ice")) {
-        updatedOptions.splice(index, 2);
-      } else if (option.startsWith("Fountain flavors")) {
-        updatedOptions.splice(index - 1, 2);
-      } else {
-        updatedOptions.splice(index, 1);
-      }
+      // if (option.startsWith("Ice")) {
+      //   updatedOptions.splice(index, 2);
+      // } else if (option.startsWith("Fountain flavors")) {
+      //   updatedOptions.splice(index - 1, 2);
+      // } else {
+      //   updatedOptions.splice(index, 1);
+      // }
+      updatedOptions.splice(index, 1);
 
       let firstAddOptionIndex = null;
       let haveMoreThanOne = false;
       let count = 0;
-      let key = option.split("_")[0];
+      let type = option.split("_")[0];
       for (let i = updatedOptions.length - 1; i >= 0; i--) {
-        if (updatedOptions[i].key.startsWith(key)) {
+        if (updatedOptions[i].type.startsWith(type)) {
           if (firstAddOptionIndex === null) {
             firstAddOptionIndex = i;
           } else {
             haveMoreThanOne = true;
           }
-          updatedOptions[i].key = `${key}_${++count}`;
-          if (key === "Fountain flavors") {
-            updatedOptions[--i].key = `${"Ice"}_${count}`;
-          }
+          updatedOptions[i].type = `${type}_${++count}`;
+          // if (key === "Fountain flavors") {
+          //   updatedOptions[--i].key = `${"Ice"}_${count}`;
+          // }
         }
       }
 
       if (!haveMoreThanOne && firstAddOptionIndex !== null) {
-        updatedOptions[firstAddOptionIndex].key = `${option.split("_")[0]}`;
-        if (option.split("_")[0] === "Fountain flavors") {
-          updatedOptions[firstAddOptionIndex - 1].key = `${"Ice"}`;
-        }
+        updatedOptions[firstAddOptionIndex].type = `${option.split("_")[0]}`;
+        // if (option.split("_")[0] === "Fountain flavors") {
+        //   updatedOptions[firstAddOptionIndex - 1].key = `${"Ice"}`;
+        // }
       }
 
       return [...updatedOptions];
@@ -198,12 +188,55 @@ const ProductForm = ({ handleOnSubmit }) => {
 
   const displayOptions = () => {
     return productOptions.map((option, index) => (
-      <ProductFormOptions
-        option={option}
-        index={index}
-        handleSelectOptions={handleSelectOptions}
-        handleDeleteOptions={handleDeleteOptions}
-      />
+      <div className="input_group" key={`option ${option.type}`}>
+        <div className="border flex flex-col gap-2 border-gray-500  p-2 relative bg-[#2b2b31]">
+          <ProductFormOptions
+            type={option.type}
+            selected={option.selected}
+            index={index}
+            handleSelectOptions={handleSelectOptions}
+          />
+
+          {option?.subOptions &&
+            Object.entries(option.subOptions).map(
+              ([type, subOption], sub_index) => (
+                <div className="p-2 flex flex-col gap-4">
+                  <div
+                    key={option.type + index + "_" + sub_index}
+                    className="input_group"
+                  >
+                    <div className="border border-gray-500  p-2 bg-[#2b2b31]">
+                      <ProductFormOptions
+                        type={type}
+                        selected={subOption}
+                        isSub={true}
+                        parentType={option.type}
+                        handleSelectOptions={handleSelectOptions}
+                      />
+                    </div>
+                    <div className={`input_title `}>
+                      <span>{type}</span>
+                    </div>
+                  </div>
+                </div>
+              )
+            )}
+
+          <div className="absolute -top-[10px] -right-[10px]">
+            <div
+              className="bg-red-500 rounded-full cursor-pointer text-[0.8rem] p-[2px]"
+              onClick={() => {
+                handleDeleteOptions(option.type, index);
+              }}
+            >
+              <RxCross2 />
+            </div>
+          </div>
+        </div>
+        <div className={`input_title `}>
+          <span>{option.type}</span>
+        </div>
+      </div>
     ));
   };
 
@@ -260,24 +293,54 @@ const ProductForm = ({ handleOnSubmit }) => {
           {input({ name: "describe", type: inputTypeEnum.TEXT_AREA })}
           {input({ name: "img", type: inputTypeEnum.FILE })}
           <div className="text-white flex flex-col gap-5">
-            <div className="flex flex-wrap gap-2">
-              <div className="w-[15rem]">
-                <Selection
-                  formData={{
-                    value: selectAddOption,
-                    options: ["Butter", "Fountain flavors", "ICEE flavors"],
-                    validate: "",
-                  }}
-                  handleOnChange={(value) => setSelectAddOption(value)}
-                />
-              </div>
+            <div className="flex flex-wrap items-center gap-4">
+              <span className="w-full text-gray-300">Product Options</span>
+              {productOptionTypes?.length > 0 && (
+                <div className="flex gap-2">
+                  <div className="w-[15rem]">
+                    <Selection
+                      formData={{
+                        value: selectAddOption,
+                        options: productOptionTypes,
+                        validate: "",
+                      }}
+                      handleOnChange={(value) => setSelectAddOption(value)}
+                    />
+                  </div>
 
-              <div
-                className="border border-gray-400 cursor-pointer p-2 rounded max-w-[15rem] flex items-center justify-center gap-2"
-                onClick={handleAddOpions}
-              >
-                <AiOutlinePlus />
-                <span> Add product options</span>
+                  <div
+                    className="w-[5rem] text-gray-200 border border-gray-400 cursor-pointer p-2 rounded max-w-[15rem] flex items-center justify-center gap-2"
+                    onClick={() => handleAddOpions()}
+                  >
+                    <span> Add</span>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex rounded-md">
+                <div className="input_group">
+                  <input
+                    type="text"
+                    className="input px-1 h-full border-gray-500 mobile:w-[10rem]"
+                    value={newOptionType}
+                    onChange={(e) => setNewOptionType(e.target.value)}
+                    style={{ borderRadius: "5px 0 0 5px" }}
+                  />
+                  <div className={`input_title `}>
+                    <span>Type</span>
+                  </div>
+                </div>
+                <div
+                  className="text-gray-200 border border-gray-500 border-l-0 h-[2.5rem] text-[0.8rem] mobile:text-[0.7rem] cursor-pointer p-2 max-w-[15rem] flex items-center justify-center gap-2"
+                  style={{ borderRadius: "0 5px 5px 0" }}
+                  onClick={() => {
+                    if (newOptionType === "") return;
+                    handleAddOpions(newOptionType);
+                    setNewOptionType("");
+                  }}
+                >
+                  <span> Create New</span>
+                </div>
               </div>
             </div>
 

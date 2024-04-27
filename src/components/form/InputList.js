@@ -18,7 +18,7 @@ const InputList = ({ listValues = [], validate = "", handleOnChange }) => {
     if (listVal === "") return;
     if (e.keyCode === 13) {
       if (isArrayString(listVal)) {
-        console.log(stringToArray(listVal));
+        // console.log(stringToArray(listVal));
         handleOnChange([...listValues, ...stringToArray(listVal)]);
       } else {
         handleOnChange([...listValues, listVal.trim()]);

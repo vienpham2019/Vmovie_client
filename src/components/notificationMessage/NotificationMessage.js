@@ -91,7 +91,7 @@ const NotificationMessage = () => {
       {message && (
         <div
           ref={animationRef}
-          className="fixed z-10 left-1/2 top-[1rem] transform -translate-x-1/2 animate__fadeIn"
+          className="fixed z-[100] left-1/2 top-[1rem] transform -translate-x-1/2 animate__fadeIn"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
