@@ -63,6 +63,16 @@ export const productApiSlice = apiSlice.injectEndpoints({
         { type: "ProductOptionTypes" },
       ],
     }),
+    deleteAllProductOptionByType: builder.mutation({
+      query: ({ type }) => ({
+        url: `/productOption/allType/${type}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (result, err, arg) => [
+        { type: "ProductOption" },
+        { type: "ProductOptionTypes" },
+      ],
+    }),
   }),
 });
 
@@ -72,4 +82,5 @@ export const {
   useCreateProductOptionMutation,
   useUpdateProductOptionMutation,
   useDeleteProductOptionMutation,
+  useDeleteAllProductOptionByTypeMutation,
 } = productApiSlice;

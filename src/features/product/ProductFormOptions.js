@@ -6,6 +6,7 @@ import { PiSubtractSquareFill } from "react-icons/pi";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import {
+  closeModal,
   modalComponentEnum,
   openModal,
   setModalParams,
@@ -14,6 +15,7 @@ import {
   useGetAllProductOptionsByTypeQuery,
   useDeleteProductOptionMutation,
 } from "./productApiSlice";
+import { ConfirmModalActionEnum } from "../../components/modal/ConfirmModal";
 const ProductFormOptions = ({
   type,
   selected,
@@ -67,6 +69,17 @@ const ProductFormOptions = ({
     await deleteOption({ _id });
   };
 
+  const handleDeleteAllOptionByType = () => {
+    dispatch(
+      setModalParams({
+        message: `You want to delete all ${type} option`,
+        confirmAction: ConfirmModalActionEnum.DELETE_ALL_OPTION_TYPE,
+        confirmActionParams: { type },
+      })
+    );
+    dispatch(openModal(modalComponentEnum.CONFIRM));
+  };
+
   if (isLoading) return <div>Loading...</div>;
   return (
     <div className="flex flex-col gap-2">
@@ -80,7 +93,10 @@ const ProductFormOptions = ({
         </div>
         {avaliableOptions.length > 0 && (
           <>
-            <div className="h-[2rem] tooltip_container aspect-square rounded-full flex justify-center items-center border cursor-pointer">
+            <div
+              onClick={handleDeleteAllOptionByType}
+              className="h-[2rem] tooltip_container aspect-square rounded-full flex justify-center items-center border cursor-pointer"
+            >
               <TbTrashX />
               <span className="tooltip tooltip_bottom">Delete</span>
             </div>

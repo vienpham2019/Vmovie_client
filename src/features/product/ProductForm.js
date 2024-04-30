@@ -293,6 +293,7 @@ const ProductForm = ({ handleOnSubmit }) => {
           </div>
           {input({ name: "describe", type: inputTypeEnum.TEXT_AREA })}
           {input({ name: "img", type: inputTypeEnum.FILE })}
+
           <div className="text-white flex flex-col gap-5">
             <div className="flex flex-wrap items-center gap-4">
               <span className="w-full text-gray-300">Product Options</span>

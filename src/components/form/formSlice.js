@@ -110,26 +110,17 @@ const initState = {
       value: "",
       validate: "",
     },
+    type: {
+      value: "",
+      validate: "",
+    },
     img: {
       value: {},
       validate: "",
     },
-    PO: {
+    options: {
       value: [],
       validate: "",
-    },
-    type: {
-      value: "",
-      validate: "",
-      options: [
-        "Combo",
-        "Popcorn",
-        "Fountain_Drinks",
-        "Bottled_Drinks",
-        "Candy",
-        "Snacks",
-        "Ice_Cream",
-      ],
     },
   },
 };
