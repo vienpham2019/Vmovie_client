@@ -19,11 +19,13 @@ const ProductFormOptions = ({
   selected,
   index,
   handleSelectOptions,
+  handleAddNewSub,
   isSub = false,
   parentType,
 }) => {
   const [editMode, setEditMode] = useState(false);
   const [openSub, setOpenSub] = useState(false);
+  const [newOptionType, setNewOptionType] = useState("");
   const [deleteOption] = useDeleteProductOptionMutation();
   const { data: { metadata: avaliableOptions } = [], isLoading } =
     useGetAllProductOptionsByTypeQuery(
@@ -36,14 +38,27 @@ const ProductFormOptions = ({
   const dispatch = useDispatch();
   const handleAddOption = () => {
     dispatch(
-      setModalParams({ option: { optionType: type.split("_")[0], parentType } })
+      setModalParams({
+        option: {
+          optionType: type.split("_")[0],
+          parentType,
+          isParent: !isSub,
+        },
+      })
     );
     dispatch(openModal(modalComponentEnum.PRODUCT_OPTION));
   };
   const handleEditOption = (name, img, _id) => {
     dispatch(
       setModalParams({
-        option: { optionType: type.split("_")[0], name, img, _id, parentType },
+        option: {
+          optionType: type.split("_")[0],
+          name,
+          img,
+          _id,
+          parentType,
+          isParent: !isSub,
+        },
       })
     );
     dispatch(openModal(modalComponentEnum.PRODUCT_OPTION));
@@ -98,8 +113,8 @@ const ProductFormOptions = ({
             <input
               type="text"
               className="input px-1 h-full border-gray-500 mobile:w-[10rem]"
-              // value={newOptionType}
-              // onChange={(e) => setNewOptionType(e.target.value)}
+              value={newOptionType}
+              onChange={(e) => setNewOptionType(e.target.value)}
               style={{ borderRadius: "5px 0 0 5px" }}
             />
             <div className={`input_title `}>
@@ -109,14 +124,12 @@ const ProductFormOptions = ({
           <div
             className="text-gray-200 border border-gray-500 border-l-0 h-[2.5rem] text-[0.8rem] mobile:text-[0.7rem] cursor-pointer p-2 max-w-[15rem] flex items-center justify-center gap-2"
             style={{ borderRadius: "0 5px 5px 0" }}
-            // onClick={() => {
-            //   if (newOptionType === "") return;
-            //   setNewOptionType("");
-            //   setProductOptions((prev) => [
-            //     { key: newOptionType.split("_").join(" "), options: [] },
-            //     ...prev,
-            //   ]);
-            // }}
+            onClick={() => {
+              if (newOptionType === "") return;
+              handleAddNewSub(type, newOptionType);
+              setNewOptionType("");
+              setOpenSub(false);
+            }}
           >
             <span>New Sub</span>
           </div>
@@ -129,7 +142,7 @@ const ProductFormOptions = ({
           const selected = true;
           return (
             <div
-              key={name + type}
+              key={"optionDetails" + name + type}
               className="flex gap-2 items-center rounded-md p-2 border border-gray-500 bg-[#232328]"
             >
               {img ? (

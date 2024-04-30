@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import UploadFile from "../../components/form/image/UploadFile";
 import { useDispatch, useSelector } from "react-redux";
 import { IoMdLink } from "react-icons/io";
@@ -8,6 +8,7 @@ import {
   useUpdateProductOptionMutation,
 } from "./productApiSlice";
 import { closeModal } from "../../components/modal/ModalSlice";
+import { useDeleteImageMutation } from "../../components/form/image/imageApiSlice";
 
 const imageModeEnum = Object.freeze({
   URL: "url",
@@ -26,7 +27,9 @@ const ProductOptionsModal = () => {
   const [imageUrl, setImageUrl] = useState();
   const [createOption] = useCreateProductOptionMutation();
   const [editOption] = useUpdateProductOptionMutation();
+  const [deleteImage] = useDeleteImageMutation();
   const dispatch = useDispatch();
+  const uploadImageFileName = useRef("");
 
   useEffect(() => {
     const { name: paramsName, img: paramImg } = modalParams?.option;
@@ -35,6 +38,11 @@ const ProductOptionsModal = () => {
       setImageUrl(paramImg);
       setMode(modeEnum.EDIT);
     }
+    return async () => {
+      if (uploadImageFileName.current !== "") {
+        await deleteImage({ fileName: uploadImageFileName.current });
+      }
+    };
   }, [modalParams]);
 
   const handleSubmit = async () => {
@@ -49,6 +57,7 @@ const ProductOptionsModal = () => {
     } else if (mode === modeEnum.EDIT) {
       res = await editOption(payload);
     }
+    uploadImageFileName.current = "";
     if (res?.data?.message) {
       dispatch(closeModal());
     }
@@ -109,8 +118,10 @@ const ProductOptionsModal = () => {
             validate={""}
             value={""}
             name={"flavor img"}
-            setOnChange={(value) => console.log(value)}
-            db={"product options"}
+            setOnChange={(value) => {
+              setImageUrl(value.url);
+              uploadImageFileName.current = value.name;
+            }}
           />
           <div className={`input_title `}>
             <span>Image</span>

@@ -13,9 +13,9 @@ export const productApiSlice = apiSlice.injectEndpoints({
         if (result?.metadata) {
           return [
             { type: "ProductOptionTypes", id: "LIST" },
-            ...result.metadata.map((type) => ({
+            ...result.metadata.map((optionType) => ({
               type: "ProductOptionTypes",
-              type,
+              optionType,
             })),
           ];
         } else return [{ type: "ProductOptionTypes", id: "LIST" }];
@@ -58,7 +58,10 @@ export const productApiSlice = apiSlice.injectEndpoints({
         url: `/productOption/${_id}`,
         method: "DELETE",
       }),
-      invalidatesTags: (result, err, arg) => [{ type: "ProductOption" }],
+      invalidatesTags: (result, err, arg) => [
+        { type: "ProductOption" },
+        { type: "ProductOptionTypes" },
+      ],
     }),
   }),
 });
