@@ -11,6 +11,7 @@ import {
 import {
   initMovieFormData,
   resetMovieFormdata,
+  setProductFormData,
 } from "../../components/form/formSlice";
 
 import { RxCross2 } from "react-icons/rx";
@@ -20,6 +21,10 @@ import Selection from "../../components/form/Selection";
 import { useEffect, useState } from "react";
 import ProductFormOptions from "./ProductFormOptions";
 import { useGetAllProductOptionTypesQuery } from "./productApiSlice";
+import { RiListOrdered, RiPlayListAddFill } from "react-icons/ri";
+import { CiFileOn } from "react-icons/ci";
+import { IoLinkSharp } from "react-icons/io5";
+import { FaRegFile } from "react-icons/fa6";
 
 const fountain_PO = [
   "Coca-Cola",
@@ -62,15 +67,23 @@ const flavor_img = {
     "https://www.cinemark.com/media/75981315/icee-flavor_blueraspberry_100x100.jpg",
 };
 
+const imageUploadTypeEnum = Object.freeze({
+  FILE: "File",
+  URL: "Url",
+});
+
 const ProductForm = ({ handleOnSubmit }) => {
   const dispatch = useDispatch();
   const { productFormData } = useSelector((state) => state.form);
-  const [productOptions, setProductOptions] = useState([]);
   const [newOptionType, setNewOptionType] = useState("");
   const { data: { metadata: productOptionTypes } = [] } =
     useGetAllProductOptionTypesQuery();
   const [optionTypes, setOptionTypes] = useState({});
   const [selectAddOption, setSelectAddOption] = useState("");
+  const [newProductType, setNewProductType] = useState(true);
+  const [imageUploadType, setImageUploadType] = useState(
+    imageUploadTypeEnum.URL
+  );
 
   useEffect(() => {
     if (productOptionTypes?.length) {
@@ -90,12 +103,12 @@ const ProductForm = ({ handleOnSubmit }) => {
   }, [productOptionTypes]);
 
   const handleOnChange = (value, name) => {
-    // dispatch(
-    //   setMovieFormData({
-    //     name,
-    //     value,
-    //   })
-    // );
+    dispatch(
+      setProductFormData({
+        name,
+        value,
+      })
+    );
   };
 
   const input = (options) => {
@@ -108,77 +121,65 @@ const ProductForm = ({ handleOnSubmit }) => {
   };
 
   const handleAddOpions = (type = selectAddOption) => {
-    setProductOptions((prevOptions) => {
-      let newOptions = [
-        {
-          type: type,
-          selected: [],
-        },
-        ...prevOptions,
-      ];
+    let newOptions = [
+      {
+        type: type,
+        selected: [],
+      },
+      ...JSON.parse(JSON.stringify(productFormData.options.value)),
+    ];
 
-      const filterOptionsIndex = newOptions.reduce((acc, option, index) => {
-        if (option.type.split("_")[0] === type) acc.push(index);
-        return acc;
-      }, []);
+    const filterOptionsIndex = newOptions.reduce((acc, option, index) => {
+      if (option.type.split("_")[0] === type) acc.push(index);
+      return acc;
+    }, []);
 
-      if (filterOptionsIndex.length > 1) {
-        filterOptionsIndex.forEach((indexValue, count) => {
-          newOptions[indexValue].type = `${
-            newOptions[indexValue].type.split("_")[0]
-          }_#${count + 1}`;
-        });
-      }
+    if (filterOptionsIndex.length > 1) {
+      filterOptionsIndex.forEach((indexValue, count) => {
+        newOptions[indexValue].type = `${
+          newOptions[indexValue].type.split("_")[0]
+        }_#${count + 1}`;
+      });
+    }
 
-      return [...newOptions];
-    });
+    handleOnChange(newOptions, "options");
   };
 
   const handleDeleteOptions = (type, index) => {
-    setProductOptions((prevOptions) => {
-      let updatedOptions = [...prevOptions];
-      updatedOptions.splice(index, 1);
+    let updateOptions = [
+      ...JSON.parse(JSON.stringify(productFormData.options.value)),
+    ];
 
-      const filterOptionsIndex = [];
-      updatedOptions.forEach((option, i) => {
-        if (option.type.split("_")[0] === type.split("_")[0]) {
-          filterOptionsIndex.push(i);
-        }
-      });
+    updateOptions.splice(index, 1);
 
-      if (filterOptionsIndex.length > 1) {
-        filterOptionsIndex.forEach((indexValue, count) => {
-          updatedOptions[indexValue].type = `${
-            updatedOptions[indexValue].type.split("_")[0]
-          }_#${count + 1}`;
-        });
-      } else if (filterOptionsIndex.length === 1) {
-        updatedOptions[filterOptionsIndex[0]].type =
-          updatedOptions[filterOptionsIndex[0]].type.split("_")[0];
+    const filterOptionsIndex = [];
+    updateOptions.forEach((option, i) => {
+      if (option.type.split("_")[0] === type.split("_")[0]) {
+        filterOptionsIndex.push(i);
       }
-
-      return [...updatedOptions];
     });
-  };
 
-  const handleSelectOptions = (optionIndex, selectIndex, value) => {
-    setProductOptions((prevOptions) => {
-      let updatedOptions = [...prevOptions];
-      updatedOptions[optionIndex].options[selectIndex].selected = value;
+    if (filterOptionsIndex.length > 1) {
+      filterOptionsIndex.forEach((indexValue, count) => {
+        updateOptions[indexValue].type = `${
+          updateOptions[indexValue].type.split("_")[0]
+        }_#${count + 1}`;
+      });
+    } else if (filterOptionsIndex.length === 1) {
+      updateOptions[filterOptionsIndex[0]].type =
+        updateOptions[filterOptionsIndex[0]].type.split("_")[0];
+    }
 
-      return [...updatedOptions];
-    });
+    handleOnChange(updateOptions, "options");
   };
 
   const displayOptions = () => {
-    return productOptions.map((option, index) => (
+    return productFormData.options.value.map((option, index) => (
       <div className="input_group" key={`Product option ${index}`}>
         <div className="border flex flex-col gap-2 border-gray-500  p-2 relative bg-[#2b2b31]">
           <ProductFormOptions
             type={option.type}
-            selected={option.selected}
-            index={index}
-            handleSelectOptions={handleSelectOptions}
+            selectedArr={option.selected}
             handleAddNewSub={(parentType, newSubType) => {
               const updateOptionTypes = { ...optionTypes };
               if (
@@ -210,10 +211,9 @@ const ProductForm = ({ handleOnSubmit }) => {
                 <div className="border border-gray-500  p-2 bg-[#2b2b31]">
                   <ProductFormOptions
                     type={subType}
-                    selected={option.selected}
+                    selectedArr={option.selected}
                     isSub={true}
                     parentType={option.type}
-                    handleSelectOptions={handleSelectOptions}
                   />
                 </div>
                 <div className={`input_title `}>
@@ -287,18 +287,63 @@ const ProductForm = ({ handleOnSubmit }) => {
           <div className="flex flex-wrap gap-4 items-center">
             <div className="flex-1">{input({ name: "item_name" })}</div>
             <div className="flex-1">{input({ name: "price" })}</div>
-            <div className="flex-1">
-              {input({ name: "type", type: inputTypeEnum.SELECT })}
-            </div>
+
+            {newProductType ? (
+              <div className="flex flex-wrap gap-2 items-center flex-1">
+                <div className="flex-1">{input({ name: "type" })}</div>
+                <div className="tooltip_container">
+                  <RiListOrdered
+                    className="border border-gray-400 text-white w-[2rem] h-full p-1 cursor-pointer"
+                    onClick={() => setNewProductType(false)}
+                  />
+                  <span className="tooltip tooltip_bottom">Type List</span>
+                </div>
+              </div>
+            ) : (
+              <div className="flex gap-2 items-center flex-1">
+                <div className="flex-1">
+                  {input({ name: "type", type: inputTypeEnum.SELECT })}
+                </div>
+                <div className="tooltip_container">
+                  <RiPlayListAddFill
+                    className="border border-gray-400 text-white w-[2rem] h-full p-1 cursor-pointer"
+                    onClick={() => setNewProductType(true)}
+                  />
+                  <span className="tooltip tooltip_bottom">New Type</span>
+                </div>
+              </div>
+            )}
           </div>
           {input({ name: "describe", type: inputTypeEnum.TEXT_AREA })}
-          {input({ name: "img", type: inputTypeEnum.FILE })}
+          <div className="flex gap-2 text-white px-2 text-[1.2rem]">
+            <div
+              className={`tooltip_container border border-gray-400 ${
+                imageUploadType === imageUploadTypeEnum.URL && "text-cyan-400"
+              } p-1 cursor-pointer`}
+              onClick={() => setImageUploadType(imageUploadTypeEnum.URL)}
+            >
+              <IoLinkSharp />
+              <span className="tooltip tooltip_bottom">Url</span>
+            </div>
+            <div
+              className={`tooltip_container border border-gray-400 ${
+                imageUploadType === imageUploadTypeEnum.FILE && "text-cyan-400"
+              } p-1 cursor-pointer`}
+              onClick={() => setImageUploadType(imageUploadTypeEnum.FILE)}
+            >
+              <FaRegFile />
+              <span className="tooltip tooltip_bottom">File</span>
+            </div>
+          </div>
+          {imageUploadType === imageUploadTypeEnum.FILE
+            ? input({ name: "img", type: inputTypeEnum.FILE })
+            : input({ name: "img", type: inputTypeEnum.IMG_URL })}
 
           <div className="text-white flex flex-col gap-5">
             <div className="flex flex-wrap items-center gap-4">
               <span className="w-full text-gray-300">Product Options</span>
               {productOptionTypes?.length > 0 && (
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   <div className="w-[15rem]">
                     <Selection
                       formData={{

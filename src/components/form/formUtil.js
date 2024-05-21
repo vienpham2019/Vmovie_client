@@ -4,6 +4,7 @@ import UploadFile from "./image/UploadFile";
 import { separatedWords } from "../../util/string";
 import { inputTypeEnum } from "./formEnum";
 import VideoInput from "./VideoInput";
+import UploadUrl from "./image/UploadUrl";
 
 const displayInput = ({
   formData,
@@ -50,6 +51,15 @@ const displayInput = ({
         setOnChange={(uploadFiles) => {
           handleOnChange(uploadFiles, name);
         }}
+      />
+    );
+  } else if (type === inputTypeEnum.IMG_URL) {
+    content = (
+      <UploadUrl
+        name={name}
+        value={formData[name].value?.url || ""}
+        validate={formData[name].validate}
+        handleOnChange={handleOnChange}
       />
     );
   } else if (type === inputTypeEnum.VIDEO) {

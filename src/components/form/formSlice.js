@@ -193,10 +193,29 @@ export const formSlice = createSlice({
         movieFormData: initState.movieFormData,
       };
     },
+    setProductFormData: (state, action) => {
+      const { name, value } = action.payload;
+      const updatedFormData = JSON.parse(JSON.stringify(state.productFormData));
+
+      for (const key in updatedFormData) {
+        updatedFormData[key].validate = "";
+      }
+
+      updatedFormData[name].value = value;
+
+      return {
+        ...state,
+        productFormData: updatedFormData,
+      };
+    },
   },
 });
 
-export const { initMovieFormData, setMovieFormData, resetMovieFormdata } =
-  formSlice.actions;
+export const {
+  initMovieFormData,
+  setMovieFormData,
+  resetMovieFormdata,
+  setProductFormData,
+} = formSlice.actions;
 
 export default formSlice.reducer;

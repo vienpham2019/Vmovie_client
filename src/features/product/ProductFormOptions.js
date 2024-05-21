@@ -2,11 +2,11 @@ import CheckBox from "../../components/form/CheckBox";
 import { TbTrashX } from "react-icons/tb";
 import { FaPencil, FaPlus } from "react-icons/fa6";
 import { PiSubtractSquareFill } from "react-icons/pi";
+import { IoCheckmarkDoneSharp } from "react-icons/io5";
 
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
-  closeModal,
   modalComponentEnum,
   openModal,
   setModalParams,
@@ -16,11 +16,11 @@ import {
   useDeleteProductOptionMutation,
 } from "./productApiSlice";
 import { ConfirmModalActionEnum } from "../../components/modal/ConfirmModal";
+import { setProductFormData } from "../../components/form/formSlice";
+
 const ProductFormOptions = ({
   type,
-  selected,
-  index,
-  handleSelectOptions,
+  selectedArr,
   handleAddNewSub,
   isSub = false,
   parentType,
@@ -28,8 +28,10 @@ const ProductFormOptions = ({
   const [editMode, setEditMode] = useState(false);
   const [openSub, setOpenSub] = useState(false);
   const [newOptionType, setNewOptionType] = useState("");
+
+  const { productFormData } = useSelector((state) => state.form);
   const [deleteOption] = useDeleteProductOptionMutation();
-  const { data: { metadata: avaliableOptions } = [], isLoading } =
+  const { data: { metadata: availableOptions } = [], isLoading } =
     useGetAllProductOptionsByTypeQuery(
       { type: type.split("_")[0] },
       {
@@ -38,6 +40,7 @@ const ProductFormOptions = ({
       }
     );
   const dispatch = useDispatch();
+
   const handleAddOption = () => {
     dispatch(
       setModalParams({
@@ -50,6 +53,7 @@ const ProductFormOptions = ({
     );
     dispatch(openModal(modalComponentEnum.PRODUCT_OPTION));
   };
+
   const handleEditOption = (name, img, _id) => {
     dispatch(
       setModalParams({
@@ -65,6 +69,7 @@ const ProductFormOptions = ({
     );
     dispatch(openModal(modalComponentEnum.PRODUCT_OPTION));
   };
+
   const handleDeleteOption = async (_id) => {
     await deleteOption({ _id });
   };
@@ -72,7 +77,7 @@ const ProductFormOptions = ({
   const handleDeleteAllOptionByType = () => {
     dispatch(
       setModalParams({
-        message: `You want to delete all ${type} option`,
+        message: `Are you sure you want to delete all ${type} options? \nThis action will delete all options from other products as well.`,
         confirmAction: ConfirmModalActionEnum.DELETE_ALL_OPTION_TYPE,
         confirmActionParams: { type },
       })
@@ -80,9 +85,57 @@ const ProductFormOptions = ({
     dispatch(openModal(modalComponentEnum.CONFIRM));
   };
 
+  const handleSelectAll = () => {
+    const allSelected = isAllSelected();
+    const availableIds = availableOptions.map((o) => o._id);
+
+    selectedArr = selectedArr.filter((opId) => !availableIds.includes(opId));
+
+    if (!allSelected) {
+      selectedArr.push(...availableIds);
+    }
+
+    const productOptions = productFormData.options.value.map((op) =>
+      [parentType, type].includes(op.type)
+        ? { ...op, selected: selectedArr }
+        : op
+    );
+    dispatch(
+      setProductFormData({
+        name: "options",
+        value: productOptions,
+      })
+    );
+  };
+
+  const handleSelectOption = (_id) => {
+    const productOptions = productFormData.options.value.map((op) => {
+      if ([parentType, type].includes(op.type)) {
+        let { selected } = op;
+        if (selected.includes(_id)) {
+          selected = selected.filter((selectedId) => selectedId !== _id);
+        } else {
+          selected = [...selected, _id];
+        }
+        return { ...op, selected };
+      }
+      return op;
+    });
+    dispatch(
+      setProductFormData({
+        name: "options",
+        value: productOptions,
+      })
+    );
+  };
+
+  const isAllSelected = () => {
+    return availableOptions.every(({ _id }) => selectedArr.includes(_id));
+  };
+
   if (isLoading) return <div>Loading...</div>;
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 ">
       <div className="flex gap-2">
         <div
           onClick={handleAddOption}
@@ -91,7 +144,7 @@ const ProductFormOptions = ({
           <FaPlus />
           <span className="tooltip tooltip_bottom">Add</span>
         </div>
-        {avaliableOptions.length > 0 && (
+        {availableOptions.length > 0 && (
           <>
             <div
               onClick={handleDeleteAllOptionByType}
@@ -120,6 +173,17 @@ const ProductFormOptions = ({
                 <span className="tooltip tooltip_bottom">Add Sub Option</span>
               </div>
             )}
+            <div
+              className={`h-[2rem] aspect-square tooltip_container ${
+                isAllSelected() && "bg-cyan-600"
+              } rounded-full flex justify-center items-center border cursor-pointer`}
+              onClick={handleSelectAll}
+            >
+              <IoCheckmarkDoneSharp />
+              <span className="tooltip tooltip_bottom">
+                {isAllSelected() ? "UnSelect All" : "Select All"}
+              </span>
+            </div>
           </>
         )}
       </div>
@@ -153,9 +217,9 @@ const ProductFormOptions = ({
       )}
       {/*  */}
       <div className="max-h-[20rem] min-h-[3rem] overflow-y-auto flex flex-wrap gap-5">
-        {avaliableOptions.map(({ name, img, _id }, optionIndex) => {
+        {availableOptions.map(({ name, img, _id }, optionIndex) => {
           // change this
-          const selected = true;
+          const selected = selectedArr.includes(_id);
           return (
             <div
               key={"optionDetails" + name + type}
@@ -168,16 +232,12 @@ const ProductFormOptions = ({
                   className={`h-[3rem] aspect-square rounded-full border-2 ${
                     selected ? "border-cyan-400" : "opacity-10"
                   } cursor-pointer`}
-                  onClick={() =>
-                    handleSelectOptions(index, optionIndex, !selected)
-                  }
+                  onClick={() => handleSelectOption(_id)}
                 />
               ) : (
                 <CheckBox
                   isChecked={selected}
-                  handleCheckboxChange={() =>
-                    handleSelectOptions(index, optionIndex, !selected)
-                  }
+                  handleCheckboxChange={() => handleSelectOption(_id)}
                 />
               )}
               <div className="flex flex-col gap-1 max-w-[10rem]">
