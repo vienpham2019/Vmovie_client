@@ -5,6 +5,11 @@ import { apiSlice } from "../../app/api/apiSlice";
 // const initState = productAdapter.getInitialState();
 export const productApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
+    getAllProductTypes: builder.query({
+      query: () => ({
+        url: `/product/allTypes`,
+      }),
+    }),
     getAllProductOptionTypes: builder.query({
       query: () => ({
         url: `/productOption/types`,
@@ -45,6 +50,14 @@ export const productApiSlice = apiSlice.injectEndpoints({
         { type: "ProductOptionTypes" },
       ],
     }),
+    createProduct: builder.mutation({
+      query: (payload) => ({
+        url: "/product/new",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: (result, err, arg) => [{ type: "Product", id: arg._id }],
+    }),
     updateProductOption: builder.mutation({
       query: (payload) => ({
         url: "/productOption/updateOption",
@@ -77,8 +90,10 @@ export const productApiSlice = apiSlice.injectEndpoints({
 });
 
 export const {
+  useGetAllProductTypesQuery,
   useGetAllProductOptionTypesQuery,
   useGetAllProductOptionsByTypeQuery,
+  useCreateProductMutation,
   useCreateProductOptionMutation,
   useUpdateProductOptionMutation,
   useDeleteProductOptionMutation,

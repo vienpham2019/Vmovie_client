@@ -98,7 +98,7 @@ const initState = {
     },
   },
   productFormData: {
-    item_name: {
+    itemName: {
       value: "",
       validate: "",
     },
@@ -113,6 +113,7 @@ const initState = {
     type: {
       value: "",
       validate: "",
+      options: [],
     },
     img: {
       value: {},
@@ -193,6 +194,12 @@ export const formSlice = createSlice({
         movieFormData: initState.movieFormData,
       };
     },
+    initProductFormData: (state, action) => {
+      return {
+        ...state,
+        productFormData: action.payload,
+      };
+    },
     setProductFormData: (state, action) => {
       const { name, value } = action.payload;
       const updatedFormData = JSON.parse(JSON.stringify(state.productFormData));
@@ -208,6 +215,13 @@ export const formSlice = createSlice({
         productFormData: updatedFormData,
       };
     },
+    resetProductFormdata: (state, _) => {
+      return {
+        ...state,
+        id: null,
+        productFormData: initState.productFormData,
+      };
+    },
   },
 });
 
@@ -215,7 +229,9 @@ export const {
   initMovieFormData,
   setMovieFormData,
   resetMovieFormdata,
+  initProductFormData,
   setProductFormData,
+  resetProductFormdata,
 } = formSlice.actions;
 
 export default formSlice.reducer;

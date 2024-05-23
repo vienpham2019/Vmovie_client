@@ -38,7 +38,11 @@ const AddMovie = () => {
     try {
       let submitFormData = {};
       Object.keys(movieFormData).forEach((key) => {
-        submitFormData[key] = movieFormData[key].value;
+        if (key === "img") {
+          submitFormData["imgUrl"] = movieFormData[key].value.url;
+        } else {
+          submitFormData[key] = movieFormData[key].value;
+        }
       });
       submitFormData._id = id;
       const res = await updateUncompletedMovie(submitFormData);

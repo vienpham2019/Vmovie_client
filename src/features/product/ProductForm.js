@@ -10,7 +10,9 @@ import {
 } from "../../components/notificationMessage/notificationMessageSlice";
 import {
   initMovieFormData,
+  initProductFormData,
   resetMovieFormdata,
+  resetProductFormdata,
   setProductFormData,
 } from "../../components/form/formSlice";
 
@@ -18,54 +20,15 @@ import { RxCross2 } from "react-icons/rx";
 
 import Selection from "../../components/form/Selection";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ProductFormOptions from "./ProductFormOptions";
-import { useGetAllProductOptionTypesQuery } from "./productApiSlice";
+import {
+  useGetAllProductOptionTypesQuery,
+  useGetAllProductTypesQuery,
+} from "./productApiSlice";
 import { RiListOrdered, RiPlayListAddFill } from "react-icons/ri";
-import { CiFileOn } from "react-icons/ci";
 import { IoLinkSharp } from "react-icons/io5";
 import { FaRegFile } from "react-icons/fa6";
-
-const fountain_PO = [
-  "Coca-Cola",
-  "Diet Coke",
-  "Dr Pepper",
-  "Sprite",
-  "Coke Zero",
-  "Cherry Coke",
-  `Barq's Root Beer`,
-  "Powerade Mountain Blast",
-  "Fanta Orange",
-  "Hi-C Fruit Punch",
-];
-const butter_PO = ["No Added Butter", "Regular Butter", "Layered Butter"];
-const ice_PO = ["Regular Ice", "No Ice", "Light Ice", "Extra Ice"];
-const ICEE_PO = ["ICEE Coke", "ICEE Cherry", "ICEE Blue Raspberry"];
-
-const flavor_img = {
-  "Coca-Cola": "https://www.cinemark.com/media/75973827/flavor_coca_cola.jpg",
-  "Diet Coke": "https://www.cinemark.com/media/75973829/flavor_diet_coke.jpg",
-  "Dr Pepper": "https://www.cinemark.com/media/75976727/sodadrpepper.jpg",
-  Sprite:
-    "https://www.cinemark.com/media/76006718/siat_categoryimages_sprite_100x100.png",
-  "Coke Zero": "https://www.cinemark.com/media/75973828/flavor_coke_zero.jpg",
-  "Cherry Coke":
-    "https://www.cinemark.com/media/75981318/siat_cherry-coke_100x100.jpg",
-  "Barq's Root Beer":
-    "https://www.cinemark.com/media/75981317/siat_barqs-root-beer_100x100.jpg",
-  "Powerade Mountain Blast":
-    "https://www.cinemark.com/media/76006870/siat_categoryimages_powerade_100x100.png",
-  "Fanta Orange":
-    "https://www.cinemark.com/media/76006869/siat_categoryimages_fanta_100x100.png",
-  "Hi-C Fruit Punch":
-    "https://www.cinemark.com/media/75981320/siat_hi-c_100x100.jpg",
-  "ICEE Coke":
-    "https://www.cinemark.com/media/75981314/icee_flavor_coke_100x100.jpg",
-  "ICEE Cherry":
-    "https://www.cinemark.com/media/75981316/icee-flavor_wildcherry_100x100.jpg",
-  "ICEE Blue Raspberry":
-    "https://www.cinemark.com/media/75981315/icee-flavor_blueraspberry_100x100.jpg",
-};
 
 const imageUploadTypeEnum = Object.freeze({
   FILE: "File",
@@ -80,12 +43,20 @@ const ProductForm = ({ handleOnSubmit }) => {
     useGetAllProductOptionTypesQuery();
   const [optionTypes, setOptionTypes] = useState({});
   const [selectAddOption, setSelectAddOption] = useState("");
-  const [newProductType, setNewProductType] = useState(true);
+  const [newProductType, setNewProductType] = useState(false);
   const [imageUploadType, setImageUploadType] = useState(
     imageUploadTypeEnum.URL
   );
-
+  const { data: { metadata: allProductTypes } = [], isLoading } =
+    useGetAllProductTypesQuery();
+  const setProductType = useRef(false);
   useEffect(() => {
+    if (!isLoading && !setProductType.current) {
+      setProductType.current = true;
+      let initFormData = JSON.parse(JSON.stringify(productFormData));
+      initFormData["type"].options = allProductTypes;
+      dispatch(initProductFormData(initFormData));
+    }
     if (productOptionTypes?.length) {
       const optionTypes = {};
       productOptionTypes.forEach((option) => {
@@ -100,7 +71,7 @@ const ProductForm = ({ handleOnSubmit }) => {
       setOptionTypes(optionTypes);
       setSelectAddOption(Object.keys(optionTypes)[0]);
     }
-  }, [productOptionTypes]);
+  }, [productOptionTypes, isLoading, dispatch, setProductFormData]);
 
   const handleOnChange = (value, name) => {
     dispatch(
@@ -261,7 +232,7 @@ const ProductForm = ({ handleOnSubmit }) => {
     }
 
     if (isInvalid) {
-      dispatch(initMovieFormData(updatedFormData));
+      dispatch(initProductFormData(updatedFormData));
       dispatch(
         setMessage({
           message: "All fields are required.",
@@ -272,8 +243,10 @@ const ProductForm = ({ handleOnSubmit }) => {
     }
 
     await handleOnSubmit();
-    dispatch(resetMovieFormdata());
+    dispatch(resetProductFormdata());
   };
+
+  if (isLoading) return <div>Loading...</div>;
 
   return (
     <form
@@ -285,19 +258,24 @@ const ProductForm = ({ handleOnSubmit }) => {
       <div className="flex flex-wrap gap-4 ">
         <div className="grid flex-auto gap-4 w-[50rem] mobile:min-w-[15rem]">
           <div className="flex flex-wrap gap-4 items-center">
-            <div className="flex-1">{input({ name: "item_name" })}</div>
+            <div className="flex-1">{input({ name: "itemName" })}</div>
             <div className="flex-1">{input({ name: "price" })}</div>
 
-            {newProductType ? (
+            {newProductType || allProductTypes.length === 0 ? (
               <div className="flex flex-wrap gap-2 items-center flex-1">
                 <div className="flex-1">{input({ name: "type" })}</div>
-                <div className="tooltip_container">
-                  <RiListOrdered
-                    className="border border-gray-400 text-white w-[2rem] h-full p-1 cursor-pointer"
-                    onClick={() => setNewProductType(false)}
-                  />
-                  <span className="tooltip tooltip_bottom">Type List</span>
-                </div>
+                {allProductTypes.length > 0 && (
+                  <div className="tooltip_container">
+                    <RiListOrdered
+                      className="border border-gray-400 text-white w-[2rem] h-full p-1 cursor-pointer"
+                      onClick={() => {
+                        if (allProductTypes.length > 0)
+                          setNewProductType(false);
+                      }}
+                    />
+                    <span className="tooltip tooltip_bottom">Type List</span>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="flex gap-2 items-center flex-1">
@@ -307,7 +285,9 @@ const ProductForm = ({ handleOnSubmit }) => {
                 <div className="tooltip_container">
                   <RiPlayListAddFill
                     className="border border-gray-400 text-white w-[2rem] h-full p-1 cursor-pointer"
-                    onClick={() => setNewProductType(true)}
+                    onClick={() => {
+                      if (allProductTypes.length > 0) setNewProductType(true);
+                    }}
                   />
                   <span className="tooltip tooltip_bottom">New Type</span>
                 </div>

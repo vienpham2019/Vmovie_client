@@ -31,6 +31,7 @@ const ProductFormOptions = ({
 
   const { productFormData } = useSelector((state) => state.form);
   const [deleteOption] = useDeleteProductOptionMutation();
+
   const { data: { metadata: availableOptions } = [], isLoading } =
     useGetAllProductOptionsByTypeQuery(
       { type: type.split("_")[0] },
