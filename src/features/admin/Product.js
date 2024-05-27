@@ -3,6 +3,12 @@ import { SlMagnifier } from "react-icons/sl";
 import { Link, useNavigate } from "react-router-dom";
 import Selection from "../../components/form/Selection";
 import { MdAdd } from "react-icons/md";
+import { useGetAllProductByAdminQuery } from "../product/productApiSlice";
+import { Pagination } from "../../components/Pagination";
+import { FaArrowDownWideShort, FaArrowUpShortWide } from "react-icons/fa6";
+import { LuArrowDownUp } from "react-icons/lu";
+import AdminSkeleton from "./AdminSkeleton";
+import DisplayProduct from "./DisplayProduct";
 
 const Product = () => {
   const navigate = useNavigate();
@@ -12,6 +18,105 @@ const Product = () => {
   const [filter, setFilter] = useState("All");
   const [search, setSearch] = useState("");
   const limit = 10;
+  const { data, isLoading } = useGetAllProductByAdminQuery(
+    { search, page, limit, sortBy, sortDir, filter },
+    {
+      pollingInterval: 120000, // 2min the data will fetch again
+      refertchOnFocus: true, // data will fetch when page on focus
+      refetchOnMountOrArgChange: true, // it will refresh data when remount component
+      // Set the query key to include the page so it updates when the page changes
+      queryKey: [
+        "getAllProductByAdmin",
+        { search, page, sortBy, sortDir, filter },
+      ],
+    }
+  );
+
+  const handleSortClick = (header) => {
+    setPage(1);
+    setSortDir(() => (header === sortBy ? sortDir * -1 : -1));
+    setSortBy(header);
+  };
+
+  const handleDisplayProduct = () => {
+    if (Object.keys(data.products.entities).length === 0) {
+      return (
+        <div className="h-[30vh] flex justify-center items-center text-white">
+          No Product
+        </div>
+      );
+    }
+
+    const duplicatedProducts = Object.entries(data.products?.entities).flatMap(
+      ([_, product]) => product
+    );
+
+    const headers = [
+      "id",
+      "thumbnail",
+      "itemName",
+      "price",
+      "type",
+      "createdAt",
+      "updatedAt",
+    ];
+
+    return (
+      <table className="table-auto text-gray-200 gap-1 border-separate border-spacing-1">
+        <thead>
+          <tr>
+            {headers.map((header, index) => (
+              <th
+                className={`laptop:cursor-pointer
+               ${header === "actions" && "laptop:hidden"} ${
+                  ["updatedAt", "createdAt"].includes(header) && "tablet:hidden"
+                } ${["price", "type"].includes(header) && "mobile:hidden"}`}
+                key={header}
+              >
+                <div
+                  className={`uppercase font-thin p-2 h-[3rem] flex items-center gap-2  ${
+                    header === sortBy && "text-cyan-400"
+                  }`}
+                  key={header + "attach"}
+                >
+                  {header === "actions" ? "" : header}{" "}
+                  {!["id", "actions", "thumbnail"].includes(header) && (
+                    <div
+                      className="cursor-pointer"
+                      onClick={() => handleSortClick(header)}
+                    >
+                      {header === sortBy && sortDir === -1 ? (
+                        <FaArrowDownWideShort />
+                      ) : header === sortBy && sortDir === 1 ? (
+                        <FaArrowUpShortWide />
+                      ) : (
+                        <LuArrowDownUp />
+                      )}
+                    </div>
+                  )}
+                </div>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {Object.entries(duplicatedProducts).map(
+            ([_, product], productIndex) => (
+              <DisplayProduct
+                product={product}
+                productIndex={productIndex + 1 + limit * (page - 1)}
+                key={product["title"] + productIndex}
+                className={`h-[6rem]  px-4`}
+              />
+            )
+          )}
+        </tbody>
+      </table>
+    );
+  };
+
+  if (isLoading) return <AdminSkeleton />;
+
   return (
     <div className="p-[1rem]">
       {" "}
@@ -44,7 +149,7 @@ const Product = () => {
                 <input
                   type="text"
                   className="input py-[1.4rem]"
-                  placeholder="Find moive"
+                  placeholder="Find product"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
@@ -64,19 +169,19 @@ const Product = () => {
               </div>
             </div>
             {/* Movie List */}
-            {/* {handleDisplayMovie()} */}
-            {/* {false && (
+            {handleDisplayProduct()}
+            {false && (
               <div className="flex justify-between items-center">
                 <div className="text-gray-300 font-thin text-[0.8rem] border border-gray-700 bg-slate-800 flex items-center h-[2rem] px-2 rounded-md">
-                  Showing 10 of {data.totalMovies}
+                  Showing 10 of {data.totalProducts}
                 </div>
                 <Pagination
                   currentPage={page}
-                  totalPage={Math.ceil(data.totalMovies / 10)}
+                  totalPage={Math.ceil(data.totalProducts / 10)}
                   setCurrentPage={(page) => setPage(page)}
                 />
               </div>
-            )} */}
+            )}
           </div>
         </div>
         {/* Body */}

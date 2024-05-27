@@ -6,10 +6,10 @@ import { useNavigate } from "react-router-dom";
 import { MdAdd } from "react-icons/md";
 import { useGetAllMovieByAdminQuery } from "../movie/movieApiSlice";
 import AdminSkeleton from "./AdminSkeleton";
-import CatalogMovie from "./CatalogMovie";
 import Pagination from "../../components/Pagination";
 import { useState } from "react";
 import Selection from "../../components/form/Selection";
+import DisplayMovie from "./DisplayMovie";
 
 const Catalog = () => {
   const navigate = useNavigate();
@@ -111,7 +111,7 @@ const Catalog = () => {
         </thead>
         <tbody>
           {Object.entries(duplicatedMovies).map(([_, movie], movieIndex) => (
-            <CatalogMovie
+            <DisplayMovie
               movie={movie}
               movieIndex={movieIndex + 1 + limit * (page - 1)}
               key={movie["title"] + movieIndex}

@@ -1,14 +1,53 @@
 import { createEntityAdapter, createSelector } from "@reduxjs/toolkit";
 import { apiSlice } from "../../app/api/apiSlice";
 
-// const productAdapter = createEntityAdapter({});
-// const initState = productAdapter.getInitialState();
+const productAdapter = createEntityAdapter({});
+const initState = productAdapter.getInitialState();
 export const productApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getAllProductTypes: builder.query({
       query: () => ({
         url: `/product/allTypes`,
       }),
+    }),
+    getProductDetails: builder.query({
+      query: (id) => ({
+        url: `/product/details/${id}`,
+      }),
+    }),
+    getAllProductByAdmin: builder.query({
+      query: ({ page, limit, sortBy, sortDir, filter, search }) => ({
+        url: `/product/allProductByAdmin?page=${page}&limit=${limit}&sortBy=${sortBy}&sortDir=${sortDir}&filter=${filter}&search=${search}`,
+        validateStatus: (res, result) => {
+          return res.status >= 200 && res.status < 300;
+        },
+      }),
+      //keepUnusedDataFor: 5, default 60s
+      transformResponse: (resData) => {
+        const loadedProducts = resData.metadata.products.map((product) => {
+          product.id = product._id;
+          return product;
+        });
+        const totalProducts = resData.metadata.totalProducts; // Assuming this property exists in the response
+
+        return {
+          products: productAdapter.setAll(initState, loadedProducts),
+          totalProducts,
+        };
+      },
+      providesTags: (result, error, arg) => {
+        if (result?.ids) {
+          return [
+            { type: "Product", id: "LIST" },
+            ...result.ids.map((id) => ({ type: "Product", id })),
+            { type: "Product", id: "TOTAL_COUNT" },
+          ];
+        } else
+          return [
+            { type: "Product", id: "LIST" },
+            { type: "Product", id: "TOTAL_COUNT" },
+          ];
+      },
     }),
     getAllProductOptionTypes: builder.query({
       query: () => ({
@@ -90,6 +129,8 @@ export const productApiSlice = apiSlice.injectEndpoints({
 });
 
 export const {
+  useGetAllProductByAdminQuery,
+  useGetProductDetailsQuery,
   useGetAllProductTypesQuery,
   useGetAllProductOptionTypesQuery,
   useGetAllProductOptionsByTypeQuery,

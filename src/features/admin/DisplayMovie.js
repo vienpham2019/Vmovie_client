@@ -110,7 +110,7 @@ const updatedAtContent = (updatedAt) => (
   </div>
 );
 
-const CatalogMovie = ({ movie, movieIndex }) => {
+const DisplayMovie = ({ movie, movieIndex }) => {
   const [open, setOpen] = useState(false);
   const isLaptop = useMediaQuery({ maxWidth: 1024 });
   const ref = useRef(null);
@@ -261,4 +261,4 @@ const CatalogMovie = ({ movie, movieIndex }) => {
   );
 };
 
-export default CatalogMovie;
+export default DisplayMovie;

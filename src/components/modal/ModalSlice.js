@@ -6,6 +6,7 @@ import MovieFoodAndDrinkModal from "../../features/movie/MovieFoodAndDrinkModal"
 import MovieCheckOutSummaryModal from "../../features/movie/MovieCheckOutSummaryModal";
 import ProductOptionsModal from "../../features/product/ProductOptionsModal";
 import ConfirmModal from "./ConfirmModal";
+import ProductDetailModal from "../../features/product/ProductDetailModal";
 
 const initState = {
   isModalOpen: false,
@@ -39,6 +40,7 @@ const modalComponentEnum = Object.freeze({
   RESET_PASSWORD: "RESET_PASSWORD",
   VIDEO: "VIDEO",
   FOOD_AND_DRINK: "FOOD_AND_DRINK",
+  PRODUCT_DETAIL: "PRODUCT_DETAIL",
   CHECKOUT_SUMMARY: "CHECKOUT_SUMMARY",
   PRODUCT_OPTION: "PRODUCT_OPTION",
   CONFIRM: "CONFIRM",
@@ -57,8 +59,8 @@ const getModalComponent = (modalIdentifier) => {
       return <ResetPasswordModal />;
     case modalComponentEnum.VIDEO:
       return <VideoModal />;
-    case modalComponentEnum.FOOD_AND_DRINK:
-      return <MovieFoodAndDrinkModal />;
+    case modalComponentEnum.PRODUCT_DETAIL:
+      return <ProductDetailModal />;
     case modalComponentEnum.CHECKOUT_SUMMARY:
       return <MovieCheckOutSummaryModal />;
     case modalComponentEnum.PRODUCT_OPTION:
