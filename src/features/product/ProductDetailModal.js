@@ -1,13 +1,40 @@
 import Selection from "../../components/form/Selection";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useGetProductDetailsQuery } from "./productApiSlice";
+import { FaMinus, FaPlus } from "react-icons/fa6";
+import { closeModal } from "../../components/modal/ModalSlice";
+import { useEffect, useState } from "react";
+
+const productDetailTypeEnum = Object.freeze({
+  EDIT: "Edit",
+  ADD: "Add",
+  DETAIL: "Detail",
+});
 
 const ProductDetailModal = () => {
   const {
-    modalParams: { _id },
+    modalParams: { _id, type, amount: paramsAmount },
   } = useSelector((state) => state.modal);
+
+  const dispatch = useDispatch();
+  const [amount, setAmount] = useState(1);
   const { data: { metadata: product } = {}, isLoading } =
-    useGetProductDetailsQuery(_id);
+    useGetProductDetailsQuery(
+      { _id },
+      {
+        refertchOnFocus: true, // data will fetch when page on focus
+        refetchOnMountOrArgChange: true, // it will refresh data when remount component
+      }
+    );
+  const handleCloseModal = () => {
+    dispatch(closeModal());
+  };
+
+  useEffect(() => {
+    if (paramsAmount) {
+      setAmount(amount);
+    }
+  }, [paramsAmount, setAmount]);
 
   const handleDisplayOptions = () => {
     return product.options.map((option) => {
@@ -101,11 +128,55 @@ const ProductDetailModal = () => {
         </div>
         {handleDisplayOptions()}
         <div className="flex justify-between">
-          <span>${product.price.toFixed(2)}</span>
+          {productDetailTypeEnum.DETAIL !== type && (
+            <div className="flex gap-2 items-center">
+              <div
+                className={`w-[2rem] aspect-square rounded-full ${
+                  amount > 1 ? "bg-gray-800 cursor-pointer" : "bg-gray-300"
+                } text-white flex justify-center items-center`}
+                onClick={() => {
+                  if (amount <= 1) return;
+                  setAmount(amount - 1);
+                }}
+              >
+                <FaMinus />
+              </div>
+              <span>{amount}</span>
+              <div
+                className={`w-[2rem] aspect-square rounded-full text-white  ${
+                  amount < 10 ? "bg-gray-800 cursor-pointer" : "bg-gray-300"
+                } flex justify-center items-center`}
+                onClick={() => {
+                  if (amount >= 10) return;
+                  setAmount(amount + 1);
+                }}
+              >
+                <FaPlus />
+              </div>
+            </div>
+          )}
+          <span>${product.price.toFixed(2) * amount}</span>
         </div>
+        {productDetailTypeEnum.DETAIL !== type && (
+          <div className="flex gap-1">
+            <button
+              className="border h-[3rem] flex-1 border-red-700 text-red-700 rounded"
+              onClick={() => handleCloseModal()}
+            >
+              Cancel
+            </button>
+            <button
+              className="border h-[3rem] flex-1 border-red-700 text-white bg-red-700 rounded uppercase"
+              // onClick={() => handleAddProduct()}
+            >
+              {type}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
+export { productDetailTypeEnum };
 export default ProductDetailModal;

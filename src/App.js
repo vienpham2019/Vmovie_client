@@ -16,6 +16,7 @@ import MovieDetails from "./features/movie/MovieDetails";
 import MovieTicket from "./features/movie/MovieTicket";
 import AddProduct from "./features/product/AddProduct";
 import Product from "./features/admin/Product";
+import EditProduct from "./features/product/EditProduct";
 
 const App = () => {
   return (
@@ -43,6 +44,10 @@ const App = () => {
               <Route path="product">
                 <Route index element={<Product />} />
                 <Route path="addProduct" element={<AddProduct />} />
+                <Route
+                  path="editProduct/:productId"
+                  element={<EditProduct />}
+                />
               </Route>
             </Route>
           </Route>

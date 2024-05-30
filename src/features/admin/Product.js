@@ -71,13 +71,13 @@ const Product = () => {
                ${header === "actions" && "laptop:hidden"} ${
                   ["updatedAt", "createdAt"].includes(header) && "tablet:hidden"
                 } ${["price", "type"].includes(header) && "mobile:hidden"}`}
-                key={header}
+                key={Math.random()}
               >
                 <div
                   className={`uppercase font-thin p-2 h-[3rem] flex items-center gap-2  ${
                     header === sortBy && "text-cyan-400"
                   }`}
-                  key={header + "attach"}
+                  // key={header + "attach"}
                 >
                   {header === "actions" ? "" : header}{" "}
                   {!["id", "actions", "thumbnail"].includes(header) && (
@@ -105,7 +105,7 @@ const Product = () => {
               <DisplayProduct
                 product={product}
                 productIndex={productIndex + 1 + limit * (page - 1)}
-                key={product["title"] + productIndex}
+                key={Math.random()}
                 className={`h-[6rem]  px-4`}
               />
             )

@@ -115,7 +115,7 @@ const initState = {
       validate: "",
       options: [],
     },
-    img: {
+    imgUrl: {
       value: {},
       validate: "",
     },
@@ -125,28 +125,6 @@ const initState = {
     },
   },
 };
-
-//   //   {
-//     item_name: "Large Popcorn & Drink Combo",
-//     price: 14.8,
-//     describe:
-//       "Tub of buttered Orville Redenbacher's light and fluffy popcorn & a Large fountain beverage of your choice from a variety of Coca-Cola® products.",
-//     img: "https://www.cinemark.com/media/76011403/400x225-siat-combo1.jpg",
-//     OPT: [
-//       {
-//         name: "butter_options",
-//         options: butter_OPT,
-//       },
-//       {
-//         name: "ice_options",
-//         options: ice_OPT,
-//       },
-//       {
-//         name: "fountain_flavors",
-//         options: fountain_OPT,
-//       },
-//     ],
-//   },
 
 export const formSlice = createSlice({
   name: "form",
@@ -233,5 +211,7 @@ export const {
   setProductFormData,
   resetProductFormdata,
 } = formSlice.actions;
+
+export { initState as formInitState };
 
 export default formSlice.reducer;

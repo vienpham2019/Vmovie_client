@@ -15,6 +15,7 @@ import {
   openModal,
   setModalParams,
 } from "../../components/modal/ModalSlice";
+import { productDetailTypeEnum } from "../product/ProductDetailModal";
 
 const DisplayProduct = ({ product, productIndex }) => {
   const [open, setOpen] = useState(false);
@@ -58,7 +59,9 @@ const DisplayProduct = ({ product, productIndex }) => {
   }, [setOpen]);
 
   const handlePreview = () => {
-    dispatch(setModalParams({ _id: product._id }));
+    dispatch(
+      setModalParams({ _id: product._id, type: productDetailTypeEnum.DETAIL })
+    );
     dispatch(openModal(modalComponentEnum.PRODUCT_DETAIL));
   };
 
@@ -107,7 +110,7 @@ const DisplayProduct = ({ product, productIndex }) => {
           <div className="tooltip tooltip_bottom">Preview</div>
         </div>
         <Link
-          to={`/admin/catalog/editMovie/${product._id}`}
+          to={`/admin/product/editProduct/${product._id}`}
           className="tooltip_container w-[2rem] aspect-square rounded-md flex items-center justify-center cursor-pointer bg-[rgba(135,189,255,0.4)]"
         >
           <RiEdit2Fill className="text-[rgb(135,189,255)]" />
@@ -152,7 +155,8 @@ const DisplayProduct = ({ product, productIndex }) => {
       <tr ref={ref} onClick={() => isLaptop && setOpen(!open)}>
         {Object.entries(contents).map(([key, productContent], index) => (
           <td
-            key={"content" + product["itemName"] + index}
+            // key={"content" + product["itemName"] + index}
+            key={Math.random()}
             className={`bg-[rgb(36,36,41)] laptop:cursor-pointer ${
               key === "actions" && "laptop:hidden"
             } ${["updatedAt", "createdAt"].includes(key) && "tablet:hidden"} ${

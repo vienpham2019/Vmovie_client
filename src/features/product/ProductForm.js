@@ -50,6 +50,7 @@ const ProductForm = ({ handleOnSubmit }) => {
   const { data: { metadata: allProductTypes } = [], isLoading } =
     useGetAllProductTypesQuery();
   const setProductType = useRef(false);
+
   useEffect(() => {
     if (!isLoading && !setProductType.current) {
       setProductType.current = true;
@@ -219,11 +220,14 @@ const ProductForm = ({ handleOnSubmit }) => {
     let updatedFormData = JSON.parse(JSON.stringify(productFormData));
 
     for (const key in productFormData) {
+      const value = updatedFormData[key].value;
       if (updatedFormData.hasOwnProperty(key)) {
         if (
-          updatedFormData[key].value === "" ||
-          updatedFormData[key].value?.length === 0 ||
-          Object.keys(updatedFormData[key].value).length === 0
+          value === "" || // Check if value is an empty string
+          (Array.isArray(value) && value.length === 0) || // Check if value is an empty array
+          (typeof value === "object" &&
+            value !== null &&
+            Object.keys(value).length === 0) // Check if value is an empty object
         ) {
           isInvalid = true;
           updatedFormData[key].validate = inputValidateEnum.INVALID;
@@ -316,8 +320,8 @@ const ProductForm = ({ handleOnSubmit }) => {
             </div>
           </div>
           {imageUploadType === imageUploadTypeEnum.FILE
-            ? input({ name: "img", type: inputTypeEnum.FILE })
-            : input({ name: "img", type: inputTypeEnum.IMG_URL })}
+            ? input({ name: "imgUrl", type: inputTypeEnum.FILE })
+            : input({ name: "imgUrl", type: inputTypeEnum.IMG_URL })}
 
           <div className="text-white flex flex-col gap-5">
             <div className="flex flex-wrap items-center gap-4">

@@ -6,17 +6,20 @@ import {
   notificationMessageEnum,
   setMessage,
 } from "../../components/notificationMessage/notificationMessageSlice";
+import { useEffect } from "react";
+import { resetProductFormdata } from "../../components/form/formSlice";
 
 const AddProduct = () => {
   const { productFormData } = useSelector((state) => state.form);
   const [createProduct, { isLoading }] = useCreateProductMutation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const handleAddProduct = async () => {
     try {
       let submitFormData = {};
       Object.keys(productFormData).forEach((key) => {
-        if (key === "img") {
+        if (key === "imgUrl") {
           submitFormData["imgUrl"] = productFormData[key].value.url;
         } else {
           submitFormData[key] = productFormData[key].value;
@@ -25,7 +28,7 @@ const AddProduct = () => {
       const res = await createProduct(submitFormData);
       dispatch(
         setMessage({
-          message: res.data.message,
+          message: res?.data?.message || "",
           messageType: notificationMessageEnum.SUCCESS,
         })
       );

@@ -11,8 +11,8 @@ export const productApiSlice = apiSlice.injectEndpoints({
       }),
     }),
     getProductDetails: builder.query({
-      query: (id) => ({
-        url: `/product/details/${id}`,
+      query: ({ _id }) => ({
+        url: `/product/details/${_id}`,
       }),
     }),
     getAllProductByAdmin: builder.query({
@@ -97,6 +97,14 @@ export const productApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: (result, err, arg) => [{ type: "Product", id: arg._id }],
     }),
+    updateProduct: builder.mutation({
+      query: ({ _id, payload }) => ({
+        url: `/product/edit/${_id}`,
+        method: "PATCH",
+        body: payload,
+      }),
+      invalidatesTags: (result, err, arg) => [{ type: "Product", id: arg._id }],
+    }),
     updateProductOption: builder.mutation({
       query: (payload) => ({
         url: "/productOption/updateOption",
@@ -136,6 +144,7 @@ export const {
   useGetAllProductOptionsByTypeQuery,
   useCreateProductMutation,
   useCreateProductOptionMutation,
+  useUpdateProductMutation,
   useUpdateProductOptionMutation,
   useDeleteProductOptionMutation,
   useDeleteAllProductOptionByTypeMutation,
