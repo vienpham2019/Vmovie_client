@@ -1,42 +1,37 @@
-import { FaEye, FaLock, FaLockOpen, FaStar, FaTrash } from "react-icons/fa6";
+import { FaEye, FaTrash } from "react-icons/fa6";
 import { RiEdit2Fill } from "react-icons/ri";
 import { IoIosArrowDown } from "react-icons/io";
 import { useEffect, useRef, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import { Link } from "react-router-dom";
-import { useDeleteMovieByIdMutation } from "../product/productApiSlice";
+
 import { useDispatch } from "react-redux";
-import {
-  notificationMessageEnum,
-  setMessage,
-} from "../../components/notificationMessage/notificationMessageSlice";
+
 import {
   modalComponentEnum,
   openModal,
   setModalParams,
 } from "../../components/modal/ModalSlice";
 import { productDetailTypeEnum } from "../product/ProductDetailModal";
+import { ConfirmModalActionEnum } from "../../components/modal/ConfirmModal";
 
 const DisplayProduct = ({ product, productIndex }) => {
   const [open, setOpen] = useState(false);
   const isLaptop = useMediaQuery({ maxWidth: 1024 });
   const ref = useRef(null);
   const extand_ref = useRef(null);
-  //   const [deleteMovie, { isLoading: deleteLoading }] = null;
-  const deleteMovie = null;
-  const deleteLoading = null;
+
   const dispatch = useDispatch();
 
   const handleDelete = async () => {
-    const res = await deleteMovie({ productId: product._id });
-    if (!res?.error) {
-      dispatch(
-        setMessage({
-          message: "Delete product success",
-          messageType: notificationMessageEnum.SUCCESS,
-        })
-      );
-    }
+    dispatch(
+      setModalParams({
+        message: `Are you sure you want to delete this product ?`,
+        confirmAction: ConfirmModalActionEnum.DELETE_PRODUCT_BY_ID,
+        confirmActionParams: { _id: product._id },
+      })
+    );
+    dispatch(openModal(modalComponentEnum.CONFIRM));
   };
 
   useEffect(() => {
@@ -138,18 +133,6 @@ const DisplayProduct = ({ product, productIndex }) => {
     actions: actionsContent(),
   };
 
-  if (deleteLoading)
-    return (
-      <tr
-        className={`flex justify-center items-center animate-pulse h-[6rem] bg-[rgb(36,36,41)] px-4`}
-      >
-        <td className="grid gap-1 w-full">
-          <div className="h-[1rem] bg-[rgb(52,52,59)] w-full rounded-md"></div>
-          <div className="h-[1rem] bg-[rgb(52,52,59)] w-[50%] rounded-md"></div>
-        </td>
-        <td className="h-full w-[3.2rem] bg-[rgb(52,52,59)]"></td>
-      </tr>
-    );
   return (
     <>
       <tr ref={ref} onClick={() => isLaptop && setOpen(!open)}>

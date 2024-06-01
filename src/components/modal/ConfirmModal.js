@@ -1,9 +1,17 @@
 import { useDispatch, useSelector } from "react-redux";
 import { closeModal } from "./ModalSlice";
-import { useDeleteAllProductOptionByTypeMutation } from "../../features/product/productApiSlice";
+import {
+  useDeleteAllProductOptionByTypeMutation,
+  useDeleteProductByIdMutation,
+} from "../../features/product/productApiSlice";
+import {
+  notificationMessageEnum,
+  setMessage,
+} from "../notificationMessage/notificationMessageSlice";
 
 const ConfirmModalActionEnum = Object.freeze({
   DELETE_ALL_OPTION_TYPE: "DELETE ALL OPTION TYPE",
+  DELETE_PRODUCT_BY_ID: "DELETE PRODUCT BY ID",
 });
 
 const ConfirmModal = () => {
@@ -11,16 +19,26 @@ const ConfirmModal = () => {
   const { message, confirmAction, confirmActionParams } = modalParams;
   const dispatch = useDispatch();
   const [deleteAllOptionByType] = useDeleteAllProductOptionByTypeMutation();
+  const [deleteProductById] = useDeleteProductByIdMutation();
 
   const handleConfirmAction = async () => {
+    let res;
     switch (confirmAction) {
       case ConfirmModalActionEnum.DELETE_ALL_OPTION_TYPE:
-        await deleteAllOptionByType(confirmActionParams);
+        res = await deleteAllOptionByType(confirmActionParams);
         break;
-
+      case ConfirmModalActionEnum.DELETE_PRODUCT_BY_ID:
+        res = await deleteProductById(confirmActionParams);
+        break;
       default:
         break;
     }
+    dispatch(
+      setMessage({
+        message: res.data.message,
+        messageType: notificationMessageEnum.SUCCESS,
+      })
+    );
     dispatch(closeModal());
   };
   return (

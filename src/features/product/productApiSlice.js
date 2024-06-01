@@ -1,4 +1,4 @@
-import { createEntityAdapter, createSelector } from "@reduxjs/toolkit";
+import { createEntityAdapter } from "@reduxjs/toolkit";
 import { apiSlice } from "../../app/api/apiSlice";
 
 const productAdapter = createEntityAdapter({});
@@ -123,6 +123,13 @@ export const productApiSlice = apiSlice.injectEndpoints({
         { type: "ProductOptionTypes" },
       ],
     }),
+    deleteProductById: builder.mutation({
+      query: ({ _id }) => ({
+        url: `/product/${_id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (result, err, arg) => [{ type: "Product" }],
+    }),
     deleteAllProductOptionByType: builder.mutation({
       query: ({ type }) => ({
         url: `/productOption/allType/${type}`,
@@ -146,6 +153,7 @@ export const {
   useCreateProductOptionMutation,
   useUpdateProductMutation,
   useUpdateProductOptionMutation,
+  useDeleteProductByIdMutation,
   useDeleteProductOptionMutation,
   useDeleteAllProductOptionByTypeMutation,
 } = productApiSlice;
