@@ -2,11 +2,15 @@ import { useDispatch, useSelector } from "react-redux";
 import ProductForm from "./ProductForm";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
+  useGetAllProductTypesQuery,
   useGetProductDetailsQuery,
   useUpdateProductMutation,
 } from "./productApiSlice";
 import { useEffect } from "react";
-import { initProductFormData } from "../../components/form/formSlice";
+import {
+  formInitState,
+  initProductFormData,
+} from "../../components/form/formSlice";
 import {
   notificationMessageEnum,
   setMessage,
@@ -14,6 +18,17 @@ import {
 
 const EditProduct = () => {
   const { productId } = useParams();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [updateProduct] = useUpdateProductMutation();
+  const { data: { metadata: allProductTypes } = [] } =
+    useGetAllProductTypesQuery(
+      {},
+      {
+        refertchOnFocus: true, // data will fetch when page on focus
+        refetchOnMountOrArgChange: true, // it will refresh data when remount component
+      }
+    );
   const { data: { metadata: product } = {}, isLoading } =
     useGetProductDetailsQuery(
       { _id: productId },
@@ -24,26 +39,28 @@ const EditProduct = () => {
     );
   const { productFormData } = useSelector((state) => state.form);
   useEffect(() => {
+    let initFormData = JSON.parse(
+      JSON.stringify(formInitState.productFormData)
+    );
+    if (allProductTypes) {
+      initFormData["type"].options = allProductTypes;
+    }
     if (product) {
-      const updateProduct = JSON.parse(JSON.stringify(productFormData));
-      for (let key in updateProduct) {
+      for (let key in initFormData) {
         if (key === "imgUrl") {
-          updateProduct[key].value.url = product[key];
+          initFormData[key].value.url = product[key];
         } else if (key === "options") {
-          updateProduct[key].value = product[key].map((o) => ({
+          initFormData[key].value = product[key].map((o) => ({
             ...o,
             selected: o.selected.map(({ _id }) => _id),
           }));
         } else {
-          updateProduct[key].value = product[key];
+          initFormData[key].value = product[key];
         }
       }
-      dispatch(initProductFormData(updateProduct));
+      dispatch(initProductFormData(initFormData));
     }
-  }, [product]);
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const [updateProduct] = useUpdateProductMutation();
+  }, [product, dispatch, allProductTypes]);
 
   const handleEditProduct = async () => {
     try {
@@ -70,6 +87,7 @@ const EditProduct = () => {
       console.log(error);
     }
   };
+  if (isLoading) return <div>Loading...</div>;
   return (
     <div className="p-[1rem] mobile:p-2">
       <div className="py-[0.4rem] border-b border-gray-600 flex items-center gap-2 text-white font-thin">

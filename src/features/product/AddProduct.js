@@ -1,19 +1,43 @@
 import { Link, useNavigate } from "react-router-dom";
 import ProductForm from "./ProductForm";
 import { useDispatch, useSelector } from "react-redux";
-import { useCreateProductMutation } from "./productApiSlice";
+import {
+  useCreateProductMutation,
+  useGetAllProductTypesQuery,
+} from "./productApiSlice";
 import {
   notificationMessageEnum,
   setMessage,
 } from "../../components/notificationMessage/notificationMessageSlice";
 import { useEffect } from "react";
-import { resetProductFormdata } from "../../components/form/formSlice";
+import {
+  initProductFormData,
+  formInitState,
+} from "../../components/form/formSlice";
 
 const AddProduct = () => {
   const { productFormData } = useSelector((state) => state.form);
   const [createProduct, { isLoading }] = useCreateProductMutation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { data: { metadata: allProductTypes } = [] } =
+    useGetAllProductTypesQuery(
+      {},
+      {
+        refertchOnFocus: true, // data will fetch when page on focus
+        refetchOnMountOrArgChange: true, // it will refresh data when remount component
+      }
+    );
+
+  useEffect(() => {
+    if (allProductTypes) {
+      let initFormData = JSON.parse(
+        JSON.stringify(formInitState.productFormData)
+      );
+      initFormData["type"].options = allProductTypes;
+      dispatch(initProductFormData(initFormData));
+    }
+  }, [allProductTypes, dispatch]);
 
   const handleAddProduct = async () => {
     try {

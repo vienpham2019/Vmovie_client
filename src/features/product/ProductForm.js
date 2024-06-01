@@ -9,9 +9,7 @@ import {
   setMessage,
 } from "../../components/notificationMessage/notificationMessageSlice";
 import {
-  initMovieFormData,
   initProductFormData,
-  resetMovieFormdata,
   resetProductFormdata,
   setProductFormData,
 } from "../../components/form/formSlice";
@@ -20,12 +18,9 @@ import { RxCross2 } from "react-icons/rx";
 
 import Selection from "../../components/form/Selection";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import ProductFormOptions from "./ProductFormOptions";
-import {
-  useGetAllProductOptionTypesQuery,
-  useGetAllProductTypesQuery,
-} from "./productApiSlice";
+import { useGetAllProductOptionTypesQuery } from "./productApiSlice";
 import { RiListOrdered, RiPlayListAddFill } from "react-icons/ri";
 import { IoLinkSharp } from "react-icons/io5";
 import { FaRegFile } from "react-icons/fa6";
@@ -47,17 +42,8 @@ const ProductForm = ({ handleOnSubmit }) => {
   const [imageUploadType, setImageUploadType] = useState(
     imageUploadTypeEnum.URL
   );
-  const { data: { metadata: allProductTypes } = [], isLoading } =
-    useGetAllProductTypesQuery();
-  const setProductType = useRef(false);
 
   useEffect(() => {
-    if (!isLoading && !setProductType.current) {
-      setProductType.current = true;
-      let initFormData = JSON.parse(JSON.stringify(productFormData));
-      initFormData["type"].options = allProductTypes;
-      dispatch(initProductFormData(initFormData));
-    }
     if (productOptionTypes?.length) {
       const optionTypes = {};
       productOptionTypes.forEach((option) => {
@@ -72,7 +58,7 @@ const ProductForm = ({ handleOnSubmit }) => {
       setOptionTypes(optionTypes);
       setSelectAddOption(Object.keys(optionTypes)[0]);
     }
-  }, [productOptionTypes, isLoading, dispatch, setProductFormData]);
+  }, [productOptionTypes]);
 
   const handleOnChange = (value, name) => {
     dispatch(
@@ -250,8 +236,6 @@ const ProductForm = ({ handleOnSubmit }) => {
     dispatch(resetProductFormdata());
   };
 
-  if (isLoading) return <div>Loading...</div>;
-
   return (
     <form
       action="submit"
@@ -265,15 +249,15 @@ const ProductForm = ({ handleOnSubmit }) => {
             <div className="flex-1">{input({ name: "itemName" })}</div>
             <div className="flex-1">{input({ name: "price" })}</div>
 
-            {newProductType || allProductTypes.length === 0 ? (
+            {newProductType || productFormData?.type.options.length === 0 ? (
               <div className="flex flex-wrap gap-2 items-center flex-1">
                 <div className="flex-1">{input({ name: "type" })}</div>
-                {allProductTypes.length > 0 && (
+                {productFormData?.type.options.length > 0 && (
                   <div className="tooltip_container">
                     <RiListOrdered
                       className="border border-gray-400 text-white w-[2rem] h-full p-1 cursor-pointer"
                       onClick={() => {
-                        if (allProductTypes.length > 0)
+                        if (productFormData?.type.options.length > 0)
                           setNewProductType(false);
                       }}
                     />
@@ -290,7 +274,8 @@ const ProductForm = ({ handleOnSubmit }) => {
                   <RiPlayListAddFill
                     className="border border-gray-400 text-white w-[2rem] h-full p-1 cursor-pointer"
                     onClick={() => {
-                      if (allProductTypes.length > 0) setNewProductType(true);
+                      if (productFormData?.type.options.length > 0)
+                        setNewProductType(true);
                     }}
                   />
                   <span className="tooltip tooltip_bottom">New Type</span>
