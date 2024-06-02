@@ -8,6 +8,7 @@ import {
   notificationMessageEnum,
   setMessage,
 } from "../notificationMessage/notificationMessageSlice";
+import { initProductFormData } from "../form/formSlice";
 
 const ConfirmModalActionEnum = Object.freeze({
   DELETE_ALL_OPTION_TYPE: "DELETE ALL OPTION TYPE",
@@ -16,6 +17,7 @@ const ConfirmModalActionEnum = Object.freeze({
 
 const ConfirmModal = () => {
   const { modalParams } = useSelector((state) => state.modal);
+  const { productFormData } = useSelector((state) => state.form);
   const { message, confirmAction, confirmActionParams } = modalParams;
   const dispatch = useDispatch();
   const [deleteAllOptionByType] = useDeleteAllProductOptionByTypeMutation();
@@ -26,6 +28,17 @@ const ConfirmModal = () => {
     switch (confirmAction) {
       case ConfirmModalActionEnum.DELETE_ALL_OPTION_TYPE:
         res = await deleteAllOptionByType(confirmActionParams);
+        const updateProductFromData = JSON.parse(
+          JSON.stringify(productFormData)
+        );
+        updateProductFromData.options.value =
+          updateProductFromData.options.value.map((val) => {
+            if (val.type.split("_")[0] === confirmActionParams.type) {
+              val.selected = [];
+            }
+            return val;
+          });
+        dispatch(initProductFormData(updateProductFromData));
         break;
       case ConfirmModalActionEnum.DELETE_PRODUCT_BY_ID:
         res = await deleteProductById(confirmActionParams);

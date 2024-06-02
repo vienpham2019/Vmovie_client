@@ -73,6 +73,21 @@ const ProductFormOptions = ({
 
   const handleDeleteOption = async (_id) => {
     await deleteOption({ _id });
+    const productOptions = productFormData.options.value.map((op) => {
+      if ([parentType, type].includes(op.type)) {
+        return {
+          ...op,
+          selected: op.selected.filter((selectedId) => selectedId !== _id),
+        };
+      }
+      return op;
+    });
+    dispatch(
+      setProductFormData({
+        name: "options",
+        value: productOptions,
+      })
+    );
   };
 
   const handleDeleteAllOptionByType = () => {

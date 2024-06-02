@@ -209,11 +209,12 @@ const ProductForm = ({ handleOnSubmit }) => {
       const value = updatedFormData[key].value;
       if (updatedFormData.hasOwnProperty(key)) {
         if (
-          value === "" || // Check if value is an empty string
-          (Array.isArray(value) && value.length === 0) || // Check if value is an empty array
-          (typeof value === "object" &&
-            value !== null &&
-            Object.keys(value).length === 0) // Check if value is an empty object
+          key !== "options" &&
+          (value === "" || // Check if value is an empty string
+            (Array.isArray(value) && value.length === 0) || // Check if value is an empty array
+            (typeof value === "object" &&
+              value !== null &&
+              Object.keys(value).length === 0)) // Check if value is an empty object
         ) {
           isInvalid = true;
           updatedFormData[key].validate = inputValidateEnum.INVALID;

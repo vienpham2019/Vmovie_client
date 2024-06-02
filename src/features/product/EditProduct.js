@@ -68,10 +68,15 @@ const EditProduct = () => {
       Object.entries(productFormData).forEach(([k, v]) => {
         if (k === "imgUrl") {
           updateProductObj[k] = v.value.url;
+        } else if (k === "options") {
+          updateProductObj[k] = v.value.filter(
+            (val) => val.selected.length > 0
+          );
         } else {
           updateProductObj[k] = v.value;
         }
       });
+
       const res = await updateProduct({
         _id: productId,
         payload: updateProductObj,
