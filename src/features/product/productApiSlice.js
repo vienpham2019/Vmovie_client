@@ -78,6 +78,12 @@ export const productApiSlice = apiSlice.injectEndpoints({
         } else return [{ type: "ProductOption", id: "LIST" }];
       },
     }),
+    isOptionTypeExists: builder.mutation({
+      query: ({ type }) => ({
+        url: `/productOption/isOptionTypeExists/${type}`,
+        method: "POST",
+      }),
+    }),
     createProductOption: builder.mutation({
       query: (payload) => ({
         url: "/productOption/createOption",
@@ -144,6 +150,7 @@ export const productApiSlice = apiSlice.injectEndpoints({
 });
 
 export const {
+  useIsOptionTypeExistsMutation,
   useGetAllProductByAdminQuery,
   useGetProductDetailsQuery,
   useGetAllProductTypesQuery,

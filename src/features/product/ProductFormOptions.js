@@ -14,9 +14,14 @@ import {
 import {
   useGetAllProductOptionsByTypeQuery,
   useDeleteProductOptionMutation,
+  useIsOptionTypeExistsMutation,
 } from "./productApiSlice";
 import { ConfirmModalActionEnum } from "../../components/modal/ConfirmModal";
 import { setProductFormData } from "../../components/form/formSlice";
+import {
+  notificationMessageEnum,
+  setMessage,
+} from "../../components/notificationMessage/notificationMessageSlice";
 
 const ProductFormOptions = ({
   type,
@@ -31,7 +36,7 @@ const ProductFormOptions = ({
 
   const { productFormData } = useSelector((state) => state.form);
   const [deleteOption] = useDeleteProductOptionMutation();
-
+  const [isOptionTypeExists] = useIsOptionTypeExistsMutation();
   const { data: { metadata: availableOptions } = [], isLoading } =
     useGetAllProductOptionsByTypeQuery(
       { type: type.split("_")[0] },
@@ -91,13 +96,26 @@ const ProductFormOptions = ({
   };
 
   const handleDeleteAllOptionByType = () => {
+    const availableOptionIds = availableOptions.map((op) => op._id);
+    const updateProductFormData = JSON.parse(JSON.stringify(productFormData));
+    updateProductFormData.options.value =
+      updateProductFormData.options.value.map((op) => {
+        if (op.type === type || (isSub && op.type === parentType)) {
+          op.selected = op.selected.filter(
+            (s) => !availableOptionIds.includes(s)
+          );
+        }
+        return op;
+      });
+
     dispatch(
       setModalParams({
         message: `Are you sure you want to delete all ${type} options? \nThis action will delete all options from other products as well.`,
         confirmAction: ConfirmModalActionEnum.DELETE_ALL_OPTION_TYPE,
-        confirmActionParams: { type },
+        confirmActionParams: { type, updateProductFormData },
       })
     );
+
     dispatch(openModal(modalComponentEnum.CONFIRM));
   };
 
@@ -147,6 +165,23 @@ const ProductFormOptions = ({
 
   const isAllSelected = () => {
     return availableOptions.every(({ _id }) => selectedArr.includes(_id));
+  };
+
+  const handleAddNewSubOption = async () => {
+    if (newOptionType === "") return;
+    const isExists = await isOptionTypeExists({ type: newOptionType });
+    if (isExists.data.metadata) {
+      dispatch(
+        setMessage({
+          message: `Sub option type: ${newOptionType} already exist!`,
+          messageType: notificationMessageEnum.WARNING,
+        })
+      );
+      return;
+    }
+    handleAddNewSub(type, newOptionType);
+    setNewOptionType("");
+    setOpenSub(false);
   };
 
   if (isLoading) return <div>Loading...</div>;
@@ -220,12 +255,7 @@ const ProductFormOptions = ({
           <div
             className="text-gray-200 border border-gray-500 border-l-0 h-[2.5rem] text-[0.8rem] mobile:text-[0.7rem] cursor-pointer p-2 max-w-[15rem] flex items-center justify-center gap-2"
             style={{ borderRadius: "0 5px 5px 0" }}
-            onClick={() => {
-              if (newOptionType === "") return;
-              handleAddNewSub(type, newOptionType);
-              setNewOptionType("");
-              setOpenSub(false);
-            }}
+            onClick={handleAddNewSubOption}
           >
             <span>New Sub</span>
           </div>
