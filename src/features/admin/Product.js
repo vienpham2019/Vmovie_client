@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { SlMagnifier } from "react-icons/sl";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Selection from "../../components/form/Selection";
 import { MdAdd } from "react-icons/md";
-import { useGetAllProductByAdminQuery } from "../product/productApiSlice";
+import {
+  useGetAllProductByAdminQuery,
+  useGetAllProductTypesQuery,
+} from "../product/productApiSlice";
 import { Pagination } from "../../components/Pagination";
 import { FaArrowDownWideShort, FaArrowUpShortWide } from "react-icons/fa6";
 import { LuArrowDownUp } from "react-icons/lu";
@@ -18,6 +21,16 @@ const Product = () => {
   const [filter, setFilter] = useState("All");
   const [search, setSearch] = useState("");
   const limit = 10;
+  const { data: { metadata: allProductTypes } = [] } =
+    useGetAllProductTypesQuery(
+      {},
+      {
+        pollingInterval: 120000, // 2min the data will fetch again
+        refertchOnFocus: true, // data will fetch when page on focus
+        refetchOnMountOrArgChange: true,
+      }
+    );
+
   const { data, isLoading } = useGetAllProductByAdminQuery(
     { search, page, limit, sortBy, sortDir, filter },
     {
@@ -135,12 +148,12 @@ const Product = () => {
                   <Selection
                     formData={{
                       value: filter,
-                      options: ["All", "Draft", "Published"],
+                      options: ["All", ...allProductTypes],
                     }}
                     handleOnChange={(value) => setFilter(value)}
                   />
                   <div className={`input_title`}>
-                    <span>Filter By Status</span>
+                    <span>Filter By Type</span>
                   </div>
                 </div>
               </div>

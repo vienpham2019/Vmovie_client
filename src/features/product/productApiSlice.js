@@ -9,6 +9,17 @@ export const productApiSlice = apiSlice.injectEndpoints({
       query: () => ({
         url: `/product/allTypes`,
       }),
+      providesTags: (result, err, arg) => {
+        if (result?.metadata) {
+          return [
+            { type: "ProductTypes", id: "LIST" },
+            ...result.metadata.map((optionType) => ({
+              type: "ProductTypes",
+              optionType,
+            })),
+          ];
+        } else return [{ type: "ProductTypes", id: "LIST" }];
+      },
     }),
     getProductDetails: builder.query({
       query: ({ _id }) => ({
@@ -101,7 +112,10 @@ export const productApiSlice = apiSlice.injectEndpoints({
         method: "POST",
         body: payload,
       }),
-      invalidatesTags: (result, err, arg) => [{ type: "Product", id: arg._id }],
+      invalidatesTags: (result, err, arg) => [
+        { type: "Product", id: arg._id },
+        { type: "ProductTypes" },
+      ],
     }),
     updateProduct: builder.mutation({
       query: ({ _id, payload }) => ({
@@ -109,7 +123,10 @@ export const productApiSlice = apiSlice.injectEndpoints({
         method: "PATCH",
         body: payload,
       }),
-      invalidatesTags: (result, err, arg) => [{ type: "Product", id: arg._id }],
+      invalidatesTags: (result, err, arg) => [
+        { type: "Product", id: arg._id },
+        { type: "ProductTypes" },
+      ],
     }),
     updateProductOption: builder.mutation({
       query: (payload) => ({
@@ -134,7 +151,10 @@ export const productApiSlice = apiSlice.injectEndpoints({
         url: `/product/${_id}`,
         method: "DELETE",
       }),
-      invalidatesTags: (result, err, arg) => [{ type: "Product" }],
+      invalidatesTags: (result, err, arg) => [
+        { type: "Product" },
+        { type: "ProductTypes" },
+      ],
     }),
     deleteAllProductOptionByType: builder.mutation({
       query: ({ type }) => ({
