@@ -65,6 +65,7 @@ const MovieSeats = ({
       </div>
     );
   };
+
   return (
     <div className="overflow-x-scroll flex-1 tablet:max-w-[47rem] mobile:w-[19rem] px-5 bg-[#172532] rounded-md">
       <div className="flex flex-col gap-1 py-2 min-w-[40rem]">

@@ -1,13 +1,7 @@
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import Logo from "../components/Logo";
-import {
-  LuLogOut,
-  LuUsers,
-  LuTicket,
-  LuLayoutGrid,
-  LuFilm,
-} from "react-icons/lu";
-import { GiForkKnifeSpoon } from "react-icons/gi";
+import { LuLogOut, LuLayoutGrid, LuFilm } from "react-icons/lu";
+import { GiForkKnifeSpoon, GiTheater } from "react-icons/gi";
 
 import UserIcon from "../components/UserIcon";
 import { useEffect, useState } from "react";
@@ -19,8 +13,7 @@ const AdminLayout = () => {
     dashboard: { active: true, icon: <LuLayoutGrid />, path: "" },
     catalog: { active: false, icon: <LuFilm />, path: "catalog" },
     product: { active: false, icon: <GiForkKnifeSpoon />, path: "product" },
-    users: { active: false, icon: <LuUsers />, path: "" },
-    tikets: { active: false, icon: <LuTicket />, path: "" },
+    theater: { active: false, icon: <GiTheater />, path: "theater" },
   };
   const { username } = useAuth();
   const [sideBar, setSideBar] = useState(initSideBar);
