@@ -2,7 +2,9 @@ import { Link, useNavigate } from "react-router-dom";
 import EditTheaterSeat from "./EditTheaterSeat";
 
 const AddTheater = () => {
-  const navigate = useNavigate();
+  const handleAddTheater = (newTheater) => {
+    console.log(newTheater);
+  };
   return (
     <div className="p-[1rem] mobile:p-2">
       <div className="py-[0.4rem] border-b border-gray-600 flex items-center gap-2 text-white font-thin">
@@ -13,7 +15,7 @@ const AddTheater = () => {
         <h2 className="text-[1.5rem] capitalize">Add new theater</h2>
       </div>
       <div className="p-2 mobile:p-1">
-        <EditTheaterSeat />
+        <EditTheaterSeat handleSubmit={handleAddTheater} />
       </div>
     </div>
   );

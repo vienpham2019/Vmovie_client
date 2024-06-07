@@ -1,18 +1,18 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { FaWheelchair } from "react-icons/fa6";
 import { IoMdArrowDropright } from "react-icons/io";
-import { MdArrowDropDown } from "react-icons/md";
-import { RxCrossCircled } from "react-icons/rx";
+import { MdArrowDropDown, MdOutlineWheelchairPickup } from "react-icons/md";
+import { RxCross2, RxCrossCircled } from "react-icons/rx";
+import { BiHandicap } from "react-icons/bi";
+import { modifyTypeEnum, seatTypeEnum } from "./theaterEnum";
+import {
+  notificationMessageEnum,
+  setMessage,
+} from "../../components/notificationMessage/notificationMessageSlice";
+import { useDispatch } from "react-redux";
 
-const modifyTypeEnum = Object.freeze({
-  INSERT_LEFT: "Insert left",
-  INSERT_RIGHT: "Insert right",
-  INSERT_ABOVE: "Insert above",
-  INSERT_BELOW: "Insert below",
-  REMOVE: "Remove",
-});
-
-const EditTheaterSeat = () => {
+const EditTheaterSeat = ({ theaterSeat, handleSubmit }) => {
+  const dispatch = useDispatch();
   const [rows, setRows] = useState(5);
   const [cols, setCols] = useState(5);
   const [selectCols, setSelectCols] = useState({ start: null, end: null });
@@ -21,43 +21,78 @@ const EditTheaterSeat = () => {
   const rowMax = 15;
   const [openColControll, setOpenColControll] = useState(null);
   const [openRowControll, setOpenRowControll] = useState(null);
-  const [selectedSeat, setSelectedSeat] = useState([]);
+  const [selectSeatType, setSelectSeatType] = useState(seatTypeEnum.NORMAL);
+  const [roomName, setRoomName] = useState("");
   const [targetSelectedSeat, setTargetSelectedSeat] = useState({
     row: null,
     col: null,
   });
   const [grid, setGrid] = useState([]);
 
+  useEffect(() => {
+    if (theaterSeat?.name) {
+      setRoomName(theaterSeat.name);
+    }
+    if (theaterSeat?.grid.length) {
+      const initGrid = [...theaterSeat.grid];
+      const setInitGrid = [];
+      for (let rowIndex = 0; rowIndex < initGrid.length; rowIndex++) {
+        const row = [];
+        for (
+          let colIndex = 0;
+          colIndex < initGrid[rowIndex].length;
+          colIndex++
+        ) {
+          row.push({
+            seatType: initGrid[rowIndex][colIndex],
+            isSelected: false,
+          }); // Example seat identifier, customize as needed
+        }
+        setInitGrid.push(row);
+      }
+      setGrid(setInitGrid);
+    }
+  }, [theaterSeat, setGrid, setRoomName]);
+
   const getSeatGrid = () => {
-    const initGrid = [];
+    const setInitGrid = [];
     for (let i = 0; i < rows; i++) {
       const row = [];
       for (let j = 0; j < cols; j++) {
-        row.push("N"); // Example seat identifier, customize as needed
+        row.push({
+          seatType: seatTypeEnum.NORMAL,
+          isSelected: false,
+        }); // Example seat identifier, customize as needed
       }
-      initGrid.push(row);
+      setInitGrid.push(row);
     }
-    setGrid(initGrid);
+    setGrid(setInitGrid);
   };
 
   const modifyColumn = ({ currentColumnIndex, type }) => {
-    if ((cols <= 1 && type === modifyTypeEnum.REMOVE) || cols + 1 > colMax)
+    if (
+      (cols <= 1 && type === modifyTypeEnum.REMOVE) ||
+      (type !== modifyTypeEnum.REMOVE && cols + 1 > colMax)
+    )
       return;
     setGrid((prevGrid) => {
-      const newGrid = prevGrid.map((row) => {
+      const newGrid = prevGrid.map((row, i) => {
         const newRow = [...row];
-        const seatType = "N";
+        const seat = {
+          seatType: seatTypeEnum.NORMAL,
+          isSelected: false,
+        };
         if (type === modifyTypeEnum.INSERT_LEFT) {
           if (currentColumnIndex <= newRow.length) {
-            newRow.splice(currentColumnIndex, 0, seatType);
+            newRow.splice(currentColumnIndex, 0, seat);
           } else {
-            newRow.unshift(seatType);
+            newRow.unshift(seat);
           }
         } else if (type === modifyTypeEnum.INSERT_RIGHT) {
           if (currentColumnIndex + 1 <= newRow.length) {
-            newRow.splice(currentColumnIndex + 1, 0, seatType);
+            newRow.splice(currentColumnIndex + 1, 0, seat);
           } else {
-            newRow.push(seatType);
+            newRow.push(seat);
           }
         } else if (type === modifyTypeEnum.REMOVE) {
           newRow.splice(currentColumnIndex, 1);
@@ -76,11 +111,18 @@ const EditTheaterSeat = () => {
   };
 
   const modifyRow = ({ currentRowIndex, type }) => {
-    if ((rows <= 1 && type === modifyTypeEnum.REMOVE) || rows + 1 > rowMax)
+    if (
+      (rows <= 1 && type === modifyTypeEnum.REMOVE) ||
+      (type !== modifyTypeEnum.REMOVE && rows + 1 > rowMax)
+    )
       return;
     setGrid((prevGrid) => {
       const newGrid = [...prevGrid];
-      const newRow = Array(newGrid[0].length).fill("N"); // Fill new row with default seatType "H"
+      const seat = {
+        seatType: seatTypeEnum.NORMAL,
+        isSelected: false,
+      };
+      const newRow = Array(newGrid[0].length).fill(seat); // Fill new row with default seatType "H"
 
       if (type === modifyTypeEnum.INSERT_ABOVE) {
         if (currentRowIndex <= newGrid.length) {
@@ -114,23 +156,16 @@ const EditTheaterSeat = () => {
     return (
       <div className="flex flex-col gap-2">
         {grid.map((row, rowIndex) => {
-          let count = 0;
+          let seatNumber = 0;
           return (
             <div className="flex gap-2 justify-center" key={rowIndex}>
               {row.map((seat, colIndex) => {
-                if (seat === "N") {
-                  count++;
-                }
-                const seatNumber = {
-                  N: count,
-                  H: "",
-                };
+                if (seat.seatType !== seatTypeEnum.HALL) seatNumber++;
                 return (
                   <div>
                     {SeatComponent({
-                      seatNumber: seatNumber[seat],
-                      seatCordinate: { col: colIndex + 1, row: rowIndex + 1 },
-                      seatType: seat,
+                      seat: { ...seat, seatNumber },
+                      cordinate: { col: colIndex + 1, row: rowIndex + 1 },
                     })}
                   </div>
                 );
@@ -164,52 +199,41 @@ const EditTheaterSeat = () => {
       return;
     }
 
-    let updateSelectedSeat = [...selectedSeat];
-    const s_r = Math.min(selectRows.start, selectRows.end);
-    const e_r = Math.max(selectRows.start, selectRows.end);
-
-    const s_c = Math.min(selectCols.start, selectCols.end);
-    const e_c = Math.max(selectCols.start, selectCols.end);
-    for (let rowIndex = s_r; rowIndex <= e_r; rowIndex++) {
-      for (let colIndex = s_c; colIndex <= e_c; colIndex++) {
-        if (!isSelected({ row: rowIndex, col: colIndex })) {
-          updateSelectedSeat.push({ row: rowIndex, col: colIndex });
+    const updateGrid = [...grid];
+    for (let row = 0; row < updateGrid.length; row++) {
+      for (let col = 0; col < updateGrid[row].length; col++) {
+        const seat = updateGrid[row][col];
+        if (!seat.isSelected) {
+          updateGrid[row][col].isSelected =
+            isInColumn(col + 1) && isInRow(row + 1);
         }
       }
     }
-    updateSelectedSeat.sort((a, b) => {
-      if (a.row === b.row) {
-        return a.col - b.col;
-      }
-      return a.row - b.row;
-    });
-    setSelectedSeat(updateSelectedSeat);
+    setGrid(updateGrid);
     setSelectCols(() => ({ start: null, end: null }));
     setSelectRows(() => ({ start: null, end: null }));
   };
 
-  const isSelected = ({ row, col }) => {
-    return selectedSeat.some((seat) => seat.row === row && seat.col === col);
-  };
-
-  const SeatComponent = ({ seatNumber, seatType, seatCordinate }) => {
+  const SeatComponent = ({ seat, cordinate }) => {
+    const { seatType, seatNumber, isSelected } = seat;
     let className =
-      "w-[2rem] aspect-square rounded-md flex justify-center items-center cursor-pointer text-gray-300 text-[0.7rem] hover:bg-cyan-600 border border-gray-400";
-    if (seatType === "H") {
-      className = "w-[2rem] aspect-square";
+      "w-[2rem] aspect-square rounded-md flex justify-center items-center cursor-pointer text-[0.7rem] hover:bg-cyan-600 ";
+    if (seatType === seatTypeEnum.HALL) {
+      className += "text-transparent";
+    } else {
+      className += "border border-gray-500 text-white";
     }
 
     const isStartSelected =
-      selectCols.start === seatCordinate.col &&
-      selectRows.start === seatCordinate.row;
+      selectCols.start === cordinate.col && selectRows.start === cordinate.row;
 
     const isTargetSelectedSeat =
-      targetSelectedSeat.col === seatCordinate.col &&
-      targetSelectedSeat.row === seatCordinate.row;
+      targetSelectedSeat.col === cordinate.col &&
+      targetSelectedSeat.row === cordinate.row;
 
-    if (isInColumn(seatCordinate.col) && isInRow(seatCordinate.row)) {
+    if (isInColumn(cordinate.col) && isInRow(cordinate.row)) {
       className += " bg-cyan-800";
-    } else if (isSelected(seatCordinate)) {
+    } else if (isSelected) {
       className += " bg-cyan-600";
     }
 
@@ -225,8 +249,8 @@ const EditTheaterSeat = () => {
         className={className}
         onClick={() => {
           if (selectCols.start === null) {
-            setSelectCols((prev) => ({ ...prev, start: seatCordinate.col }));
-            setSelectRows((prev) => ({ ...prev, start: seatCordinate.row }));
+            setSelectCols((prev) => ({ ...prev, start: cordinate.col }));
+            setSelectRows((prev) => ({ ...prev, start: cordinate.row }));
           } else if (isStartSelected) {
             setSelectCols(() => ({ start: null, end: null }));
             setSelectRows(() => ({ start: null, end: null }));
@@ -236,12 +260,18 @@ const EditTheaterSeat = () => {
         }}
         onMouseEnter={() => {
           if (selectCols.start !== null) {
-            setSelectCols((prev) => ({ ...prev, end: seatCordinate.col }));
-            setSelectRows((prev) => ({ ...prev, end: seatCordinate.row }));
+            setSelectCols((prev) => ({ ...prev, end: cordinate.col }));
+            setSelectRows((prev) => ({ ...prev, end: cordinate.row }));
           }
         }}
       >
-        {seatType === "D" ? <FaWheelchair /> : seatNumber}
+        {seatType === seatTypeEnum.WHEELCHAIR ? (
+          <FaWheelchair />
+        ) : seatType === seatTypeEnum.COMPANITION ? (
+          <MdOutlineWheelchairPickup />
+        ) : (
+          seatNumber
+        )}
       </div>
     );
   };
@@ -372,36 +402,172 @@ const EditTheaterSeat = () => {
 
   const handleUnselectedSeat = ({ row, col }) => {
     setTargetSelectedSeat({ row: null, col: null });
-    setSelectedSeat((prevSelectedSeat) =>
-      prevSelectedSeat.filter((seat) => !(seat.row === row && seat.col === col))
-    );
+    const updateGrid = [...grid];
+    updateGrid[row - 1][col - 1].isSelected = false;
+    setGrid(updateGrid);
+  };
+
+  const handleClearSelectedSeat = (selectedSeatList) => {
+    const updateGrid = [...grid];
+    for (let cordinate of selectedSeatList) {
+      const { row, col } = cordinate;
+      updateGrid[row - 1][col - 1].isSelected = false;
+    }
+    setGrid(updateGrid);
+    setSelectSeatType(seatTypeEnum.NORMAL);
+  };
+
+  const handleSetSeat = (selectedSeatList) => {
+    const updateGrid = [...grid];
+    for (let cordinate of selectedSeatList) {
+      const { row, col } = cordinate;
+      updateGrid[row - 1][col - 1].seatType = selectSeatType;
+      updateGrid[row - 1][col - 1].isSelected = false;
+    }
+    setGrid(updateGrid);
+    setSelectSeatType(seatTypeEnum.NORMAL);
   };
 
   const displaySelectedSeat = () => {
+    const selectedSeat = [];
+    for (let row = 0; row < grid.length; row++) {
+      for (let col = 0; col < grid[row].length; col++) {
+        if (grid[row][col].isSelected) {
+          selectedSeat.push({ row: row + 1, col: col + 1 });
+        }
+      }
+    }
+
+    if (selectedSeat.length === 0) {
+      return (
+        <span className="text-gray-400 text-[0.8rem]">No seat selected</span>
+      );
+    }
     return (
-      <div className="flex flex-wrap gap-2 max-h-[10rem] overflow-y-auto p-2 border border-gray-500">
-        {selectedSeat.map(({ row, col }) => {
-          return (
-            <div
-              onMouseEnter={() => setTargetSelectedSeat({ row, col })}
-              onMouseLeave={() =>
-                setTargetSelectedSeat({ row: null, col: null })
-              }
-              className="border border-gray-600 bg-cyan-900 p-2 text-[0.8rem] text-white flex gap-2 items-center cursor-pointer hover:bg-cyan-500"
-            >
-              <span>R-{row}</span>
-              <span>C-{col}</span>
-              <span
-                className="text-[1rem] text-red-500 cursor-pointer"
-                onClick={() => handleUnselectedSeat({ row, col })}
+      <div className="flex flex-col gap-3 w-auto mobile:max-w-[15rem]">
+        <div className="flex flex-wrap gap-2 max-h-[10rem] overflow-y-auto p-2 border border-gray-500">
+          {selectedSeat.map(({ row, col }) => {
+            return (
+              <div
+                onMouseEnter={() => setTargetSelectedSeat({ row, col })}
+                onMouseLeave={() =>
+                  setTargetSelectedSeat({ row: null, col: null })
+                }
+                className="border border-gray-600 bg-cyan-900 p-2 text-[0.8rem] text-white flex gap-2 items-center cursor-pointer hover:bg-cyan-500"
               >
-                <RxCrossCircled />
-              </span>
-            </div>
-          );
-        })}
+                <span>R-{row}</span>
+                <span>C-{col}</span>
+                <span
+                  className="text-[1rem] text-red-500 cursor-pointer"
+                  onClick={() => handleUnselectedSeat({ row, col })}
+                >
+                  <RxCrossCircled />
+                </span>
+              </div>
+            );
+          })}
+        </div>
+        <button
+          className="border border-gray-400 p-2 bg-cyan-950 hover:bg-cyan-800 rounded"
+          onClick={() => {
+            setTargetSelectedSeat({ row: null, col: null });
+            handleClearSelectedSeat(selectedSeat);
+          }}
+        >
+          Clear selected seat{" "}
+        </button>
+        <div className="flex flex-col gap-3">
+          {displaySetSeat()}{" "}
+          <button
+            className="flex-1 border border-gray-500 py-2 bg-cyan-950 hover:bg-cyan-800 rounded"
+            onClick={() => handleSetSeat(selectedSeat)}
+          >
+            Set Seat
+          </button>
+        </div>
       </div>
     );
+  };
+
+  const displaySetSeat = () => {
+    const seatClass =
+      "w-[2rem] aspect-square border border-gray-400 rounded text-white flex justify-center items-center bg-[rgb(33,37,41)]";
+    const seatType = {
+      [seatTypeEnum.NORMAL]: (
+        <div className="flex items-center gap-3 px-2">
+          <div className={`${seatClass}`}></div>
+          <span>Normal</span>
+        </div>
+      ),
+      [seatTypeEnum.HALL]: (
+        <div className="flex items-center gap-3 px-2">
+          <div className={`${seatClass}`}>
+            <RxCross2 />
+          </div>
+          <span>Hall</span>
+        </div>
+      ),
+      [seatTypeEnum.WHEELCHAIR]: (
+        <div className="flex items-center gap-3 px-2">
+          <div className={`${seatClass}`}>
+            <BiHandicap />
+          </div>
+          <span>Wheelchair</span>
+        </div>
+      ),
+      [seatTypeEnum.COMPANITION]: (
+        <div className="flex items-center gap-3 px-2">
+          <div className={`${seatClass}`}>
+            <MdOutlineWheelchairPickup />
+          </div>
+          <span>Companition</span>
+        </div>
+      ),
+    };
+    return (
+      <div className="flex flex-wrap gap-3">
+        {Object.entries(seatTypeEnum).map(([_, seat]) => (
+          <div
+            onClick={() => setSelectSeatType(seat)}
+            className={`border border-gray-400 rounded-md p-2 cursor-pointer ${
+              selectSeatType === seat && "bg-cyan-900"
+            }`}
+          >
+            {seatType[seat]}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const onHandleSubmit = () => {
+    if (roomName === "" || grid.length === 0) {
+      dispatch(
+        setMessage({
+          message:
+            roomName === ""
+              ? "Theater room required"
+              : grid.length === 0
+              ? "Grid empty"
+              : "",
+          messageType: notificationMessageEnum.ERROR,
+        })
+      );
+      return;
+    }
+    const modifyTheater = {
+      name: roomName,
+      grid: [],
+    };
+    for (let row = 0; row < grid.length; row++) {
+      const rows = [];
+      for (let col = 0; col < grid[row].length; col++) {
+        rows.push(grid[row][col].seatType);
+      }
+      modifyTheater.grid.push(rows);
+    }
+
+    handleSubmit(modifyTheater);
   };
 
   return (
@@ -414,10 +580,10 @@ const EditTheaterSeat = () => {
           setOpenRowControll(null);
         }
       }}
-      className="overflow-x-scroll flex flex-wrap justify-center flex-1 tablet:max-w-[47rem] mobile:w-[19rem] px-5 bg-[#172532] rounded-md"
+      className="overflow-x-scroll flex flex-wrap justify-center flex-1 px-5 bg-[#172532] rounded-md"
     >
-      <div className="flex flex-col gap-1 py-2 min-w-[40rem] flex-auto">
-        <div className="flex flex-col items-center m-2 pl-[2rem]">
+      <div className="flex flex-col gap-1 py-2 min-w-[40rem] flex-auto items-center">
+        <div className="flex flex-col  m-2 pl-[2rem]">
           <div className="w-[30rem] h-[5rem] screen-container ">
             <div className="screen w-full bg-gray-400"></div>
           </div>
@@ -425,7 +591,7 @@ const EditTheaterSeat = () => {
             <div className="screen-shadow w-full bg-gradient-to-b from-gray-700"></div>
           </div>
         </div>
-        <div className="flex justify-center mb-[2rem]">
+        <div className="flex  mb-[2rem]">
           {displayRowControll()}
           <div>
             {displayColControll()}
@@ -440,8 +606,8 @@ const EditTheaterSeat = () => {
           <input
             type="text"
             className={`input  border-gray-500`}
-            value={""}
-            onChange={(e) => console.log(e.target.value)}
+            value={roomName}
+            onChange={(e) => setRoomName(e.target.value)}
           />
           <div className={`input_title`}>
             <span>
@@ -479,33 +645,21 @@ const EditTheaterSeat = () => {
           </div>
           <button
             onClick={getSeatGrid}
-            className="border p-1 text-white rounded border-cyan-300"
+            className="border p-1 text-white rounded border-cyan-300 bg-cyan-950 hover:bg-cyan-800"
           >
             Generate
           </button>
         </div>
         <div className="flex flex-col gap-3 text-white">
           <h3>Selected Seat</h3>
-          {selectedSeat.length ? (
-            <div className="flex flex-col gap-3 w-auto">
-              {" "}
-              {displaySelectedSeat()}
-              <button
-                className="border border-gray-400 p-2 hover:bg-cyan-900"
-                onClick={() => {
-                  setTargetSelectedSeat({ row: null, col: null });
-                  setSelectedSeat([]);
-                }}
-              >
-                Clear selected seat{" "}
-              </button>
-            </div>
-          ) : (
-            <span className="text-gray-500 text-[0.8rem]">
-              No seat selected
-            </span>
-          )}
+          {displaySelectedSeat()}
         </div>
+        <button
+          onClick={() => onHandleSubmit()}
+          className="border border-gray-500 py-2 bg-cyan-950 rounded text-white hover:bg-cyan-800"
+        >
+          Submit
+        </button>
       </div>
     </div>
   );
