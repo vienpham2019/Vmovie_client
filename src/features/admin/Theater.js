@@ -3,15 +3,27 @@ import Pagination from "../../components/Pagination";
 import { useNavigate } from "react-router-dom";
 import { SlMagnifier } from "react-icons/sl";
 import { MdAdd } from "react-icons/md";
+import { useGetAllTheaterByAdminQuery } from "../theater/theaterApiSlice";
+import AdminSkeleton from "./AdminSkeleton";
 
 const Theater = () => {
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [sortBy, setSortBy] = useState("updatedAt");
   const [sortDir, setSortDir] = useState(-1);
-  const [filter, setFilter] = useState("All");
   const [search, setSearch] = useState("");
   const limit = 10;
+
+  const { data, isLoading } = useGetAllTheaterByAdminQuery(
+    { search, page, limit, sortBy, sortDir },
+    {
+      pollingInterval: 120000, // 2min the data will fetch again
+      refertchOnFocus: true, // data will fetch when page on focus
+      refetchOnMountOrArgChange: true, // it will refresh data when remount component
+      // Set the query key to include the page so it updates when the page changes
+      queryKey: ["getAllTheaterByAdmin", { search, page, sortBy, sortDir }],
+    }
+  );
 
   const handleDisplayTheater = () => {
     return (
@@ -20,6 +32,9 @@ const Theater = () => {
       </div>
     );
   };
+
+  if (isLoading) return <AdminSkeleton />;
+  else console.log(data);
   return (
     <div className="p-[1rem]">
       {" "}

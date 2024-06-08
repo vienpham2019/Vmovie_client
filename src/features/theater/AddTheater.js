@@ -1,9 +1,29 @@
 import { Link, useNavigate } from "react-router-dom";
 import EditTheaterSeat from "./EditTheaterSeat";
+import { useCreateTheaterMutation } from "./theaterApiSlice";
+import { useDispatch } from "react-redux";
+import {
+  notificationMessageEnum,
+  setMessage,
+} from "../../components/notificationMessage/notificationMessageSlice";
 
 const AddTheater = () => {
-  const handleAddTheater = (newTheater) => {
-    console.log(newTheater);
+  const [createTheater] = useCreateTheaterMutation();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const handleAddTheater = async (newTheater) => {
+    try {
+      const res = await createTheater(newTheater);
+      dispatch(
+        setMessage({
+          message: res.data.message,
+          messageType: notificationMessageEnum.SUCCESS,
+        })
+      );
+      navigate("/admin/theater");
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <div className="p-[1rem] mobile:p-2">
