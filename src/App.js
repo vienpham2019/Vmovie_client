@@ -19,6 +19,7 @@ import Product from "./features/admin/Product";
 import EditProduct from "./features/product/EditProduct";
 import Theater from "./features/admin/Theater";
 import AddTheater from "./features/theater/AddTheater";
+import EditTheater from "./features/theater/EditTheater";
 
 const App = () => {
   return (
@@ -54,6 +55,10 @@ const App = () => {
               <Route path="theater">
                 <Route index element={<Theater />} />
                 <Route path="addTheater" element={<AddTheater />} />
+                <Route
+                  path="editTheater/:theaterId"
+                  element={<EditTheater />}
+                />
               </Route>
             </Route>
           </Route>

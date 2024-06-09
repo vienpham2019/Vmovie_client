@@ -6,8 +6,8 @@ const initState = theaterAdapter.getInitialState();
 export const theaterApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getAllTheaterByAdmin: builder.query({
-      query: ({ page, limit, sortBy, sortDir, search }) => ({
-        url: `/theater/allTheaterByAdmin?page=${page}&limit=${limit}&sortBy=${sortBy}&sortDir=${sortDir}&search=${search}`,
+      query: ({ page, limit, search }) => ({
+        url: `/theater/allTheaterByAdmin?page=${page}&limit=${limit}&search=${search}`,
         validateStatus: (res, result) => {
           return res.status >= 200 && res.status < 300;
         },
@@ -39,6 +39,11 @@ export const theaterApiSlice = apiSlice.injectEndpoints({
           ];
       },
     }),
+    getTheaterDetails: builder.query({
+      query: ({ _id }) => ({
+        url: `/theater/details/${_id}`,
+      }),
+    }),
     createTheater: builder.mutation({
       query: (payload) => ({
         url: "/theater/new",
@@ -47,8 +52,28 @@ export const theaterApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: (result, err, arg) => [{ type: "Theater" }],
     }),
+    editTheater: builder.mutation({
+      query: ({ payload, _id }) => ({
+        url: `/theater/edit/${_id}`,
+        method: "PATCH",
+        body: payload,
+      }),
+      invalidatesTags: (result, err, arg) => [{ type: "Theater" }],
+    }),
+    deleteTheater: builder.mutation({
+      query: ({ _id }) => ({
+        url: `/theater/${_id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (result, err, arg) => [{ type: "Theater" }],
+    }),
   }),
 });
 
-export const { useGetAllTheaterByAdminQuery, useCreateTheaterMutation } =
-  theaterApiSlice;
+export const {
+  useGetAllTheaterByAdminQuery,
+  useCreateTheaterMutation,
+  useEditTheaterMutation,
+  useDeleteTheaterMutation,
+  useGetTheaterDetailsQuery,
+} = theaterApiSlice;

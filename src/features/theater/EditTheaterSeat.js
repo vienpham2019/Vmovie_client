@@ -162,7 +162,7 @@ const EditTheaterSeat = ({ theaterSeat, handleSubmit }) => {
               {row.map((seat, colIndex) => {
                 if (seat.seatType !== seatTypeEnum.HALL) seatNumber++;
                 return (
-                  <div>
+                  <div key={`Seat - row ${rowIndex} - col ${colIndex}`}>
                     {SeatComponent({
                       seat: { ...seat, seatNumber },
                       cordinate: { col: colIndex + 1, row: rowIndex + 1 },
@@ -281,7 +281,7 @@ const EditTheaterSeat = ({ theaterSeat, handleSubmit }) => {
       <div className="flex gap-2 justify-center mb-3">
         {grid.length > 0 &&
           grid[0].map((_, i) => (
-            <div className="relative">
+            <div className="relative" key={`Col ${i}`}>
               <div
                 key={i + "col_controll"}
                 onClick={() =>
@@ -343,7 +343,7 @@ const EditTheaterSeat = ({ theaterSeat, handleSubmit }) => {
         {grid.length &&
           grid.map((_, i) => {
             return (
-              <div className="relative">
+              <div className="relative" key={`Rows ${i}`}>
                 <div
                   key={i + "row_controll"}
                   onClick={() =>
@@ -449,6 +449,7 @@ const EditTheaterSeat = ({ theaterSeat, handleSubmit }) => {
           {selectedSeat.map(({ row, col }) => {
             return (
               <div
+                key={`Select Seat - row ${row} - col ${col}`}
                 onMouseEnter={() => setTargetSelectedSeat({ row, col })}
                 onMouseLeave={() =>
                   setTargetSelectedSeat({ row: null, col: null })
@@ -528,6 +529,7 @@ const EditTheaterSeat = ({ theaterSeat, handleSubmit }) => {
       <div className="flex flex-wrap gap-3">
         {Object.entries(seatTypeEnum).map(([_, seat]) => (
           <div
+            key={`Set seat type ${seat}`}
             onClick={() => setSelectSeatType(seat)}
             className={`border border-gray-400 rounded-md p-2 cursor-pointer ${
               selectSeatType === seat && "bg-cyan-900"

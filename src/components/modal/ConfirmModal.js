@@ -9,10 +9,12 @@ import {
   setMessage,
 } from "../notificationMessage/notificationMessageSlice";
 import { initProductFormData } from "../form/formSlice";
+import { useDeleteTheaterMutation } from "../../features/theater/theaterApiSlice";
 
 const ConfirmModalActionEnum = Object.freeze({
   DELETE_ALL_OPTION_TYPE: "DELETE ALL OPTION TYPE",
   DELETE_PRODUCT_BY_ID: "DELETE PRODUCT BY ID",
+  DELETE_THEATER_BY_ID: "DELETE THEATER BY ID",
 });
 
 const ConfirmModal = () => {
@@ -21,6 +23,7 @@ const ConfirmModal = () => {
   const dispatch = useDispatch();
   const [deleteAllOptionByType] = useDeleteAllProductOptionByTypeMutation();
   const [deleteProductById] = useDeleteProductByIdMutation();
+  const [deleteTheaterById] = useDeleteTheaterMutation();
 
   const handleConfirmAction = async () => {
     let res;
@@ -34,6 +37,9 @@ const ConfirmModal = () => {
         break;
       case ConfirmModalActionEnum.DELETE_PRODUCT_BY_ID:
         res = await deleteProductById(confirmActionParams);
+        break;
+      case ConfirmModalActionEnum.DELETE_THEATER_BY_ID:
+        res = await deleteTheaterById(confirmActionParams);
         break;
       default:
         break;

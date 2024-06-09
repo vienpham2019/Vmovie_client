@@ -5,36 +5,124 @@ import { SlMagnifier } from "react-icons/sl";
 import { MdAdd } from "react-icons/md";
 import { useGetAllTheaterByAdminQuery } from "../theater/theaterApiSlice";
 import AdminSkeleton from "./AdminSkeleton";
+import { seatTypeEnum } from "../theater/theaterEnum";
+import { FaPencil, FaTrash } from "react-icons/fa6";
+import { useDispatch } from "react-redux";
+import {
+  modalComponentEnum,
+  openModal,
+  setModalParams,
+} from "../../components/modal/ModalSlice";
+import { ConfirmModalActionEnum } from "../../components/modal/ConfirmModal";
 
 const Theater = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [page, setPage] = useState(1);
-  const [sortBy, setSortBy] = useState("updatedAt");
-  const [sortDir, setSortDir] = useState(-1);
   const [search, setSearch] = useState("");
   const limit = 10;
 
   const { data, isLoading } = useGetAllTheaterByAdminQuery(
-    { search, page, limit, sortBy, sortDir },
+    { search, page, limit },
     {
       pollingInterval: 120000, // 2min the data will fetch again
       refertchOnFocus: true, // data will fetch when page on focus
       refetchOnMountOrArgChange: true, // it will refresh data when remount component
       // Set the query key to include the page so it updates when the page changes
-      queryKey: ["getAllTheaterByAdmin", { search, page, sortBy, sortDir }],
+      queryKey: ["getAllTheaterByAdmin", { search, page }],
     }
   );
 
+  const handleDeleteTheater = async (_id) => {
+    dispatch(
+      setModalParams({
+        message: `Are you sure you want to delete this theater ?`,
+        confirmAction: ConfirmModalActionEnum.DELETE_THEATER_BY_ID,
+        confirmActionParams: { _id },
+      })
+    );
+    dispatch(openModal(modalComponentEnum.CONFIRM));
+  };
   const handleDisplayTheater = () => {
+    const theaters = data?.theaters?.entities;
+    if (theaters && Object.keys(theaters).length === 0) {
+      return (
+        <div className="h-[30vh] flex justify-center items-center text-white">
+          No Theater
+        </div>
+      );
+    }
+
     return (
-      <div className="h-[30vh] flex justify-center items-center text-white">
-        No Theater
+      <div className="flex flex-wrap gap-3 justify-center">
+        {Object.entries(theaters).map(([_id, theater]) => {
+          const seatCount = {};
+          const seatTypeName = {};
+          Object.entries(seatTypeEnum).forEach(([key, value]) => {
+            seatTypeName[value] = key;
+          });
+          theater.grid.forEach((row) => {
+            row.forEach((seat) => {
+              if (seat !== seatTypeEnum.HALL) {
+                seatCount[`${seatTypeName[seat]}`] =
+                  seatCount[`${seatTypeName[seat]}`] + 1 || 1;
+              }
+            });
+          });
+
+          return (
+            <div
+              key={"theater " + theater.name}
+              className="w-[9rem] border border-gray-500 rounded text-white p-2 flex flex-col justify-between"
+            >
+              <span className="text-[0.8rem] ">Room: {theater.name}</span>
+              <div className="text-[0.8rem]">
+                <span className="text-gray-400">Seats</span>
+                {Object.entries(seatCount).map(
+                  ([seatType, count], seatIndex) => (
+                    <div key={`${theater.name} - Seats ${seatIndex}`}>
+                      <span className="">
+                        {seatType} : {count}
+                      </span>
+                    </div>
+                  )
+                )}
+              </div>
+              <div className="flex flex-col gap-2 text-[0.8rem]">
+                <div className="flex flex-col">
+                  <span className="text-gray-400">Created at</span>{" "}
+                  <span> {theater.createdAt.split("T")[0]}</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-gray-400">Updated at</span>{" "}
+                  <span>{theater.updatedAt.split("T")[0]}</span>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-[2rem] border border-gray-500 py-2 justify-center">
+                <div
+                  className="text-cyan-500 tooltip_container cursor-pointer"
+                  onClick={() => navigate(`/admin/theater/editTheater/${_id}`)}
+                >
+                  <FaPencil />
+                  <div className="tooltip tooltip_top">Edit</div>
+                </div>
+                <div
+                  className="text-red-500 tooltip_container cursor-pointer"
+                  onClick={() => handleDeleteTheater(_id)}
+                >
+                  <FaTrash />
+                  <div className="tooltip tooltip_top">Delete</div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
     );
   };
 
   if (isLoading) return <AdminSkeleton />;
-  else console.log(data);
+
   return (
     <div className="p-[1rem]">
       {" "}
@@ -53,7 +141,7 @@ const Theater = () => {
                 <input
                   type="text"
                   className="input py-[1.4rem]"
-                  placeholder="Find product"
+                  placeholder="Find theater"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
