@@ -7,6 +7,7 @@ import UserIcon from "../components/UserIcon";
 import { useEffect, useState } from "react";
 import { useLogoutMutation } from "../features/auths/authApiSlice";
 import useAuth from "../hooks/useAuth";
+import { HiOutlineCalendarDays } from "react-icons/hi2";
 
 const AdminLayout = () => {
   const initSideBar = {
@@ -14,6 +15,11 @@ const AdminLayout = () => {
     catalog: { active: false, icon: <LuFilm />, path: "catalog" },
     product: { active: false, icon: <GiForkKnifeSpoon />, path: "product" },
     theater: { active: false, icon: <GiTheater />, path: "theater" },
+    showtime: {
+      active: false,
+      icon: <HiOutlineCalendarDays />,
+      path: "showtime",
+    },
   };
   const { username } = useAuth();
   const [sideBar, setSideBar] = useState(initSideBar);

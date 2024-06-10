@@ -12,4 +12,21 @@ const stringToArray = (string) => {
   return dataArray.map((item) => item.trim());
 };
 
-export { separatedWords, isArrayString, stringToArray };
+const capitalizeString = (str) => {
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+};
+
+const capitalizeWords = (sentence) => {
+  return sentence
+    .split(" ")
+    .map((word) => capitalizeString(word))
+    .join(" ");
+};
+
+export {
+  separatedWords,
+  isArrayString,
+  stringToArray,
+  capitalizeWords,
+  capitalizeString,
+};

@@ -149,7 +149,7 @@ const Theater = () => {
                   <SlMagnifier />
                 </div>
               </div>
-              {/* Add product */}
+              {/* Add theater */}
               <div className="flex flex-wrap gap-[1rem] items-center ">
                 <button
                   className="text-cyan-300 flex gap-1 items-center px-5 border border-gray-500 rounded-md py-[0.7rem]"

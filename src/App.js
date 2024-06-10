@@ -20,6 +20,9 @@ import EditProduct from "./features/product/EditProduct";
 import Theater from "./features/admin/Theater";
 import AddTheater from "./features/theater/AddTheater";
 import EditTheater from "./features/theater/EditTheater";
+import ShowTime from "./features/admin/ShowTime";
+import EditShowtime from "./features/showtime/EditShowtime";
+import AddShowtime from "./features/showtime/AddShowtime";
 
 const App = () => {
   return (
@@ -58,6 +61,14 @@ const App = () => {
                 <Route
                   path="editTheater/:theaterId"
                   element={<EditTheater />}
+                />
+              </Route>
+              <Route path="showtime">
+                <Route index element={<ShowTime />} />
+                <Route path="addShowtime" element={<AddShowtime />} />
+                <Route
+                  path="editShowtime/:showtimeId"
+                  element={<EditShowtime />}
                 />
               </Route>
             </Route>
