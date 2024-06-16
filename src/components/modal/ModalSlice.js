@@ -7,6 +7,7 @@ import MovieCheckOutSummaryModal from "../../features/movie/MovieCheckOutSummary
 import ProductOptionsModal from "../../features/product/ProductOptionsModal";
 import ConfirmModal from "./ConfirmModal";
 import ProductDetailModal from "../../features/product/ProductDetailModal";
+import PublicMoviesModal from "../../features/movie/PublicMovies";
 
 const initState = {
   isModalOpen: false,
@@ -44,6 +45,7 @@ const modalComponentEnum = Object.freeze({
   CHECKOUT_SUMMARY: "CHECKOUT_SUMMARY",
   PRODUCT_OPTION: "PRODUCT_OPTION",
   CONFIRM: "CONFIRM",
+
   // Add more roles as needed
 });
 

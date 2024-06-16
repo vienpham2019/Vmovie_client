@@ -44,7 +44,7 @@ const getLastNumberOfDaysInLastMonth = ({
     const date = new Date(year, month, day);
 
     daysArray.push(
-      formatDate({ date, formatType: DateFormatTypeEnum.YYYY_MM_DD })
+      formatDate({ date, formatType: DateFormatTypeEnum.MM_DD_YYYY })
     );
   }
 
@@ -71,7 +71,7 @@ const getFirstNumberOfDaysInNextMonth = ({
     const date = new Date(year, month, day);
 
     daysArray.push(
-      formatDate({ date, formatType: DateFormatTypeEnum.YYYY_MM_DD })
+      formatDate({ date, formatType: DateFormatTypeEnum.MM_DD_YYYY })
     );
   }
 
@@ -97,7 +97,7 @@ const getAllDaysInMonth = ({ year, month }) => {
     const date = new Date(year, month, day);
 
     daysArray.push(
-      formatDate({ date, formatType: DateFormatTypeEnum.YYYY_MM_DD })
+      formatDate({ date, formatType: DateFormatTypeEnum.MM_DD_YYYY })
     );
   }
 

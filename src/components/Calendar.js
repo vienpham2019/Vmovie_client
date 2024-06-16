@@ -6,6 +6,7 @@ import {
   getLastDayOfMonth,
   getLastMonth,
   getNextMonth,
+  isAfterDate,
   isBeforeDate,
   isDateBetween,
   MonthEnum,
@@ -28,19 +29,7 @@ const Calendar = ({ onSelectDate }) => {
   const [nextYear, setNextYear] = useState(null);
   const [daysOfNextMonth, setDayOfNextMonth] = useState([]);
   const [selectedDay, setSelectedDay] = useState([]);
-
-  useEffect(() => {
-    const { year, month } = getCurrentMonth();
-    setYears(Array.from({ length: 4 }, (_, index) => year + index));
-    updateDateBaseOnCurrentMonth({ year, month });
-  }, []);
-
-  const resetOpenSelect = () => {
-    if (openCurrentMonthSelect) setOpenCurrentMonthSelect(false);
-    if (openCurrentYearSelect) setOpenCurrentYearSelect(false);
-    if (openNextMonthSelect) setOpenNextMonthSelect(false);
-    if (openNextYearSelect) setOpenNextYearSelect(false);
-  };
+  const [selectedDays, setSelectedDays] = useState([]);
 
   const updateDateBaseOnCurrentMonth = ({ month, year }) => {
     const { year: updateNextYear, month: updateNextMonth } = getNextMonth({
@@ -63,6 +52,20 @@ const Calendar = ({ onSelectDate }) => {
     setNextYear(updateNextYear);
     setDayOfNextMonth(updateDayOfNextMonth);
     resetOpenSelect();
+  };
+
+  useEffect(() => {
+    const { year, month } = getCurrentMonth();
+    setYears(Array.from({ length: 4 }, (_, index) => year + index));
+    updateDateBaseOnCurrentMonth({ year, month });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const resetOpenSelect = () => {
+    if (openCurrentMonthSelect) setOpenCurrentMonthSelect(false);
+    if (openCurrentYearSelect) setOpenCurrentYearSelect(false);
+    if (openNextMonthSelect) setOpenNextMonthSelect(false);
+    if (openNextYearSelect) setOpenNextYearSelect(false);
   };
 
   const updateDateBaseOnNextMonth = ({ month, year }) => {
@@ -118,6 +121,7 @@ const Calendar = ({ onSelectDate }) => {
 
   const handleSelectDay = (day) => {
     let updateSelectedDate = [];
+    let updateSelectedDays = [...selectedDays];
     if (selectedDay.length === 2) {
       updateSelectedDate = [day];
     } else {
@@ -126,9 +130,27 @@ const Calendar = ({ onSelectDate }) => {
       } else {
         updateSelectedDate = [...selectedDay, day];
       }
+      const mergeDays = [...daysOfCurrentMonth, daysOfNextMonth];
+      const [startDay, endDay] = updateSelectedDate;
+      updateSelectedDays = [startDay];
+      for (let row = 0; row < mergeDays.length; row++) {
+        for (let dayIndex = 0; dayIndex < mergeDays[row].length; dayIndex++) {
+          const day = mergeDays[row][dayIndex];
+          if (
+            !updateSelectedDays.includes(day) &&
+            isAfterDate(day, startDay) &&
+            isBeforeDate(day, endDay)
+          ) {
+            updateSelectedDays.push(day);
+          }
+        }
+      }
+      updateSelectedDays.push(endDay);
+      setSelectedDays(updateSelectedDays);
     }
+
     setSelectedDay(updateSelectedDate);
-    onSelectDate(updateSelectedDate);
+    onSelectDate(updateSelectedDate, updateSelectedDays);
   };
 
   const handleDisplayDay = ({ isCurrent, days }) => {
@@ -145,8 +167,8 @@ const Calendar = ({ onSelectDate }) => {
           key={`${isCurrent ? "Current" : "Next"} row ${rowIndex}`}
         >
           {row.map((day, dayIndex) => {
-            const [numYear, numMonth, numDay] = day.split("/");
-            const isTheSameMonth = +numMonth - 1 === month;
+            const [numMonth, numDay, numYear] = day.split("/");
+            const isTheSameMonth = +numMonth === month + 1;
             const isDayInBetweenSelected =
               selectedDay.length === 2 &&
               isTheSameMonth &&
@@ -166,9 +188,8 @@ const Calendar = ({ onSelectDate }) => {
             const isEndOfTheMonth =
               selectedDay.length === 2 &&
               +numDay ===
-                getLastDayOfMonth({ year: numYear, month: numMonth }) &&
-              isTheSameMonth &&
-              +selectedDay[0].split("/")[0] - 1 !== month;
+                getLastDayOfMonth({ year: numYear, month: +numMonth }) &&
+              isTheSameMonth;
 
             return (
               <div

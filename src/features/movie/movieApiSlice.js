@@ -39,6 +39,14 @@ export const movieApiSlice = apiSlice.injectEndpoints({
           ];
       },
     }),
+    getAllPublicMovieByAdmin: builder.query({
+      query: ({ page, limit, sortBy, sortDir, search }) => ({
+        url: `/movie/allPublicMovieByAdmin?page=${page}&limit=${limit}&sortBy=${sortBy}&sortDir=${sortDir}&search=${search}`,
+        validateStatus: (res, result) => {
+          return res.status >= 200 && res.status < 300;
+        },
+      }),
+    }),
     getMovieById: builder.query({
       query: ({ movieId }) => ({
         url: `/movie/details/${movieId}`,
@@ -93,6 +101,7 @@ export const movieApiSlice = apiSlice.injectEndpoints({
 export const {
   useGetUncompletedMovieMutation,
   useGetAllMovieByAdminQuery,
+  useGetAllPublicMovieByAdminQuery,
   useGetMovieByIdQuery,
   usePublishedMovieMutation,
   useDraftMovieMutation,
