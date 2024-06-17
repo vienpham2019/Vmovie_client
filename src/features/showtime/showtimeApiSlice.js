@@ -10,6 +10,11 @@ export const showtimeApiSlice = apiSlice.injectEndpoints({
         url: `/showtime/timeline?date=${date}&theaterName=${theaterName}`,
       }),
     }),
+    countShowtimeDayByMovieId: builder.query({
+      query: ({ movie }) => ({
+        url: `/showtime/countShowtimeDay/${movie._id}`,
+      }),
+    }),
     createShowtime: builder.mutation({
       query: (payload) => ({
         url: `/showtime/new`,
@@ -28,6 +33,7 @@ export const showtimeApiSlice = apiSlice.injectEndpoints({
 
 export const {
   useGetAllShowtimeTimelineQuery,
+  useCountShowtimeDayByMovieIdQuery,
   useCreateShowtimeMutation,
   useDeleteShowtimeMutation,
 } = showtimeApiSlice;

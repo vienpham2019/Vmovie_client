@@ -9,6 +9,7 @@ import { FaRegTrashAlt } from "react-icons/fa";
 
 import PublicMovies from "../movie/PublicMovies";
 import {
+  useCountShowtimeDayByMovieIdQuery,
   useCreateShowtimeMutation,
   useDeleteShowtimeMutation,
   useGetAllShowtimeTimelineQuery,
@@ -25,7 +26,7 @@ import {
   setMessage,
 } from "../../components/notificationMessage/notificationMessageSlice";
 
-const ShowtimeForm = ({ handleSubmit }) => {
+const ShowtimeForm = () => {
   const dispatch = useDispatch();
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -37,7 +38,8 @@ const ShowtimeForm = ({ handleSubmit }) => {
     startTime: "00:00",
     endTime: "00:00",
   });
-  const [selectedMovie, setSelectedMovie] = useState(null);
+  const [selectedMovie, setSelectedMovie] = useState();
+  const [selectedMovieId, setSelectedMovieId] = useState();
   const [openSelectMovie, setOpenSelectMovie] = useState(false);
   const [showTimeList, setShowtimeList] = useState([]);
 
@@ -46,6 +48,17 @@ const ShowtimeForm = ({ handleSubmit }) => {
       { date: selectedDay, theaterName: selectedTheater },
       {
         skip: !selectedDay || !selectedTheater, // Skip the query if the conditions are not met
+        pollingInterval: 120000, // 2min the data will fetch again
+        refetchOnFocus: true, // data will fetch when page on focus
+        refetchOnMountOrArgChange: true, // it will refresh data when remount component
+      }
+    );
+
+  const { data: { metadata: countDays } = [] } =
+    useCountShowtimeDayByMovieIdQuery(
+      { movie: selectedMovie },
+      {
+        skip: !selectedMovie, // Skip the query if the conditions are not met
         pollingInterval: 120000, // 2min the data will fetch again
         refetchOnFocus: true, // data will fetch when page on focus
         refetchOnMountOrArgChange: true, // it will refresh data when remount component
@@ -67,6 +80,12 @@ const ShowtimeForm = ({ handleSubmit }) => {
       setShowtimeList(showtimesData);
     }
   }, [showtimesData]);
+
+  useEffect(() => {
+    if (countDays) {
+      console.log(countDays);
+    }
+  }, [countDays]);
 
   const [createShowtime] = useCreateShowtimeMutation();
   const [deleteShowtime] = useDeleteShowtimeMutation();
@@ -184,6 +203,7 @@ const ShowtimeForm = ({ handleSubmit }) => {
             <PublicMovies
               selectMovie={(movie) => {
                 setSelectedMovie(movie);
+                setSelectedMovieId(movie._id);
                 setOpenSelectMovie(false);
               }}
             />

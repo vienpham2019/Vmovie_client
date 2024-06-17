@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import ShowtimeForm from "./ShowtimeForm";
+import ShowtimeEdit from "./ShowtimeEdit";
 
 const AddShowtime = () => {
   const handleAddShowtime = async (newShowTime) => {};
@@ -14,7 +15,7 @@ const AddShowtime = () => {
       </div>
       {/* Body */}
       <div className="p-2 mobile:p-1">
-        <ShowtimeForm handleSubmit={handleAddShowtime} />
+        <ShowtimeEdit />
       </div>
     </div>
   );
