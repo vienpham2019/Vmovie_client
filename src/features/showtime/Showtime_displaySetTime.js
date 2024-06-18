@@ -15,6 +15,11 @@ import {
 import { useCreateShowtimeMutation } from "./showtimeApiSlice";
 import Selection from "../../components/form/Selection";
 import { FaClock } from "react-icons/fa6";
+import {
+  modalComponentEnum,
+  openModal,
+  setModalParams,
+} from "../../components/modal/ModalSlice";
 
 const Showtime_displaySetTime = () => {
   const dispatch = useDispatch();
@@ -151,7 +156,7 @@ const Showtime_displaySetTime = () => {
   if (theaterLoading) return <div>Loading...</div>;
   return (
     <div className="flex flex-col ">
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-wrap flex-col gap-2">
         <div className="flex flex-wrap gap-2">
           <div className="input_group w-[10rem]">
             <Selection
@@ -165,6 +170,20 @@ const Showtime_displaySetTime = () => {
               <span>Select Theater Room</span>
             </div>
           </div>
+          <button
+            onClick={() => {
+              Object.entries(theaters.entities).forEach(([_, theater]) => {
+                if (theater.name === selectedTheater) {
+                  dispatch(setModalParams({ grid: theater.grid }));
+                  dispatch(openModal(modalComponentEnum.THEATER_LAYOUT));
+                  return;
+                }
+              });
+            }}
+            className="p-2 border border-gray-600 text-gray-200 rounded hover:bg-gray-700"
+          >
+            View room layout
+          </button>
         </div>
         <div>
           <div className="z-10 bg-white rounded-lg shadow w-auto dark:bg-gray-700 p-3">

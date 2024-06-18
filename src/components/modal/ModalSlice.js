@@ -7,6 +7,7 @@ import ProductOptionsModal from "../../features/product/ProductOptionsModal";
 import ConfirmModal from "./ConfirmModal";
 import ProductDetailModal from "../../features/product/ProductDetailModal";
 import Showtime_selectMoviesModal from "../../features/showtime/Showtime_selectMoviesModal";
+import TheaterLayoutModal from "../../features/theater/TheaterLayoutModal";
 
 const initState = {
   isModalOpen: false,
@@ -45,6 +46,7 @@ const modalComponentEnum = Object.freeze({
   PRODUCT_OPTION: "PRODUCT_OPTION",
   CONFIRM: "CONFIRM",
   SELECT_MOVIE: "SELECT_MOVIE",
+  THEATER_LAYOUT: "THEATER_LAYOUT",
   // Add more roles as needed
 });
 
@@ -70,6 +72,8 @@ const getModalComponent = (modalIdentifier) => {
       return <ConfirmModal />;
     case modalComponentEnum.SELECT_MOVIE:
       return <Showtime_selectMoviesModal />;
+    case modalComponentEnum.THEATER_LAYOUT:
+      return <TheaterLayoutModal />;
     default:
       return null;
   }
