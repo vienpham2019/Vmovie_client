@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import ShowtimeEdit_displaySelectDate from "./ShowtimeEdit_displaySelectDate";
+import Showtime_displaySelectDate from "./Showtime_displaySelectDate";
 import Showtime_displaySelecMovie from "./Showtime_displaySelecMovie";
 import Showtime_displaySetTime from "./Showtime_displaySetTime";
 import Showtime_displayTimeTaken from "./Showtime_displayTimeTaken";
@@ -22,11 +22,12 @@ const ShowtimeEdit = () => {
         refetchOnMountOrArgChange: true, // it will refresh data when remount component
       }
     );
+
   useEffect(() => {
     if (showtimesData) {
       dispatch(setKey({ key: "showTimeList", value: showtimesData }));
     }
-  }, [showtimesData]);
+  }, [showtimesData, dispatch]);
 
   return (
     <div className="flex flex-col gap-[1rem] p-4 border items-center border-gray-500 rounded bg-[#1f1f1f]">
@@ -34,7 +35,7 @@ const ShowtimeEdit = () => {
       <div className="flex flex-wrap gap-4 ">
         <div className="flex flex-col gap-4">
           {/* Selecdate */}
-          <ShowtimeEdit_displaySelectDate />
+          <Showtime_displaySelectDate />
           <div className="flex flex-wrap gap-3">
             {/* SelectMovies*/}
             <Showtime_displaySelecMovie />
@@ -49,10 +50,6 @@ const ShowtimeEdit = () => {
               </div>
             </div>
           </div>
-
-          <button className="btn-blue w-[15rem]" type="submit">
-            Submit
-          </button>
         </div>
       </div>
       {/* Body */}

@@ -3,12 +3,8 @@ import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import {
   getAllDaysInMonth,
   getCurrentMonth,
-  getLastDayOfMonth,
   getLastMonth,
   getNextMonth,
-  isAfterDate,
-  isBeforeDate,
-  isDateBetween,
   MonthEnum,
   WeekdaysEnum,
 } from "../util/date";
@@ -16,7 +12,7 @@ import { convertTo2DArray } from "../util/array";
 import { capitalizeString } from "../util/string";
 import OutsideClickDetector from "./OutsideClickDetector";
 
-const Calendar = ({ onSelectDate }) => {
+const Calendar = ({ onSelectDate, notifications, displayNotification }) => {
   const [years, setYears] = useState([]);
   const [openCurrentMonthSelect, setOpenCurrentMonthSelect] = useState(false);
   const [openCurrentYearSelect, setOpenCurrentYearSelect] = useState(false);
@@ -28,8 +24,7 @@ const Calendar = ({ onSelectDate }) => {
   const [nextMonth, setNextMonth] = useState(null);
   const [nextYear, setNextYear] = useState(null);
   const [daysOfNextMonth, setDayOfNextMonth] = useState([]);
-  const [selectedDay, setSelectedDay] = useState([]);
-  const [selectedDays, setSelectedDays] = useState([]);
+  const [selectedDay, setSelectedDay] = useState();
 
   const updateDateBaseOnCurrentMonth = ({ month, year }) => {
     const { year: updateNextYear, month: updateNextMonth } = getNextMonth({
@@ -120,37 +115,9 @@ const Calendar = ({ onSelectDate }) => {
   };
 
   const handleSelectDay = (day) => {
-    let updateSelectedDate = [];
-    let updateSelectedDays = [...selectedDays];
-    if (selectedDay.length === 2) {
-      updateSelectedDate = [day];
-    } else {
-      if (isBeforeDate(day, selectedDay[0])) {
-        updateSelectedDate = [day, ...selectedDay];
-      } else {
-        updateSelectedDate = [...selectedDay, day];
-      }
-      const mergeDays = [...daysOfCurrentMonth, daysOfNextMonth];
-      const [startDay, endDay] = updateSelectedDate;
-      updateSelectedDays = [startDay];
-      for (let row = 0; row < mergeDays.length; row++) {
-        for (let dayIndex = 0; dayIndex < mergeDays[row].length; dayIndex++) {
-          const day = mergeDays[row][dayIndex];
-          if (
-            !updateSelectedDays.includes(day) &&
-            isAfterDate(day, startDay) &&
-            isBeforeDate(day, endDay)
-          ) {
-            updateSelectedDays.push(day);
-          }
-        }
-      }
-      updateSelectedDays.push(endDay);
-      setSelectedDays(updateSelectedDays);
-    }
+    setSelectedDay(day);
 
-    setSelectedDay(updateSelectedDate);
-    onSelectDate(updateSelectedDate, updateSelectedDays);
+    onSelectDate(day);
   };
 
   const handleDisplayDay = ({ isCurrent, days }) => {
@@ -163,61 +130,15 @@ const Calendar = ({ onSelectDate }) => {
     return days.map((row, rowIndex) => {
       return (
         <div
-          className="flex"
+          className="flex "
           key={`${isCurrent ? "Current" : "Next"} row ${rowIndex}`}
         >
           {row.map((day, dayIndex) => {
-            const [numMonth, numDay, numYear] = day.split("/");
+            const [numMonth, numDay] = day.split("/");
             const isTheSameMonth = +numMonth === month + 1;
-            const isDayInBetweenSelected =
-              selectedDay.length === 2 &&
-              isTheSameMonth &&
-              isDateBetween({
-                dateToCheck: day,
-                startDate: selectedDay[0],
-                endDate: selectedDay[1],
-              });
-            const isFirstSelected = selectedDay[0] === day;
-            const isLastSelected = selectedDay[1] === day;
-            const isStartOfTheMonth =
-              selectedDay.length === 2 &&
-              +numDay === 1 &&
-              isTheSameMonth &&
-              +selectedDay[0].split("/")[1] - 1 !== month;
-
-            const isEndOfTheMonth =
-              selectedDay.length === 2 &&
-              +numDay ===
-                getLastDayOfMonth({ year: numYear, month: +numMonth }) &&
-              isTheSameMonth;
-
+            const isInNotifications = !!notifications[day];
             return (
               <div
-                className={`
-                ${isFirstSelected && "rounded-s-full"} 
-                ${isLastSelected && "rounded-e-full"}  
-                ${
-                  isDayInBetweenSelected &&
-                  "first:rounded-s-full last:rounded-e-full"
-                }
-               
-                ${
-                  isDayInBetweenSelected &&
-                  !isStartOfTheMonth &&
-                  !isEndOfTheMonth &&
-                  "bg-neutral-800"
-                }
-                ${
-                  isStartOfTheMonth &&
-                  isDayInBetweenSelected &&
-                  "bg-gradient-to-l from-neutral-800"
-                }
-                ${
-                  isEndOfTheMonth &&
-                  isDayInBetweenSelected &&
-                  "bg-gradient-to-r from-neutral-800"
-                }
-                `}
                 key={`${
                   isCurrent ? "Current" : "Next"
                 } day ${rowIndex} ${dayIndex}`}
@@ -227,12 +148,19 @@ const Calendar = ({ onSelectDate }) => {
                   className={`${dayClass} ${
                     isTheSameMonth ? dayActiceClass : dayDisableClass
                   } ${
-                    selectedDay.includes(day) &&
-                    isTheSameMonth &&
-                    selectedDayClass
-                  }`}
+                    selectedDay === day && isTheSameMonth && selectedDayClass
+                  } 
+                  ${isInNotifications && "border border-red-400"}
+                  relative group`}
                 >
                   {numDay}
+                  {isInNotifications && (
+                    <div className="absolute text-red-700 text-[0.7rem] font-bold -top-[0.7rem] left-[1.2rem] border-collapse border border-red-300 aspect-square w-[1.4rem] rounded-full flex justify-center items-center bg-black">
+                      {notifications[day].count}
+                    </div>
+                  )}
+
+                  {displayNotification(notifications[day], day)}
                 </div>
               </div>
             );
@@ -262,7 +190,7 @@ const Calendar = ({ onSelectDate }) => {
 
   return (
     // <!-- Datepicker -->
-    <div className="w-auto md:w-[40.4rem] flex flex-col border shadow-lg rounded-xl overflow-hidden bg-neutral-900 border-neutral-700">
+    <div className="w-auto md:w-[40.4rem] flex flex-col border shadow-lg rounded-xl  bg-neutral-900 border-neutral-700">
       <div className="p-3 flex flex-wrap gap-8 justify-center">
         {/* <!-- Calendar --> */}
         <div className=" w-[20rem]">

@@ -1,11 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  selectDay: "",
-  selectMovie: null,
-  selectMovieId: null,
+  selectedDay: "",
+  selectedMovie: null,
+  selectedMovieId: null,
   selectedTheater: null,
   showTimeList: [],
+  countShowTime: {},
 };
 
 const showtimeSlice = createSlice({

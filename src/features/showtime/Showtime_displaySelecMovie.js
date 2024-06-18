@@ -6,17 +6,17 @@ import { useState } from "react";
 
 const Showtime_displaySelecMovie = () => {
   const dispatch = useDispatch();
-  const { selectMovie } = useSelector((state) => state.showtime);
+  const { selectedMovie } = useSelector((state) => state.showtime);
   const [openSelectMovie, setOpenSelectMovie] = useState(false);
   const { hours, minutes } = convertMinutesToHoursAndMinutesString(
-    selectMovie?.runtime || "0min"
+    selectedMovie?.runtime || "0min"
   );
 
   const setSelecMovie = (movie) => {
     dispatch(
       initState({
-        selectMovie: movie,
-        selectMovieId: movie._id,
+        selectedMovie: movie,
+        selectedMovieId: movie._id,
       })
     );
   };
@@ -24,11 +24,15 @@ const Showtime_displaySelecMovie = () => {
   return (
     <div className="flex flex-col gap-3">
       <span className="text-white">Select movie</span>
-      {selectMovie && (
+      {selectedMovie && (
         <div className="flex gap-3 text-white">
-          <img className="w-[5rem]" src={selectMovie.poster.url} alt="poster" />
+          <img
+            className="w-[5rem]"
+            src={selectedMovie.poster.url}
+            alt="poster"
+          />
           <div className="flex flex-col gap-3">
-            <span>{selectMovie.title}</span>
+            <span>{selectedMovie.title}</span>
             <span className="text-gray-400">
               Duration: {hours}h {minutes}min
             </span>

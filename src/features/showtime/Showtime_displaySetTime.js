@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useGetAllTheaterByAdminQuery } from "../theater/theaterApiSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { setKey } from "./showtimeSlice";
+import { initState, setKey } from "./showtimeSlice";
 import {
   convertMinutesToHoursAndMinutesString,
   hourAndMinToMin,
@@ -18,8 +18,13 @@ import { FaClock } from "react-icons/fa6";
 
 const Showtime_displaySetTime = () => {
   const dispatch = useDispatch();
-  const { selectedTheater, showTimeList, selectedMovie, selectedDay } =
-    useSelector((state) => state.showtime);
+  const {
+    selectedTheater,
+    showTimeList,
+    selectedMovie,
+    selectedDay,
+    countShowTime,
+  } = useSelector((state) => state.showtime);
   const [selectTheaterOptions, setSelectheaterOptions] = useState({});
   const [showTime, setShowTime] = useState({
     startTime: "00:00",
@@ -44,7 +49,7 @@ const Showtime_displaySetTime = () => {
       setSelectheaterOptions(initSelecTheaters);
       dispatch(setKey({ key: "selectedTheater", value: initSelecTheaters[0] }));
     }
-  }, [theaters]);
+  }, [theaters, dispatch]);
 
   const setSelectedTheater = (value) => {
     dispatch(setKey({ key: "selectedTheater", value }));
@@ -52,6 +57,15 @@ const Showtime_displaySetTime = () => {
 
   const handleSaveTime = async () => {
     if (!selectedMovie?.runtime) {
+      return;
+    }
+    if (!selectedDay) {
+      dispatch(
+        setMessage({
+          message: "Please Select Day",
+          messageType: notificationMessageEnum.ERROR,
+        })
+      );
       return;
     }
     const { startTime, endTime } = showTime;
@@ -108,10 +122,24 @@ const Showtime_displaySetTime = () => {
       return;
     }
     const res = await createShowtime(newShowtime);
+    const updateShowTimeList = showTimeList.slice();
+    updateShowTimeList.push(res.data.metadata);
+    let updateCountShowtime = JSON.parse(JSON.stringify(countShowTime));
+    let newCountShowtime = { startTime, endTime, theaterName: selectedTheater };
+    if (updateCountShowtime[newShowtime.date]) {
+      updateCountShowtime[newShowtime.date].times.push(newCountShowtime);
+      updateCountShowtime[newShowtime.date].count++;
+    } else {
+      updateCountShowtime[newShowtime.date] = {
+        times: [newCountShowtime],
+        count: 1,
+      };
+    }
+
     dispatch(
-      setKey({
-        key: "showTimeList",
-        value: showTimeList.slice().push(res.data.metadata),
+      initState({
+        showTimeList: updateShowTimeList,
+        countShowTime: updateCountShowtime,
       })
     );
     setShowTime({

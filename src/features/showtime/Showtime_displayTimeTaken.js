@@ -3,20 +3,22 @@ import {
   convertMinutesToHoursAndMinutesString,
   convertToAmPm,
 } from "../../util/time";
-import { useDeleteAllProductOptionByTypeMutation } from "../product/productApiSlice";
 import {
   notificationMessageEnum,
   setMessage,
 } from "../../components/notificationMessage/notificationMessageSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { setKey } from "./showtimeSlice";
+import { initState } from "./showtimeSlice";
 import { FaRegTrashAlt } from "react-icons/fa";
+import { useDeleteShowtimeMutation } from "./showtimeApiSlice";
 
 const Showtime_displayTimeTaken = () => {
   const dispatch = useDispatch();
-  const { showTimeList } = useSelector((state) => state.showtime);
+  const { showTimeList, selectedDay, countShowTime } = useSelector(
+    (state) => state.showtime
+  );
   const [sortShowtimeList, setSortShowtimeList] = useState([]);
-  const [deleteShowtime] = useDeleteAllProductOptionByTypeMutation();
+  const [deleteShowtime] = useDeleteShowtimeMutation();
   useEffect(() => {
     if (showTimeList) {
       const sortSetShowtimeList = showTimeList.slice().sort((a, b) => {
@@ -28,7 +30,7 @@ const Showtime_displayTimeTaken = () => {
     }
   }, [showTimeList]);
 
-  const handleDeleteShowtime = async (_id) => {
+  const handleDeleteShowtime = async ({ _id, startTime }) => {
     const res = await deleteShowtime(_id);
     dispatch(
       setMessage({
@@ -36,12 +38,22 @@ const Showtime_displayTimeTaken = () => {
         messageType: notificationMessageEnum.SUCCESS,
       })
     );
-    dispatch(
-      setKey({
-        key: "showTimeList",
-        value: showTimeList.slice().filter((showtime) => showtime._id !== _id),
-      })
-    );
+    let updateCountShowtime = JSON.parse(JSON.stringify(countShowTime));
+    updateCountShowtime[selectedDay].times = updateCountShowtime[
+      selectedDay
+    ].times.filter((time) => time.startTime !== startTime);
+    updateCountShowtime[selectedDay].count -= 1;
+    if (updateCountShowtime[selectedDay].count === 0) {
+      delete updateCountShowtime[selectedDay];
+    }
+
+    const updateState = {
+      showTimeList: showTimeList
+        .slice()
+        .filter((showtime) => showtime._id !== _id),
+      countShowTime: updateCountShowtime,
+    };
+    dispatch(initState(updateState));
   };
 
   return (
@@ -97,7 +109,7 @@ const Showtime_displayTimeTaken = () => {
                 </p>
                 <div
                   className="flex gap-3 mt-3"
-                  onClick={() => handleDeleteShowtime(_id)}
+                  onClick={() => handleDeleteShowtime({ _id, startTime })}
                 >
                   <FaRegTrashAlt className="text-red-500 cursor-pointer" />
                 </div>
