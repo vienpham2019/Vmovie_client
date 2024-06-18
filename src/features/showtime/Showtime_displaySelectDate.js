@@ -38,7 +38,7 @@ const Showtime_displaySelectDate = () => {
         })
       );
     }
-  }, [countShowtime]);
+  }, [dispatch, countShowtime]);
 
   const onSelectDate = (day) => {
     dispatch(setKey({ key: "selectedDay", value: day }));

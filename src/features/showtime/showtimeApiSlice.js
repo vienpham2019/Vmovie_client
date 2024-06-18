@@ -1,8 +1,5 @@
-import { createEntityAdapter } from "@reduxjs/toolkit";
 import { apiSlice } from "../../app/api/apiSlice";
 
-const showtimeAdapter = createEntityAdapter({});
-const initState = showtimeAdapter.getInitialState();
 export const showtimeApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getAllShowtimeTimeline: builder.query({

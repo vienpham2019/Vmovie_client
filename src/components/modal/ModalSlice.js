@@ -2,12 +2,11 @@ import { createSlice } from "@reduxjs/toolkit";
 import PrivatePolicy from "../PrivatePolicy";
 import ResetPasswordModal from "../../features/auths/ResetPasswordModal";
 import VideoModal from "../form/VideoModal";
-import MovieFoodAndDrinkModal from "../../features/movie/MovieFoodAndDrinkModal";
 import MovieCheckOutSummaryModal from "../../features/movie/MovieCheckOutSummaryModal";
 import ProductOptionsModal from "../../features/product/ProductOptionsModal";
 import ConfirmModal from "./ConfirmModal";
 import ProductDetailModal from "../../features/product/ProductDetailModal";
-import PublicMoviesModal from "../../features/movie/PublicMovies";
+import Showtime_selectMoviesModal from "../../features/showtime/Showtime_selectMoviesModal";
 
 const initState = {
   isModalOpen: false,
@@ -45,7 +44,7 @@ const modalComponentEnum = Object.freeze({
   CHECKOUT_SUMMARY: "CHECKOUT_SUMMARY",
   PRODUCT_OPTION: "PRODUCT_OPTION",
   CONFIRM: "CONFIRM",
-
+  SELECT_MOVIE: "SELECT_MOVIE",
   // Add more roles as needed
 });
 
@@ -69,6 +68,8 @@ const getModalComponent = (modalIdentifier) => {
       return <ProductOptionsModal />;
     case modalComponentEnum.CONFIRM:
       return <ConfirmModal />;
+    case modalComponentEnum.SELECT_MOVIE:
+      return <Showtime_selectMoviesModal />;
     default:
       return null;
   }

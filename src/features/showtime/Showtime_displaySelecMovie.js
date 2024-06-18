@@ -1,25 +1,17 @@
 import { useDispatch, useSelector } from "react-redux";
 import { convertMinutesToHoursAndMinutesString } from "../../util/time";
-import { initState } from "./showtimeSlice";
-import PublicMovies from "../movie/PublicMovies";
-import { useState } from "react";
+
+import {
+  modalComponentEnum,
+  openModal,
+} from "../../components/modal/ModalSlice";
 
 const Showtime_displaySelecMovie = () => {
   const dispatch = useDispatch();
   const { selectedMovie } = useSelector((state) => state.showtime);
-  const [openSelectMovie, setOpenSelectMovie] = useState(false);
   const { hours, minutes } = convertMinutesToHoursAndMinutesString(
     selectedMovie?.runtime || "0min"
   );
-
-  const setSelecMovie = (movie) => {
-    dispatch(
-      initState({
-        selectedMovie: movie,
-        selectedMovieId: movie._id,
-      })
-    );
-  };
 
   return (
     <div className="flex flex-col gap-3">
@@ -39,30 +31,12 @@ const Showtime_displaySelecMovie = () => {
           </div>
         </div>
       )}
-      {openSelectMovie && (
-        <div>
-          <PublicMovies
-            selectMovie={(movie) => {
-              setSelecMovie(movie);
-              setOpenSelectMovie(false);
-            }}
-          />
-          <button
-            className="text-white p-3 border border-white"
-            onClick={() => setOpenSelectMovie(false)}
-          >
-            Cancel
-          </button>
-        </div>
-      )}
-      {!openSelectMovie && (
-        <button
-          className="text-white p-3 border border-white w-[15rem]"
-          onClick={() => setOpenSelectMovie(true)}
-        >
-          Select Movie
-        </button>
-      )}
+      <button
+        className="text-white p-3 border border-white w-[15rem]"
+        onClick={() => dispatch(openModal(modalComponentEnum.SELECT_MOVIE))}
+      >
+        Select Movie
+      </button>
     </div>
   );
 };

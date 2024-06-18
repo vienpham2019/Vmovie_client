@@ -1,9 +1,14 @@
 import { Link } from "react-router-dom";
-import ShowtimeForm from "./ShowtimeForm";
 import ShowtimeEdit from "./ShowtimeEdit";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { resetState } from "./showtimeSlice";
 
 const AddShowtime = () => {
-  const handleAddShowtime = async (newShowTime) => {};
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(resetState());
+  }, [dispatch]);
   return (
     <div className="p-[1rem] mobile:p-2">
       <div className="py-[0.4rem] border-b border-gray-600 flex items-center gap-2 text-white font-thin">
