@@ -31,7 +31,7 @@ const Showtime_displayTimeTaken = () => {
   }, [showTimeList]);
 
   const handleDeleteShowtime = async ({ _id, startTime }) => {
-    const res = await deleteShowtime(_id);
+    const res = await deleteShowtime({ _id });
     dispatch(
       setMessage({
         message: res.data.message,

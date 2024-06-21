@@ -24,7 +24,9 @@ const Showtime_displaySelecMovie = () => {
             alt="poster"
           />
           <div className="flex flex-col gap-3">
-            <span>{selectedMovie.title}</span>
+            <span className="text-wrap max-w-[10rem]">
+              {selectedMovie.title}
+            </span>
             <span className="text-gray-400">
               Duration: {hours}h {minutes}min
             </span>

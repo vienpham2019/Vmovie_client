@@ -10,11 +10,13 @@ import {
 } from "../notificationMessage/notificationMessageSlice";
 import { initProductFormData } from "../form/formSlice";
 import { useDeleteTheaterMutation } from "../../features/theater/theaterApiSlice";
+import { useDeleteShowtimeMutation } from "../../features/showtime/showtimeApiSlice";
 
 const ConfirmModalActionEnum = Object.freeze({
   DELETE_ALL_OPTION_TYPE: "DELETE ALL OPTION TYPE",
   DELETE_PRODUCT_BY_ID: "DELETE PRODUCT BY ID",
   DELETE_THEATER_BY_ID: "DELETE THEATER BY ID",
+  DELETE_SHOWTIME_BY_ID: "DELETE SHOWTIME BY ID",
 });
 
 const ConfirmModal = () => {
@@ -24,6 +26,7 @@ const ConfirmModal = () => {
   const [deleteAllOptionByType] = useDeleteAllProductOptionByTypeMutation();
   const [deleteProductById] = useDeleteProductByIdMutation();
   const [deleteTheaterById] = useDeleteTheaterMutation();
+  const [deleteShowtimeById] = useDeleteShowtimeMutation();
 
   const handleConfirmAction = async () => {
     let res;
@@ -41,15 +44,28 @@ const ConfirmModal = () => {
       case ConfirmModalActionEnum.DELETE_THEATER_BY_ID:
         res = await deleteTheaterById(confirmActionParams);
         break;
+      case ConfirmModalActionEnum.DELETE_SHOWTIME_BY_ID:
+        res = await deleteShowtimeById(confirmActionParams);
+        break;
       default:
         break;
     }
-    dispatch(
-      setMessage({
-        message: res.data.message,
-        messageType: notificationMessageEnum.SUCCESS,
-      })
-    );
+    if (res?.data?.message) {
+      dispatch(
+        setMessage({
+          message: res.data.message,
+          messageType: notificationMessageEnum.SUCCESS,
+        })
+      );
+    } else {
+      dispatch(
+        setMessage({
+          message: res.error.data.message,
+          messageType: notificationMessageEnum.ERROR,
+        })
+      );
+    }
+
     dispatch(closeModal());
   };
   return (

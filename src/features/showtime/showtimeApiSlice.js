@@ -1,7 +1,41 @@
+import { createEntityAdapter } from "@reduxjs/toolkit";
 import { apiSlice } from "../../app/api/apiSlice";
 
+const showtimeAdapter = createEntityAdapter({});
+const initState = showtimeAdapter.getInitialState();
 export const showtimeApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
+    getAllShowtime: builder.query({
+      query: ({ page, limit, sortBy, sortDir, search }) => ({
+        url: `/showtime/all??page=${page}&limit=${limit}&sortBy=${sortBy}&sortDir=${sortDir}&search=${search}`,
+      }),
+      //keepUnusedDataFor: 5, default 60s
+      transformResponse: (resData) => {
+        const loadedShowtimes = resData.metadata.showtimes.map((showtime) => {
+          showtime.id = showtime._id;
+          return showtime;
+        });
+        const totalShowtimes = resData.metadata.totalShowtimes; // Assuming this property exists in the response
+
+        return {
+          showtime: showtimeAdapter.setAll(initState, loadedShowtimes),
+          totalShowtimes,
+        };
+      },
+      providesTags: (result, error, arg) => {
+        if (result?.ids) {
+          return [
+            { type: "Showtime", id: "LIST" },
+            ...result.ids.map((id) => ({ type: "Showtime", id })),
+            { type: "Showtime", id: "TOTAL_COUNT" },
+          ];
+        } else
+          return [
+            { type: "Showtime", id: "LIST" },
+            { type: "Showtime", id: "TOTAL_COUNT" },
+          ];
+      },
+    }),
     getAllShowtimeTimeline: builder.query({
       query: ({ date, theaterName }) => ({
         url: `/showtime/timeline?date=${date}&theaterName=${theaterName}`,
@@ -20,15 +54,20 @@ export const showtimeApiSlice = apiSlice.injectEndpoints({
       }),
     }),
     deleteShowtime: builder.mutation({
-      query: (_id) => ({
+      query: ({ _id }) => ({
         url: `/showtime/${_id}`,
         method: "DELETE",
       }),
+      invalidatesTags: (result, err, arg) => [
+        { type: "Showtime" },
+        { type: "Showtime", id: "TOTAL_COUNT" },
+      ],
     }),
   }),
 });
 
 export const {
+  useGetAllShowtimeQuery,
   useGetAllShowtimeTimelineQuery,
   useCountShowtimeDayByMovieIdQuery,
   useCreateShowtimeMutation,

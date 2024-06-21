@@ -39,8 +39,8 @@ const Showtime_selectMoviesModal = () => {
               className="w-[8rem] h-[10rem] relative flex items-end bg-center bg-contain"
               style={{ backgroundImage: `url(${movie.poster.url})` }}
             >
-              <div className="w-full h-[35%] p-2 bg-[rgba(0,0,0,0.8)]">
-                <h2 className="text-[0.8rem]">{movie.title}</h2>
+              <div className="w-full h-[20%] p-2 bg-[rgba(0,0,0,0.8)]">
+                <h2 className="text-[0.8rem] truncate">{movie.title}</h2>
               </div>
             </div>
           </div>
