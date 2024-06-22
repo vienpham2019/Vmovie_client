@@ -10,12 +10,16 @@ import { ConfirmModalActionEnum } from "../../components/modal/ConfirmModal";
 import { FaTrash } from "react-icons/fa6";
 import { IoIosArrowDown } from "react-icons/io";
 import { convertToAmPm } from "../../util/time";
+import { FaPencilAlt } from "react-icons/fa";
+import { initState } from "../showtime/showtimeSlice";
+import { useNavigate } from "react-router-dom";
 
 const DisplayShowtime = ({ showtime, showtimeIndex }) => {
   const [open, setOpen] = useState(false);
   const isLaptop = useMediaQuery({ maxWidth: 1024 });
   const ref = useRef(null);
   const extand_ref = useRef(null);
+  const navigate = useNavigate();
 
   const dispatch = useDispatch();
 
@@ -28,6 +32,18 @@ const DisplayShowtime = ({ showtime, showtimeIndex }) => {
       })
     );
     dispatch(openModal(modalComponentEnum.CONFIRM));
+  };
+
+  const handleEdit = async () => {
+    const { date, theaterDetails, movieDetails } = showtime;
+    const initEditForm = {
+      selectedDay: date,
+      selectedMovie: movieDetails,
+      selectedMovieId: movieDetails._id,
+      selectedTheater: theaterDetails.name,
+    };
+    dispatch(initState(initEditForm));
+    navigate(`/admin/showtime/editShowtime/${showtime._id}`);
   };
 
   useEffect(() => {
@@ -100,13 +116,20 @@ const DisplayShowtime = ({ showtime, showtimeIndex }) => {
   );
   const actionsContent = () => {
     return (
-      <div className="flex gap-4 min-w-[15rem] justify-center">
+      <div className="flex gap-4 min-w-[8rem] justify-center">
         <div
           onClick={handleDelete}
           className="tooltip_container w-[2rem] aspect-square rounded-md flex items-center justify-center cursor-pointer bg-[rgba(255,99,99,0.2)]"
         >
           <FaTrash className="text-[rgb(250,117,117)]" />
           <div className="tooltip tooltip_bottom">Delete</div>
+        </div>
+        <div
+          onClick={handleEdit}
+          className="tooltip_container w-[2rem] aspect-square rounded-md flex items-center justify-center cursor-pointer bg-[rgba(91,192,232,0.2)]"
+        >
+          <FaPencilAlt className="text-[rgb(72,148,180)]" />
+          <div className="tooltip tooltip_bottom">Edit</div>
         </div>
       </div>
     );

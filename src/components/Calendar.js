@@ -12,7 +12,12 @@ import { convertTo2DArray } from "../util/array";
 import { capitalizeString } from "../util/string";
 import OutsideClickDetector from "./OutsideClickDetector";
 
-const Calendar = ({ onSelectDate, notifications, displayNotification }) => {
+const Calendar = ({
+  onSelectDate,
+  notifications,
+  displayNotification,
+  selectDay,
+}) => {
   const [years, setYears] = useState([]);
   const [openCurrentMonthSelect, setOpenCurrentMonthSelect] = useState(false);
   const [openCurrentYearSelect, setOpenCurrentYearSelect] = useState(false);
@@ -50,7 +55,15 @@ const Calendar = ({ onSelectDate, notifications, displayNotification }) => {
   };
 
   useEffect(() => {
-    const { year, month } = getCurrentMonth();
+    let { year, month } = getCurrentMonth();
+    if (selectDay) {
+      let [selectMonth, _, selectYear] = selectDay.split("/");
+
+      year = +selectYear;
+      month = +selectMonth - 1;
+      setSelectedDay(selectDay);
+    }
+
     setYears(Array.from({ length: 4 }, (_, index) => year + index));
     updateDateBaseOnCurrentMonth({ year, month });
     // eslint-disable-next-line react-hooks/exhaustive-deps

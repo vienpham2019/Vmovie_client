@@ -2,13 +2,9 @@ import { useDispatch } from "react-redux";
 import ShowtimeEdit from "./ShowtimeEdit";
 import { useEffect } from "react";
 import { resetState } from "./showtimeSlice";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 const EditShowtime = () => {
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(resetState());
-  }, [dispatch]);
   return (
     <div className="p-[1rem] mobile:p-2">
       <div className="py-[0.4rem] border-b border-gray-600 flex items-center gap-2 text-white font-thin">

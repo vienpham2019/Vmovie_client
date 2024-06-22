@@ -98,6 +98,7 @@ const Showtime_displaySelectDate = () => {
         <div className="">
           <Calendar
             onSelectDate={onSelectDate}
+            selectDay={selectedDay || ""}
             notifications={countShowTime}
             displayNotification={displayNotification}
           />

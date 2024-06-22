@@ -57,15 +57,18 @@ const Showtime_displayTimeTaken = () => {
   };
 
   return (
-    <div className="p-2 flex flex-col  items-center gap-3 border border-neutral-700 rounded w-[20rem] flex-auto mobile:w-[16rem] max-h-[20rem] overflow-y-scroll">
+    <div className="p-2 flex flex-col  items-center gap-3 border border-neutral-700 rounded w-[20rem] flex-auto mobile:w-[16rem] max-h-[18rem] overflow-y-scroll">
       {sortShowtimeList.map(({ _id, movie, startTime, endTime }, index) => {
         const { hours, minutes } = convertMinutesToHoursAndMinutesString(
           movie.duration
         );
         return (
-          <div className="flex" key={"time line " + index}>
+          <div
+            className="flex w-full items-center shadow-lg drop-shadow-[0_35px_35px_rgba(25,225,225,0.25)]"
+            key={"time line " + index}
+          >
             {/* <!-- Left Content --> */}
-            <div className="h-[110px] flex flex-col justify-between">
+            <div className="h-[110px] flex flex-col justify-between w-[4.5rem]">
               <div className="w-16 text-end">
                 <span className="text-xs text-gray-500 dark:text-neutral-400">
                   {convertToAmPm(startTime)}
@@ -95,12 +98,12 @@ const Showtime_displayTimeTaken = () => {
             {/* <!-- End Icon --> */}
 
             {/* <!-- Right Content --> */}
-            <div className="flex gap-2 items-center">
-              <div className=" h-full">
-                <img className="w-[3rem]" src={movie.posterUrl} alt="poster" />
+            <div className="flex gap-2 items-center flex-1">
+              <div className="w-[3rem] h-full">
+                <img className="w-full" src={movie.posterUrl} alt="poster" />
               </div>
 
-              <div className="grow pt-0.5 pb-8 flex flex-col gap-1">
+              <div className="flex-1 pt-0.5 pb-8 flex flex-col gap-1">
                 <h3 className="flex gap-x-1.5 font-semibold text-white text-[0.8rem]">
                   {movie.title}
                 </h3>
