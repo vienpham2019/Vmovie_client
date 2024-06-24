@@ -1,15 +1,19 @@
-import { displayInput } from "./formUtil";
-import { inputTypeEnum, inputValidateEnum } from "./formEnum";
 import { useDispatch, useSelector } from "react-redux";
+
+import {
+  resetMovieFormdata,
+  setMovieFormData,
+  initMovieFormData,
+} from "../../components/form/formSlice";
 import {
   notificationMessageEnum,
   setMessage,
-} from "../notificationMessage/notificationMessageSlice";
+} from "../../components/notificationMessage/notificationMessageSlice";
 import {
-  initMovieFormData,
-  resetMovieFormdata,
-  setMovieFormData,
-} from "./formSlice";
+  inputTypeEnum,
+  inputValidateEnum,
+} from "../../components/form/formEnum";
+import { displayInput } from "../../components/form/formUtil";
 
 const MovieForm = ({ handleOnSubmit }) => {
   const dispatch = useDispatch();
@@ -77,6 +81,20 @@ const MovieForm = ({ handleOnSubmit }) => {
         <div className="grid flex-auto gap-4 w-[50rem] mobile:min-w-[15rem]">
           {input({ name: "title" })}
           {input({ name: "movieDetail", type: inputTypeEnum.TEXT_AREA })}
+          <div className="flex gap-4">
+            <div className="flex-1">
+              {input({
+                name: "generalAdmissionPrice",
+                inputType: inputTypeEnum.NUMBER,
+              })}
+            </div>
+            <div className="flex-1">
+              {input({ name: "childPrice", inputType: inputTypeEnum.NUMBER })}
+            </div>
+            <div className="flex-1">
+              {input({ name: "seniorPrice", inputType: inputTypeEnum.NUMBER })}
+            </div>
+          </div>
           {input({ name: "trailer", type: inputTypeEnum.VIDEO })}
           <div className="flex flex-wrap gap-4">
             <div className="flex-1 min-w-[27rem] mobile:min-w-[15rem]">

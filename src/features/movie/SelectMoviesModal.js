@@ -1,13 +1,16 @@
 import { useState } from "react";
-import { useGetAllPublicMovieByAdminQuery } from "../movie/movieApiSlice";
+
 import Pagination from "../../components/Pagination";
 import { SlMagnifier } from "react-icons/sl";
 import React from "react";
 import { useDispatch } from "react-redux";
-import { setKey } from "./showtimeSlice";
-import { closeModal } from "../../components/modal/ModalSlice";
+import {
+  closeModal,
+  setModalResponse,
+} from "../../components/modal/ModalSlice";
+import { useGetAllPublicMovieByAdminQuery } from "./movieApiSlice";
 
-const Showtime_selectMoviesModal = () => {
+const SelectMoviesModal = () => {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const dispatch = useDispatch();
@@ -29,7 +32,7 @@ const Showtime_selectMoviesModal = () => {
         {movies.map((movie, movieIndex) => (
           <div
             onClick={() => {
-              dispatch(setKey({ key: "selectedMovie", value: movie }));
+              dispatch(setModalResponse({ selectedMovie: movie }));
               dispatch(closeModal());
             }}
             className="flex flex-col gap-3 text-white bg-gray-800 rounded overflow-hidden cursor-pointer hover:border hover:border-cyan-700"
@@ -87,4 +90,4 @@ const Showtime_selectMoviesModal = () => {
   );
 };
 
-export default Showtime_selectMoviesModal;
+export default SelectMoviesModal;

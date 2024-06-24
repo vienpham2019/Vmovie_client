@@ -7,7 +7,7 @@ import {
   useGetAllProductByAdminQuery,
   useGetAllProductTypesQuery,
 } from "../product/productApiSlice";
-import { Pagination } from "../../components/Pagination";
+import Pagination from "../../components/Pagination";
 import { FaArrowDownWideShort, FaArrowUpShortWide } from "react-icons/fa6";
 import { LuArrowDownUp } from "react-icons/lu";
 import AdminSkeleton from "./AdminSkeleton";
@@ -183,7 +183,7 @@ const Product = () => {
             </div>
             {/* Movie List */}
             {handleDisplayProduct()}
-            {false && (
+            {data.totalProducts > limit && (
               <div className="flex justify-between items-center">
                 <div className="text-gray-300 font-thin text-[0.8rem] border border-gray-700 bg-slate-800 flex items-center h-[2rem] px-2 rounded-md">
                   Showing 10 of {data.totalProducts}

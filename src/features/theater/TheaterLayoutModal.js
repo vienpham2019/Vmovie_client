@@ -8,7 +8,7 @@ const TheaterLayoutModal = () => {
   const SeatComponent = ({ seat }) => {
     const { seatType, seatNumber } = seat;
     let className =
-      "w-[2rem] aspect-square rounded-md flex justify-center items-center cursor-pointer text-[0.7rem] hover:bg-cyan-600 ";
+      "w-[2rem] aspect-square rounded-md flex justify-center items-center text-[0.7rem] ";
     if (seatType === seatTypeEnum.HALL) {
       className += "text-transparent";
     } else {
@@ -35,11 +35,11 @@ const TheaterLayoutModal = () => {
           return (
             <div className="flex gap-2 justify-center" key={rowIndex}>
               {row.map((seat, colIndex) => {
-                if (seat.seatType !== seatTypeEnum.HALL) seatNumber++;
+                if (seat !== seatTypeEnum.HALL) seatNumber++;
                 return (
                   <div key={`Seat - row ${rowIndex} - col ${colIndex}`}>
                     {SeatComponent({
-                      seat: { ...seat, seatNumber },
+                      seat: { seatType: seat, seatNumber },
                     })}
                   </div>
                 );

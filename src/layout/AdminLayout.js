@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { useLogoutMutation } from "../features/auths/authApiSlice";
 import useAuth from "../hooks/useAuth";
 import { HiOutlineCalendarDays } from "react-icons/hi2";
+import { MdOutlineRateReview } from "react-icons/md";
 
 const AdminLayout = () => {
   const initSideBar = {
@@ -15,6 +16,11 @@ const AdminLayout = () => {
     catalog: { active: false, icon: <LuFilm />, path: "catalog" },
     product: { active: false, icon: <GiForkKnifeSpoon />, path: "product" },
     theater: { active: false, icon: <GiTheater />, path: "theater" },
+    review: {
+      active: false,
+      icon: <MdOutlineRateReview />,
+      path: "review",
+    },
     showtime: {
       active: false,
       icon: <HiOutlineCalendarDays />,

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import MovieForm from "../../components/form/MovieForm";
+
 import {
   useGetUncompletedMovieMutation,
   useUpdateUncompletedMovieMutation,
@@ -11,6 +11,7 @@ import {
   setMessage,
 } from "../../components/notificationMessage/notificationMessageSlice";
 import { Link, useNavigate } from "react-router-dom";
+import MovieForm from "./MovieForm";
 
 const AddMovie = () => {
   const [getUncompletedMovie] = useGetUncompletedMovieMutation();

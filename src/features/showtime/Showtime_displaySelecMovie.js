@@ -2,16 +2,29 @@ import { useDispatch, useSelector } from "react-redux";
 import { convertMinutesToHoursAndMinutesString } from "../../util/time";
 
 import {
+  clearModalResponse,
   modalComponentEnum,
   openModal,
 } from "../../components/modal/ModalSlice";
+import { useEffect } from "react";
+import { setKey } from "./showtimeSlice";
 
 const Showtime_displaySelecMovie = () => {
   const dispatch = useDispatch();
+  const { modalResponse } = useSelector((state) => state.modal);
   const { selectedMovie } = useSelector((state) => state.showtime);
   const { hours, minutes } = convertMinutesToHoursAndMinutesString(
     selectedMovie?.runtime || "0min"
   );
+
+  useEffect(() => {
+    if (modalResponse?.selectedMovie) {
+      dispatch(
+        setKey({ key: "selectedMovie", value: modalResponse.selectedMovie })
+      );
+      dispatch(clearModalResponse());
+    }
+  }, [modalResponse, dispatch]);
 
   return (
     <div className="flex flex-col gap-3">

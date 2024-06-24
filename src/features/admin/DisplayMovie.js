@@ -79,10 +79,13 @@ const actionsContent = ({
           <div className="tooltip tooltip_bottom">Public</div>
         </div>
       )}
-      <div className="tooltip_container w-[2rem] aspect-square rounded-md flex items-center justify-center cursor-pointer bg-[rgba(168,111,248,0.2)]">
+      <Link
+        to={`/movie/${movie._id}`}
+        className="tooltip_container w-[2rem] aspect-square rounded-md flex items-center justify-center cursor-pointer bg-[rgba(168,111,248,0.2)]"
+      >
         <FaEye className="text-[rgb(168,111,248)]" />
         <div className="tooltip tooltip_bottom">Preview</div>
-      </div>
+      </Link>
       <Link
         to={`/admin/catalog/editMovie/${movie._id}`}
         className="tooltip_container w-[2rem] aspect-square rounded-md flex items-center justify-center cursor-pointer bg-[rgba(135,189,255,0.4)]"

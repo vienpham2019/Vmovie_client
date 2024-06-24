@@ -5,9 +5,9 @@ const showtimeAdapter = createEntityAdapter({});
 const initState = showtimeAdapter.getInitialState();
 export const showtimeApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getAllShowtime: builder.query({
+    getAllShowtimeByAdmin: builder.query({
       query: ({ page, limit, sortBy, sortDir, search }) => ({
-        url: `/showtime/all??page=${page}&limit=${limit}&sortBy=${sortBy}&sortDir=${sortDir}&search=${search}`,
+        url: `/showtime/allByAdmin?page=${page}&limit=${limit}&sortBy=${sortBy}&sortDir=${sortDir}&search=${search}`,
       }),
       //keepUnusedDataFor: 5, default 60s
       transformResponse: (resData) => {
@@ -67,7 +67,7 @@ export const showtimeApiSlice = apiSlice.injectEndpoints({
 });
 
 export const {
-  useGetAllShowtimeQuery,
+  useGetAllShowtimeByAdminQuery,
   useGetAllShowtimeTimelineQuery,
   useCountShowtimeDayByMovieIdQuery,
   useCreateShowtimeMutation,

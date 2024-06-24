@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import MovieForm from "../../components/form/MovieForm";
 import {
   useGetMovieByIdQuery,
   useUpdateUncompletedMovieMutation,
@@ -11,6 +10,7 @@ import {
   setMessage,
 } from "../../components/notificationMessage/notificationMessageSlice";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import MovieForm from "./MovieForm";
 
 const EditMovie = () => {
   const { movieId } = useParams(); // Extract movieId from route params

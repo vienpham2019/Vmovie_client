@@ -14,7 +14,7 @@ import OutsideClickDetector from "./OutsideClickDetector";
 
 const Calendar = ({
   onSelectDate,
-  notifications,
+  notifications = [],
   displayNotification,
   selectDay,
 }) => {
@@ -149,7 +149,8 @@ const Calendar = ({
           {row.map((day, dayIndex) => {
             const [numMonth, numDay] = day.split("/");
             const isTheSameMonth = +numMonth === month + 1;
-            const isInNotifications = !!notifications[day];
+            const isInNotifications =
+              notifications.length > 0 && !!notifications[day];
             return (
               <div
                 key={`${
@@ -169,11 +170,12 @@ const Calendar = ({
                   {numDay}
                   {isInNotifications && (
                     <div className="absolute text-red-700 text-[0.7rem] font-bold -top-[0.7rem] left-[1.2rem] border-collapse border border-red-300 aspect-square w-[1.4rem] rounded-full flex justify-center items-center bg-black">
-                      {notifications[day].count}
+                      {notifications[day]?.count || ""}
                     </div>
                   )}
 
-                  {displayNotification(notifications[day], day)}
+                  {notifications.length > 0 &&
+                    displayNotification(notifications[day], day)}
                 </div>
               </div>
             );
@@ -236,7 +238,7 @@ const Calendar = ({
                   <div
                     className={`absolute ${
                       openCurrentMonthSelect ? "flex" : "hidden"
-                    } flex-col py-2 bg-white rounded text-gray-800`}
+                    } flex-col py-2 bg-white rounded text-gray-800 z-10`}
                   >
                     {Object.entries(MonthEnum).map(([month, monthIndex]) => {
                       return (
@@ -275,7 +277,7 @@ const Calendar = ({
                   <div
                     className={`absolute ${
                       openCurrentYearSelect ? "flex" : "hidden"
-                    } flex-col py-2 bg-white rounded text-gray-800`}
+                    } flex-col py-2 bg-white rounded text-gray-800 z-10`}
                   >
                     {years.map((year) => {
                       return (
@@ -343,7 +345,7 @@ const Calendar = ({
                   <div
                     className={`absolute ${
                       openNextMonthSelect ? "flex" : "hidden"
-                    } flex-col py-2 bg-white rounded text-gray-800`}
+                    } flex-col py-2 bg-white rounded text-gray-800 z-10`}
                   >
                     {Object.entries(MonthEnum).map(([month, monthIndex]) => {
                       return (
@@ -372,7 +374,7 @@ const Calendar = ({
               <OutsideClickDetector
                 onOutsideClick={() => setOpenNextYearSelect(false)}
               >
-                <div className="relative text-gray-200">
+                <div className="relative text-gray-200 ">
                   <span
                     className="cursor-pointer"
                     onClick={() => setOpenNextYearSelect(true)}
@@ -382,7 +384,7 @@ const Calendar = ({
                   <div
                     className={`absolute ${
                       openNextYearSelect ? "flex" : "hidden"
-                    } flex-col py-2 bg-white rounded text-gray-800`}
+                    } flex-col py-2 bg-white rounded text-gray-800 z-10`}
                   >
                     {years.map((year) => {
                       return (

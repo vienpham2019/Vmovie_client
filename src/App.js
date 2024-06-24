@@ -23,6 +23,9 @@ import EditTheater from "./features/theater/EditTheater";
 import ShowTime from "./features/admin/ShowTime";
 import EditShowtime from "./features/showtime/EditShowtime";
 import AddShowtime from "./features/showtime/AddShowtime";
+import Review from "./features/admin/Review";
+import AddReview from "./features/review/AddReview";
+import EditReview from "./features/review/EditReview";
 
 const App = () => {
   return (
@@ -63,6 +66,13 @@ const App = () => {
                   element={<EditTheater />}
                 />
               </Route>
+
+              <Route path="review">
+                <Route index element={<Review />} />
+                <Route path="addReview" element={<AddReview />} />
+                <Route path="editReview/:reviewId" element={<EditReview />} />
+              </Route>
+
               <Route path="showtime">
                 <Route index element={<ShowTime />} />
                 <Route path="addShowtime" element={<AddShowtime />} />

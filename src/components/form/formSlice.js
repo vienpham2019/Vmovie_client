@@ -20,6 +20,18 @@ const initState = {
       validate: "",
       options: ["G", "PG", "PG_13", "R", "NC_17"],
     },
+    generalAdmissionPrice: {
+      value: "",
+      validate: "",
+    },
+    childPrice: {
+      value: "",
+      validate: "",
+    },
+    seniorPrice: {
+      value: "",
+      validate: "",
+    },
     genre: {
       value: [],
       validate: "",
@@ -124,6 +136,41 @@ const initState = {
       validate: "",
     },
   },
+  reviewFormData: {
+    movieId: {
+      value: "",
+      validate: "",
+    },
+    type: {
+      value: "",
+      validate: "",
+      options: ["TMDB", "Rotten_Tomatoes", "IMDB"],
+    },
+    reviewContent: {
+      value: "",
+      validate: "",
+    },
+    authorName: {
+      value: "",
+      validate: "",
+    },
+    authorCop: {
+      value: "",
+      validate: "",
+    },
+    date: {
+      value: "",
+      validate: "",
+    },
+    rating: {
+      value: 5,
+      validate: "",
+    },
+    fullReviewLink: {
+      value: "",
+      validate: "",
+    },
+  },
 };
 
 export const formSlice = createSlice({
@@ -200,6 +247,34 @@ export const formSlice = createSlice({
         productFormData: initState.productFormData,
       };
     },
+    initReviewFormData: (state, action) => {
+      return {
+        ...state,
+        reviewFormData: action.payload,
+      };
+    },
+    setReviewFormData: (state, action) => {
+      const { name, value } = action.payload;
+      const updatedFormData = JSON.parse(JSON.stringify(state.reviewFormData));
+
+      for (const key in updatedFormData) {
+        updatedFormData[key].validate = "";
+      }
+
+      updatedFormData[name].value = value;
+
+      return {
+        ...state,
+        reviewFormData: updatedFormData,
+      };
+    },
+    resetReviewFormdata: (state, _) => {
+      return {
+        ...state,
+        id: null,
+        reviewFormData: initState.reviewFormData,
+      };
+    },
   },
 });
 
@@ -210,6 +285,9 @@ export const {
   initProductFormData,
   setProductFormData,
   resetProductFormdata,
+  initReviewFormData,
+  setReviewFormData,
+  resetReviewFormdata,
 } = formSlice.actions;
 
 export { initState as formInitState };

@@ -1,54 +1,53 @@
-import React, { useState } from "react";
-import Pagination from "../../components/Pagination";
-import { useNavigate } from "react-router-dom";
-import { SlMagnifier } from "react-icons/sl";
 import { MdAdd } from "react-icons/md";
+import { SlMagnifier } from "react-icons/sl";
 import AdminSkeleton from "./AdminSkeleton";
-import { useGetAllShowtimeByAdminQuery } from "../showtime/showtimeApiSlice";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Pagination from "../../components/Pagination";
+import { useGetAllReviewByAdminQuery } from "../review/reviewSliceApi";
 import { FaArrowDownWideShort, FaArrowUpShortWide } from "react-icons/fa6";
 import { LuArrowDownUp } from "react-icons/lu";
-import DisplayShowtime from "./DisplayShowtime";
+import DisplayReview from "./DisplayReview";
 
-const ShowTime = () => {
+const Review = () => {
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [sortBy, setSortBy] = useState("updatedAt");
   const [sortDir, setSortDir] = useState(-1);
   const [search, setSearch] = useState("");
   const limit = 10;
-
-  const { data: { showtime, totalShowtimes } = {}, isLoading } =
-    useGetAllShowtimeByAdminQuery(
+  const { data: { reviews, totalReviews } = {}, isLoading } =
+    useGetAllReviewByAdminQuery(
       { search, page, limit, sortBy, sortDir },
       {
         pollingInterval: 120000, // 2min the data will fetch again
         refertchOnFocus: true, // data will fetch when page on focus
         refetchOnMountOrArgChange: true, // it will refresh data when remount component
         // Set the query key to include the page so it updates when the page changes
-        queryKey: ["getAllShowtime", { search, page, sortBy, sortDir }],
+        queryKey: ["getAllReview", { search, page, sortBy, sortDir }],
       }
     );
 
-  const handleDisplayShowtime = () => {
-    if (!showtime) return;
-    if (Object.keys(showtime?.entities).length === 0) {
+  const handleDisplayReviews = () => {
+    if (!reviews) return;
+    if (Object.keys(reviews?.entities).length === 0) {
       return (
         <div className="h-[30vh] flex justify-center items-center text-white">
-          No Showtime
+          No Reviews
         </div>
       );
     }
 
-    const duplicatedShowtime = Object.entries(showtime.entities).flatMap(
-      ([_, showtime]) => showtime
+    const duplicatedReviews = Object.entries(reviews.entities).flatMap(
+      ([_, review]) => review
     );
 
     const headers = [
       "id",
       "movieDetails",
-      "theater",
-      "date",
-      "time",
+      "authorDetails",
+      "rating",
+      "reviewDetails",
       "createdAt",
       "updatedAt",
     ];
@@ -69,8 +68,9 @@ const ShowTime = () => {
                ${header === "actions" && "laptop:hidden"} ${
                   ["updatedAt", "createdAt"].includes(header) && "tablet:hidden"
                 } ${
-                  ["date", "time", "theater"].includes(header) &&
-                  "mobile:hidden"
+                  ["authorDetails", "rating", "reviewDetails"].includes(
+                    header
+                  ) && "mobile:hidden"
                 }`}
                 key={Math.random()}
               >
@@ -101,16 +101,14 @@ const ShowTime = () => {
           </tr>
         </thead>
         <tbody>
-          {Object.entries(duplicatedShowtime).map(
-            ([_, showtime], showtimeIndex) => (
-              <DisplayShowtime
-                showtime={showtime}
-                showtimeIndex={showtimeIndex + 1 + limit * (page - 1)}
-                key={Math.random()}
-                className={`h-[6rem]  px-4`}
-              />
-            )
-          )}
+          {Object.entries(duplicatedReviews).map(([_, review], reviewIndex) => (
+            <DisplayReview
+              review={review}
+              reviewIndex={reviewIndex + 1 + limit * (page - 1)}
+              key={Math.random()}
+              className={`h-[6rem]  px-4`}
+            />
+          ))}
         </tbody>
       </table>
     );
@@ -124,7 +122,7 @@ const ShowTime = () => {
       <div className="grid gap-[1rem]">
         <div className="flex justify-between flex-wrap items-center py-[0.4rem] border-b border-gray-600">
           <div className="flex gap-[1rem] items-center">
-            <h2 className="admin_page_title">Showtime</h2>
+            <h2 className="admin_page_title">Review</h2>
           </div>
         </div>
         {/* Body */}
@@ -144,27 +142,27 @@ const ShowTime = () => {
                   <SlMagnifier />
                 </div>
               </div>
-              {/* Add showtime */}
+              {/* Add review */}
               <div className="flex flex-wrap gap-[1rem] items-center ">
                 <button
                   className="text-cyan-300 flex gap-1 items-center px-5 border border-gray-500 rounded-md py-[0.7rem]"
-                  onClick={() => navigate("addShowtime")}
+                  onClick={() => navigate("addReview")}
                 >
                   <MdAdd />
-                  Add Showtime
+                  Add Review
                 </button>
               </div>
             </div>
-            {/* Theater List */}
-            {handleDisplayShowtime()}
-            {totalShowtimes > limit && (
+            {/* Review List */}
+            {handleDisplayReviews()}
+            {totalReviews > limit && (
               <div className="flex justify-between items-center">
                 <div className="text-gray-300 font-thin text-[0.8rem] border border-gray-700 bg-slate-800 flex items-center h-[2rem] px-2 rounded-md">
-                  Showing 10 of {totalShowtimes}
+                  Showing 10 of {totalReviews}
                 </div>
                 <Pagination
                   currentPage={page}
-                  totalPage={Math.ceil(totalShowtimes / 10)}
+                  totalPage={Math.ceil(totalReviews / 10)}
                   setCurrentPage={(page) => setPage(page)}
                 />
               </div>
@@ -177,4 +175,4 @@ const ShowTime = () => {
   );
 };
 
-export default ShowTime;
+export default Review;

@@ -7,14 +7,13 @@ import {
   setModalParams,
 } from "../../components/modal/ModalSlice";
 import { ConfirmModalActionEnum } from "../../components/modal/ConfirmModal";
-import { FaTrash } from "react-icons/fa6";
+import { FaStar, FaTrash } from "react-icons/fa6";
 import { IoIosArrowDown } from "react-icons/io";
 import { convertToAmPm } from "../../util/time";
 import { FaPencilAlt } from "react-icons/fa";
-import { initState } from "../showtime/showtimeSlice";
 import { useNavigate } from "react-router-dom";
 
-const DisplayShowtime = ({ showtime, showtimeIndex }) => {
+const DisplayReview = ({ review, reviewIndex }) => {
   const [open, setOpen] = useState(false);
   const isLaptop = useMediaQuery({ maxWidth: 1024 });
   const ref = useRef(null);
@@ -24,26 +23,26 @@ const DisplayShowtime = ({ showtime, showtimeIndex }) => {
   const dispatch = useDispatch();
 
   const handleDelete = async () => {
-    dispatch(
-      setModalParams({
-        message: `Are you sure you want to delete this showtime ?`,
-        confirmAction: ConfirmModalActionEnum.DELETE_SHOWTIME_BY_ID,
-        confirmActionParams: { _id: showtime._id },
-      })
-    );
-    dispatch(openModal(modalComponentEnum.CONFIRM));
+    // dispatch(
+    //   setModalParams({
+    //     message: `Are you sure you want to delete this review ?`,
+    //     confirmAction: ConfirmModalActionEnum.DELETE_SHOWTIME_BY_ID,
+    //     confirmActionParams: { _id: review._id },
+    //   })
+    // );
+    // dispatch(openModal(modalComponentEnum.CONFIRM));
   };
 
   const handleEdit = async () => {
-    const { date, theaterDetails, movieDetails } = showtime;
-    const initEditForm = {
-      selectedDay: date,
-      selectedMovie: movieDetails,
-      selectedMovieId: movieDetails._id,
-      selectedTheater: theaterDetails.name,
-    };
-    dispatch(initState(initEditForm));
-    navigate(`/admin/showtime/editShowtime/${showtime._id}`);
+    // const { date, theaterDetails, movieDetails } = review;
+    // const initEditForm = {
+    //   selectedDay: date,
+    //   selectedMovie: movieDetails,
+    //   selectedMovieId: movieDetails._id,
+    //   selectedTheater: theaterDetails.name,
+    // };
+    // dispatch(initState(initEditForm));
+    // navigate(`/admin/review/editShowtime/${review._id}`);
   };
 
   useEffect(() => {
@@ -69,25 +68,25 @@ const DisplayShowtime = ({ showtime, showtimeIndex }) => {
   const movieDetailsContent = () => (
     <div className="flex gap-4 items-center justify-between p-2  flex-1">
       <img
-        src={showtime.movieDetails.poster.url}
+        src={review.movieDetails.poster.url}
         alt="poster"
         className="w-[3rem]"
       />
       <div className="flex flex-col gap-1">
-        <span className="w-[10rem]">{showtime.movieDetails.title}</span>
+        <span className="w-[10rem]">{review.movieDetails.title}</span>
         <div className="flex gap-2">
           <span
             className={`text-[0.8rem] ${
-              showtime.movieDetails.isPublished
+              review.movieDetails.isPublished
                 ? "text-green-600"
                 : "text-red-600"
             }`}
           >
-            {showtime.movieDetails.isPublished ? "Public" : "Draft"}
+            {review.movieDetails.isPublished ? "Public" : "Draft"}
           </span>
           <span className="text-gray-500">-</span>
           <span className="text-[0.8rem] text-gray-400">
-            {showtime.movieDetails.runtime}
+            {review.movieDetails.runtime}
           </span>
         </div>
       </div>
@@ -96,26 +95,28 @@ const DisplayShowtime = ({ showtime, showtimeIndex }) => {
     </div>
   );
 
-  const theaterDetailContent = () => (
-    <div className="flex p-2 flex-1 text-gray-300 text-[0.9rem]">
-      <span>Room: {showtime.theaterDetails.name}</span>
+  const authorDetailsContent = () => (
+    <div className="flex flex-col p-2 flex-1 text-gray-300 text-[0.9rem]">
+      <span>{review.authorName}</span>
+      {review.authorCop && <span>{review.authorCop}</span>}
+      <span>{review.date}</span>
     </div>
   );
 
-  const dateContent = () => (
+  const ratingContent = () => (
     <div className="flex p-2 flex-1 text-gray-300 text-[0.9rem]">
-      <span>{showtime.date}</span>
+      {Array.from({ length: review.rating }).map((_, i) => (
+        <FaStar className="text-yellow-500" key={`rating ${review._id} ${i}`} />
+      ))}
     </div>
   );
 
-  const timeContent = () => (
-    <div className="flex gap-4 items-center p-2 flex-1 text-[0.9rem]">
-      <div className="flex flex-col gap-2">
-        <span>{convertToAmPm(showtime.startTime)}</span>
-        <span>{convertToAmPm(showtime.endTime)}</span>
-      </div>
-
-      <IoIosArrowDown className="tablet:block hidden" />
+  const reviewContent = () => (
+    <div className="flex flex-col p-2 flex-1 text-gray-300 text-[0.9rem] max-w-[12rem]">
+      <p className="line-clamp-3">{review.reviewContent} </p>
+      <a href={review.fullReviewLink} target="_blank" className="text-cyan-500">
+        Full Review
+      </a>
     </div>
   );
 
@@ -154,13 +155,13 @@ const DisplayShowtime = ({ showtime, showtimeIndex }) => {
   };
 
   let contents = {
-    id: indexContent(showtimeIndex),
+    id: indexContent(reviewIndex),
     movieDetails: movieDetailsContent(),
-    theaterDetails: theaterDetailContent(),
-    date: dateContent(),
-    time: timeContent(),
-    createdAt: createdAtContent(showtime["createdAt"]),
-    updatedAt: updatedAtContent(showtime["updatedAt"]),
+    authorDetails: authorDetailsContent(),
+    rating: ratingContent(),
+    reviewDetails: reviewContent(),
+    createdAt: createdAtContent(review["createdAt"]),
+    updatedAt: updatedAtContent(review["updatedAt"]),
     actions: actionsContent(),
   };
 
@@ -174,7 +175,7 @@ const DisplayShowtime = ({ showtime, showtimeIndex }) => {
             className={`bg-[rgb(36,36,41)] laptop:cursor-pointer ${
               key === "actions" && "laptop:hidden"
             } ${["updatedAt", "createdAt"].includes(key) && "tablet:hidden"} ${
-              ["theaterDetails", "date", "time"].includes(key) &&
+              ["authorDetails", "rating", "reviewDetails"].includes(key) &&
               "mobile:hidden"
             }`}
           >
@@ -190,16 +191,16 @@ const DisplayShowtime = ({ showtime, showtimeIndex }) => {
           <div className="flex flex-wrap p-2 items-center gap-3">
             <div className="mobile:grid gap-2 flex-1 justify-center hidden">
               <div className="flex gap-1 flex-1">
-                <span className="font-thin">Theater:</span>
-                {contents["theaterDetails"]}
+                <span className="font-thin">Author:</span>
+                {contents["authorDetails"]}
               </div>
               <div className="flex gap-1 flex-1">
-                <span className="font-thin">Time:</span>
-                {contents["time"]}
+                <span className="font-thin">Rating:</span>
+                {contents["rating"]}
               </div>
               <div className="flex gap-1">
-                <span className="font-thin">Date:</span>
-                {contents["date"]}
+                <span className="font-thin">reviewDetails:</span>
+                {contents["reviewDetails"]}
               </div>
             </div>
             <div className="hidden gap-2 flex-1 justify-center tablet:grid">
@@ -222,4 +223,4 @@ const DisplayShowtime = ({ showtime, showtimeIndex }) => {
   );
 };
 
-export default DisplayShowtime;
+export default DisplayReview;

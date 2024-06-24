@@ -6,6 +6,7 @@ const inputTypeEnum = Object.freeze({
   FILE: "file",
   VIDEO: "video",
   IMG_URL: "img_url",
+  NUMBER: "number",
 });
 
 const inputValidateEnum = Object.freeze({

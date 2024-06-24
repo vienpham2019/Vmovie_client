@@ -1,8 +1,5 @@
-import { useDispatch } from "react-redux";
 import ShowtimeEdit from "./ShowtimeEdit";
-import { useEffect } from "react";
-import { resetState } from "./showtimeSlice";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const EditShowtime = () => {
   return (

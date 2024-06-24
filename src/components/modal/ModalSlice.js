@@ -6,13 +6,14 @@ import MovieCheckOutSummaryModal from "../../features/movie/MovieCheckOutSummary
 import ProductOptionsModal from "../../features/product/ProductOptionsModal";
 import ConfirmModal from "./ConfirmModal";
 import ProductDetailModal from "../../features/product/ProductDetailModal";
-import Showtime_selectMoviesModal from "../../features/showtime/Showtime_selectMoviesModal";
 import TheaterLayoutModal from "../../features/theater/TheaterLayoutModal";
+import SelectMoviesModal from "../../features/movie/SelectMoviesModal";
 
 const initState = {
   isModalOpen: false,
   modalContentTitle: null,
   modalParams: null,
+  modalResponse: null,
 };
 
 export const modalSlice = createSlice({
@@ -26,15 +27,28 @@ export const modalSlice = createSlice({
     setModalParams: (state, action) => {
       state.modalParams = action.payload;
     },
-    closeModal: () => {
+    setModalResponse: (state, action) => {
+      state.modalResponse = action.payload;
+    },
+    clearModalResponse: (state) => {
+      state.modalResponse = null;
+    },
+    closeModal: (state) => {
       return {
         ...initState,
+        modalResponse: state.modalResponse,
       };
     },
   },
 });
 
-export const { openModal, closeModal, setModalParams } = modalSlice.actions;
+export const {
+  openModal,
+  closeModal,
+  setModalParams,
+  setModalResponse,
+  clearModalResponse,
+} = modalSlice.actions;
 
 const modalComponentEnum = Object.freeze({
   PRIVATE_POLICY: "PRIVATE_POLICY",
@@ -71,7 +85,7 @@ const getModalComponent = (modalIdentifier) => {
     case modalComponentEnum.CONFIRM:
       return <ConfirmModal />;
     case modalComponentEnum.SELECT_MOVIE:
-      return <Showtime_selectMoviesModal />;
+      return <SelectMoviesModal />;
     case modalComponentEnum.THEATER_LAYOUT:
       return <TheaterLayoutModal />;
     default:
