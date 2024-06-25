@@ -1,7 +1,7 @@
 import { FaEye, FaLock, FaLockOpen, FaStar, FaTrash } from "react-icons/fa6";
 import { RiEdit2Fill } from "react-icons/ri";
 import { IoIosArrowDown } from "react-icons/io";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import { Link } from "react-router-dom";
 import {
@@ -9,11 +9,18 @@ import {
   useDraftMovieMutation,
   usePublishedMovieMutation,
 } from "../movie/movieApiSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   notificationMessageEnum,
   setMessage,
 } from "../../components/notificationMessage/notificationMessageSlice";
+import { ConfirmModalActionEnum } from "../../components/modal/ConfirmModal";
+import {
+  clearModalResponse,
+  modalComponentEnum,
+  openModal,
+  setModalParams,
+} from "../../components/modal/ModalSlice";
 
 const indexContent = (index) => <div className="text-center">{index}</div>;
 const posterContent = (poster) => (
@@ -116,8 +123,7 @@ const updatedAtContent = (updatedAt) => (
 const DisplayMovie = ({ movie, movieIndex }) => {
   const [open, setOpen] = useState(false);
   const isLaptop = useMediaQuery({ maxWidth: 1024 });
-  const ref = useRef(null);
-  const extand_ref = useRef(null);
+  const { modalResponse } = useSelector((state) => state.modal);
   const [deleteMovie, { isLoading: deleteLoading }] =
     useDeleteMovieByIdMutation();
   const [publishedMovie, { isLoading: publishedLoading }] =
@@ -125,16 +131,49 @@ const DisplayMovie = ({ movie, movieIndex }) => {
   const [draftMovie, { isLoading: draftLoading }] = useDraftMovieMutation();
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    const handleModalResponse = async () => {
+      if (modalResponse?.isConfirm) {
+        if (
+          modalResponse.confirmAction.action ===
+            ConfirmModalActionEnum.DELETE_MOVIE_BY_ID &&
+          modalResponse.confirmAction.movieId === movie._id
+        ) {
+          const res = await deleteMovie({ movieId: movie._id });
+          if (res?.data?.message) {
+            dispatch(
+              setMessage({
+                message: res.data.message,
+                messageType: notificationMessageEnum.SUCCESS,
+              })
+            );
+          } else {
+            dispatch(
+              setMessage({
+                message: res.error.data.message,
+                messageType: notificationMessageEnum.ERROR,
+              })
+            );
+          }
+          dispatch(clearModalResponse());
+        }
+      }
+    };
+
+    handleModalResponse();
+  }, [modalResponse, movie._id, dispatch]);
+
   const handleDelete = async () => {
-    const res = await deleteMovie({ movieId: movie._id });
-    if (!res?.error) {
-      dispatch(
-        setMessage({
-          message: "Delete movie success",
-          messageType: notificationMessageEnum.SUCCESS,
-        })
-      );
-    }
+    dispatch(
+      setModalParams({
+        message: `Are you sure you want to delete this movie ?`,
+        confirmAction: {
+          action: ConfirmModalActionEnum.DELETE_MOVIE_BY_ID,
+          movieId: movie._id,
+        },
+      })
+    );
+    dispatch(openModal(modalComponentEnum.CONFIRM));
   };
 
   const handlePublished = async () => {
@@ -161,24 +200,6 @@ const DisplayMovie = ({ movie, movieIndex }) => {
     }
   };
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        ref.current &&
-        !ref.current.contains(event.target) &&
-        extand_ref.current &&
-        !extand_ref.current.contains(event.target)
-      ) {
-        setOpen(false);
-      }
-    };
-
-    document.body.addEventListener("click", handleClickOutside);
-
-    return () => {
-      document.body.removeEventListener("click", handleClickOutside);
-    };
-  }, [setOpen]);
   let contents = {
     id: indexContent(movieIndex),
     poster: posterContent(movie["poster"]),
@@ -210,7 +231,7 @@ const DisplayMovie = ({ movie, movieIndex }) => {
     );
   return (
     <>
-      <tr ref={ref} onClick={() => isLaptop && setOpen(!open)}>
+      <tr onClick={() => isLaptop && setOpen(!open)}>
         {Object.entries(contents).map(([key, movieContent], index) => (
           <td
             key={"content" + movie["title"] + index}
@@ -224,7 +245,7 @@ const DisplayMovie = ({ movie, movieIndex }) => {
           </td>
         ))}
       </tr>
-      <tr ref={extand_ref} className={`${(!open || !isLaptop) && "hidden"}`}>
+      <tr className={`${(!open || !isLaptop) && "hidden"}`}>
         <td
           colSpan={9}
           className="border border-gray-500 border-t-0 border-l-0 bg-[rgb(36,36,41)]"

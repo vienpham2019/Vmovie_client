@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useMediaQuery } from "react-responsive";
 import {
+  clearModalResponse,
   modalComponentEnum,
   openModal,
   setModalParams,
@@ -13,22 +14,60 @@ import { convertToAmPm } from "../../util/time";
 import { FaPencilAlt } from "react-icons/fa";
 import { initState } from "../showtime/showtimeSlice";
 import { useNavigate } from "react-router-dom";
+import {
+  notificationMessageEnum,
+  setMessage,
+} from "../../components/notificationMessage/notificationMessageSlice";
+import { useDeleteShowtimeMutation } from "../showtime/showtimeApiSlice";
 
 const DisplayShowtime = ({ showtime, showtimeIndex }) => {
   const [open, setOpen] = useState(false);
   const isLaptop = useMediaQuery({ maxWidth: 1024 });
-  const ref = useRef(null);
-  const extand_ref = useRef(null);
+  const { modalResponse } = useSelector((state) => state.modal);
+  const [deleteShowtime] = useDeleteShowtimeMutation();
   const navigate = useNavigate();
-
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    const handleModalResponse = async () => {
+      if (modalResponse?.isConfirm) {
+        if (
+          modalResponse.confirmAction.action ===
+            ConfirmModalActionEnum.DELETE_SHOWTIME_BY_ID &&
+          modalResponse.confirmAction.showtimeId === showtime._id
+        ) {
+          const res = await deleteShowtime({ _id: showtime._id });
+          if (res?.data?.message) {
+            dispatch(
+              setMessage({
+                message: res.data.message,
+                messageType: notificationMessageEnum.SUCCESS,
+              })
+            );
+          } else {
+            dispatch(
+              setMessage({
+                message: res.error.data.message,
+                messageType: notificationMessageEnum.ERROR,
+              })
+            );
+          }
+          dispatch(clearModalResponse());
+        }
+      }
+    };
+
+    handleModalResponse();
+  }, [modalResponse, showtime._id, dispatch]);
 
   const handleDelete = async () => {
     dispatch(
       setModalParams({
         message: `Are you sure you want to delete this showtime ?`,
-        confirmAction: ConfirmModalActionEnum.DELETE_SHOWTIME_BY_ID,
-        confirmActionParams: { _id: showtime._id },
+        confirmAction: {
+          action: ConfirmModalActionEnum.DELETE_SHOWTIME_BY_ID,
+          showtimeId: showtime._id,
+        },
       })
     );
     dispatch(openModal(modalComponentEnum.CONFIRM));
@@ -45,25 +84,6 @@ const DisplayShowtime = ({ showtime, showtimeIndex }) => {
     dispatch(initState(initEditForm));
     navigate(`/admin/showtime/editShowtime/${showtime._id}`);
   };
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        ref.current &&
-        !ref.current.contains(event.target) &&
-        extand_ref.current &&
-        !extand_ref.current.contains(event.target)
-      ) {
-        setOpen(false);
-      }
-    };
-
-    document.body.addEventListener("click", handleClickOutside);
-
-    return () => {
-      document.body.removeEventListener("click", handleClickOutside);
-    };
-  }, [setOpen]);
 
   const indexContent = (index) => <div className="text-center">{index}</div>;
   const movieDetailsContent = () => (
@@ -166,7 +186,7 @@ const DisplayShowtime = ({ showtime, showtimeIndex }) => {
 
   return (
     <>
-      <tr ref={ref} onClick={() => isLaptop && setOpen(!open)}>
+      <tr onClick={() => isLaptop && setOpen(!open)}>
         {Object.entries(contents).map(([key, productContent], index) => (
           <td
             // key={"content" + product["itemName"] + index}
@@ -182,7 +202,7 @@ const DisplayShowtime = ({ showtime, showtimeIndex }) => {
           </td>
         ))}
       </tr>
-      <tr ref={extand_ref} className={`${(!open || !isLaptop) && "hidden"}`}>
+      <tr className={`${(!open || !isLaptop) && "hidden"}`}>
         <td
           colSpan={9}
           className="border border-gray-500 border-t-0 border-l-0 bg-[rgb(36,36,41)]"

@@ -7,6 +7,7 @@ import {
   hourAndMinToMin,
   isTimeBetween,
   subtractTimes,
+  timeToMinutes,
 } from "../../util/time";
 import {
   notificationMessageEnum,
@@ -74,7 +75,15 @@ const Showtime_displaySetTime = () => {
       return;
     }
     const { startTime, endTime } = showTime;
-
+    if (startTime > endTime) {
+      dispatch(
+        setMessage({
+          message: "End time needs to be after the start time.",
+          messageType: notificationMessageEnum.WARNING,
+        })
+      );
+      return;
+    }
     const { hours, minutes } = convertMinutesToHoursAndMinutesString(
       selectedMovie.runtime
     );
@@ -105,14 +114,14 @@ const Showtime_displaySetTime = () => {
       ({ startTime: s_startTime, endTime: s_endTime }) => {
         return (
           isTimeBetween({
-            startTime: s_startTime,
-            endTime: s_endTime,
-            checkTime: startTime,
+            startTime,
+            endTime,
+            checkTime: s_startTime,
           }) ||
           isTimeBetween({
-            startTime: s_startTime,
-            endTime: s_endTime,
-            checkTime: endTime,
+            startTime,
+            endTime,
+            checkTime: s_endTime,
           })
         );
       }
@@ -180,7 +189,7 @@ const Showtime_displaySetTime = () => {
                 }
               });
             }}
-            className="p-2 border border-gray-600 text-gray-200 rounded hover:bg-gray-700"
+            className="p-2 border border-gray-600 text-gray-200 rounded hover:bg-gray-700 text-[0.8rem]"
           >
             View room layout
           </button>

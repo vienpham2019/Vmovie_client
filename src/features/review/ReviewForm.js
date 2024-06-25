@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import {
-  initProductFormData,
+  initReviewFormData,
+  resetReviewFormdata,
   setReviewFormData,
 } from "../../components/form/formSlice";
 import {
@@ -69,20 +70,15 @@ const ReviewForm = ({ handleSubmit }) => {
           messageType: notificationMessageEnum.ERROR,
         })
       );
+      return;
     }
     let updatedFormData = JSON.parse(JSON.stringify(reviewFormData));
 
     for (const key in reviewFormData) {
       const value = updatedFormData[key].value;
       if (updatedFormData.hasOwnProperty(key)) {
-        if (
-          key !== "options" &&
-          (value === "" || // Check if value is an empty string
-            (Array.isArray(value) && value.length === 0) || // Check if value is an empty array
-            (typeof value === "object" &&
-              value !== null &&
-              Object.keys(value).length === 0)) // Check if value is an empty object
-        ) {
+        if (value === "") {
+          console.log(updatedFormData[key], key);
           isInvalid = true;
           updatedFormData[key].validate = inputValidateEnum.INVALID;
         }
@@ -90,7 +86,7 @@ const ReviewForm = ({ handleSubmit }) => {
     }
 
     if (isInvalid) {
-      dispatch(initProductFormData(updatedFormData));
+      dispatch(initReviewFormData(updatedFormData));
       dispatch(
         setMessage({
           message: "All fields are required.",
@@ -101,7 +97,7 @@ const ReviewForm = ({ handleSubmit }) => {
     }
 
     await handleSubmit();
-    // dispatch(resetReviewFormdata());
+    dispatch(resetReviewFormdata());
   };
 
   const onSelectDate = (date) => {
@@ -151,16 +147,22 @@ const ReviewForm = ({ handleSubmit }) => {
                     className="flex items-center"
                     onClick={() => setOpenSelectDay(true)}
                   >
-                    <div className="relative">
+                    <div
+                      className={`relative ${
+                        reviewFormData.date.validate ===
+                          inputValidateEnum.INVALID && "border border-red-500"
+                      } rounded-lg`}
+                    >
                       <div className="absolute cursor-pointer inset-y-0 start-0 flex items-center ps-3 pointer-events-none text-gray-500 text-[1.3rem]">
                         <IoCalendar />
                       </div>
+
                       <input
-                        name="start"
+                        name="date"
                         type="string"
                         value={reviewFormData.date.value}
                         readOnly
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        className={`bg-gray-50 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
                         placeholder="Select date"
                       />
                     </div>

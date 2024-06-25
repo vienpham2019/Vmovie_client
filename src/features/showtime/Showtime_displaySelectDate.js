@@ -11,7 +11,7 @@ const Showtime_displaySelectDate = () => {
     (state) => state.showtime
   );
   const dispatch = useDispatch();
-  const { data: { metadata: countShowtime } = [] } =
+  const { data: { metadata: countShowtimeData } = [] } =
     useCountShowtimeDayByMovieIdQuery(
       { movie: selectedMovie },
       {
@@ -23,9 +23,9 @@ const Showtime_displaySelectDate = () => {
     );
 
   useEffect(() => {
-    if (countShowtime) {
+    if (countShowtimeData) {
       const updateCountShowtimeNote = {};
-      countShowtime.forEach((count) => {
+      countShowtimeData.forEach((count) => {
         updateCountShowtimeNote[count.date] = {
           times: count.times,
           count: count.count,
@@ -38,13 +38,14 @@ const Showtime_displaySelectDate = () => {
         })
       );
     }
-  }, [dispatch, countShowtime]);
+  }, [dispatch, countShowtimeData]);
 
   const onSelectDate = (day) => {
     dispatch(setKey({ key: "selectedDay", value: day }));
   };
 
   const displayNotification = (notification, day) => {
+    if (!notification) return;
     return (
       <div>
         {notification?.times.length > 0 && (

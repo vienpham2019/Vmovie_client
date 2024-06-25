@@ -14,7 +14,7 @@ import OutsideClickDetector from "./OutsideClickDetector";
 
 const Calendar = ({
   onSelectDate,
-  notifications = [],
+  notifications = {},
   displayNotification,
   selectDay,
 }) => {
@@ -150,7 +150,7 @@ const Calendar = ({
             const [numMonth, numDay] = day.split("/");
             const isTheSameMonth = +numMonth === month + 1;
             const isInNotifications =
-              notifications.length > 0 && !!notifications[day];
+              Object.keys(notifications).length > 0 && !!notifications[day];
             return (
               <div
                 key={`${
@@ -170,11 +170,10 @@ const Calendar = ({
                   {numDay}
                   {isInNotifications && (
                     <div className="absolute text-red-700 text-[0.7rem] font-bold -top-[0.7rem] left-[1.2rem] border-collapse border border-red-300 aspect-square w-[1.4rem] rounded-full flex justify-center items-center bg-black">
-                      {notifications[day]?.count || ""}
+                      {(notifications && notifications[day]?.count) || ""}
                     </div>
                   )}
-
-                  {notifications.length > 0 &&
+                  {Object.keys(notifications).length > 0 &&
                     displayNotification(notifications[day], day)}
                 </div>
               </div>

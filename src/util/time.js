@@ -126,14 +126,10 @@ const timeMin = (timeStr1, timeStr2) => {
 };
 
 const isTimeBetween = ({ startTime, endTime, checkTime }) => {
-  const [startHours, startMinutes] = startTime.split(":").map(Number);
-  const [endHours, endMinutes] = endTime.split(":").map(Number);
-  const [checkHours, checkMinutes] = checkTime.split(":").map(Number);
-
   // Convert times to total minutes since midnight for easier comparison
-  const totalStartMinutes = startHours * 60 + startMinutes;
-  const totalEndMinutes = endHours * 60 + endMinutes;
-  const totalCheckMinutes = checkHours * 60 + checkMinutes;
+  const totalStartMinutes = timeToMinutes(startTime);
+  const totalEndMinutes = timeToMinutes(endTime);
+  const totalCheckMinutes = timeToMinutes(checkTime);
 
   // Check if checkTime is between startTime and endTime
   return (

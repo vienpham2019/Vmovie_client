@@ -6,12 +6,19 @@ import {
   notificationMessageEnum,
   setMessage,
 } from "../../components/notificationMessage/notificationMessageSlice";
+import { useEffect } from "react";
+import { resetReviewFormdata } from "../../components/form/formSlice";
 
 const AddReview = () => {
   const { reviewFormData } = useSelector((state) => state.form);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [createReview] = useCreateReviewMutation();
+
+  useEffect(() => {
+    dispatch(resetReviewFormdata());
+  }, [dispatch]);
+
   const handleAddReview = async () => {
     const newReview = Object.entries(reviewFormData).reduce(
       (acc, [key, value]) => {
@@ -33,6 +40,7 @@ const AddReview = () => {
     );
     navigate("/admin/review");
   };
+
   return (
     <div className="p-[1rem] mobile:p-2">
       <div className="py-[0.4rem] border-b border-gray-600 flex items-center gap-2 text-white font-thin">
