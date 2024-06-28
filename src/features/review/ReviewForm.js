@@ -24,7 +24,7 @@ import { useEffect, useState } from "react";
 import { ImCross } from "react-icons/im";
 import { FaStar } from "react-icons/fa6";
 
-const ReviewForm = ({ handleSubmit }) => {
+const ReviewForm = ({ handleSubmit, selectedMovieInit }) => {
   const { modalResponse } = useSelector((state) => state.modal);
   const dispatch = useDispatch();
   const { reviewFormData } = useSelector((state) => state.form);
@@ -42,6 +42,12 @@ const ReviewForm = ({ handleSubmit }) => {
       dispatch(clearModalResponse());
     }
   }, [modalResponse, dispatch]);
+
+  useEffect(() => {
+    if (selectedMovieInit) {
+      setSelectedMovie(selectedMovieInit);
+    }
+  }, [selectedMovieInit]);
 
   const handleOnChange = (value, name) => {
     dispatch(

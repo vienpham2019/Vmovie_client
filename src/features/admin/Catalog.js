@@ -19,6 +19,7 @@ const Catalog = () => {
   const [filter, setFilter] = useState("All");
   const [search, setSearch] = useState("");
   const limit = 10;
+  const [openExtend, setOpenExtend] = useState(null);
   const { data, isLoading } = useGetAllMovieByAdminQuery(
     { search, page, limit, sortBy, sortDir, filter },
     {
@@ -113,6 +114,8 @@ const Catalog = () => {
           {Object.entries(duplicatedMovies).map(([_, movie], movieIndex) => (
             <DisplayMovie
               movie={movie}
+              openExtend={openExtend}
+              setOpenExtend={(index) => setOpenExtend(index)}
               movieIndex={movieIndex + 1 + limit * (page - 1)}
               key={movie["title"] + movieIndex}
               className={`h-[6rem]  px-4`}

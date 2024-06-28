@@ -120,8 +120,7 @@ const updatedAtContent = (updatedAt) => (
   </div>
 );
 
-const DisplayMovie = ({ movie, movieIndex }) => {
-  const [open, setOpen] = useState(false);
+const DisplayMovie = ({ movie, movieIndex, openExtend, setOpenExtend }) => {
   const isLaptop = useMediaQuery({ maxWidth: 1024 });
   const { modalResponse } = useSelector((state) => state.modal);
   const [deleteMovie, { isLoading: deleteLoading }] =
@@ -231,7 +230,18 @@ const DisplayMovie = ({ movie, movieIndex }) => {
     );
   return (
     <>
-      <tr onClick={() => isLaptop && setOpen(!open)}>
+      <tr
+        onClick={() =>
+          isLaptop &&
+          setOpenExtend(() => {
+            if (openExtend && openExtend === movieIndex) {
+              return null;
+            } else {
+              return movieIndex;
+            }
+          })
+        }
+      >
         {Object.entries(contents).map(([key, movieContent], index) => (
           <td
             key={"content" + movie["title"] + index}
@@ -245,7 +255,9 @@ const DisplayMovie = ({ movie, movieIndex }) => {
           </td>
         ))}
       </tr>
-      <tr className={`${(!open || !isLaptop) && "hidden"}`}>
+      <tr
+        className={`${(!(openExtend === movieIndex) || !isLaptop) && "hidden"}`}
+      >
         <td
           colSpan={9}
           className="border border-gray-500 border-t-0 border-l-0 bg-[rgb(36,36,41)]"

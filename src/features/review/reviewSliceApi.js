@@ -36,10 +36,27 @@ export const reviewApiSlice = apiSlice.injectEndpoints({
           ];
       },
     }),
+    getReviewDetails: builder.query({
+      query: ({ _id }) => ({
+        url: `/review/details/${_id}`,
+        method: "GET",
+      }),
+    }),
     createReview: builder.mutation({
       query: (payload) => ({
         url: `/review/new`,
         method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: (result, err, arg) => [
+        { type: "Review" },
+        { type: "Review", id: "TOTAL_COUNT" },
+      ],
+    }),
+    updateReview: builder.mutation({
+      query: ({ _id, payload }) => ({
+        url: `/review/update/${_id}`,
+        method: "PATCH",
         body: payload,
       }),
       invalidatesTags: (result, err, arg) => [
@@ -62,6 +79,8 @@ export const reviewApiSlice = apiSlice.injectEndpoints({
 
 export const {
   useGetAllReviewByAdminQuery,
+  useGetReviewDetailsQuery,
   useCreateReviewMutation,
+  useUpdateReviewMutation,
   useDeleteReviewMutation,
 } = reviewApiSlice;

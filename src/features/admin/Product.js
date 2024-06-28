@@ -21,6 +21,7 @@ const Product = () => {
   const [filter, setFilter] = useState("All");
   const [search, setSearch] = useState("");
   const limit = 10;
+  const [openExtend, setOpenExtend] = useState(null);
   const { data: { metadata: allProductTypes } = [] } =
     useGetAllProductTypesQuery(
       {},
@@ -117,6 +118,8 @@ const Product = () => {
             ([_, product], productIndex) => (
               <DisplayProduct
                 product={product}
+                openExtend={openExtend}
+                setOpenExtend={(index) => setOpenExtend(index)}
                 productIndex={productIndex + 1 + limit * (page - 1)}
                 key={Math.random()}
                 className={`h-[6rem]  px-4`}

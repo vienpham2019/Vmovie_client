@@ -16,6 +16,7 @@ const Review = () => {
   const [sortDir, setSortDir] = useState(-1);
   const [search, setSearch] = useState("");
   const limit = 10;
+  const [openExtend, setOpenExtend] = useState(null);
   const { data: { reviews, totalReviews } = {}, isLoading } =
     useGetAllReviewByAdminQuery(
       { search, page, limit, sortBy, sortDir },
@@ -81,7 +82,9 @@ const Review = () => {
                   // key={header + "attach"}
                 >
                   {header === "actions" ? "" : header}{" "}
-                  {!["id", "actions", "time"].includes(header) && (
+                  {!["id", "actions", "time", "reviewDetails"].includes(
+                    header
+                  ) && (
                     <div
                       className="cursor-pointer"
                       onClick={() => handleSortClick(header)}
@@ -104,6 +107,8 @@ const Review = () => {
           {Object.entries(duplicatedReviews).map(([_, review], reviewIndex) => (
             <DisplayReview
               review={review}
+              openExtend={openExtend}
+              setOpenExtend={(index) => setOpenExtend(index)}
               reviewIndex={reviewIndex + 1 + limit * (page - 1)}
               key={Math.random()}
               className={`h-[6rem]  px-4`}

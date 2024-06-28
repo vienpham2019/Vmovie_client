@@ -16,10 +16,11 @@ import {
   notificationMessageEnum,
   setMessage,
 } from "../../components/notificationMessage/notificationMessageSlice";
+import { useNavigate } from "react-router-dom";
 
-const DisplayReview = ({ review, reviewIndex }) => {
-  const [open, setOpen] = useState(false);
+const DisplayReview = ({ review, reviewIndex, openExtend, setOpenExtend }) => {
   const { modalResponse } = useSelector((state) => state.modal);
+  const navigate = useNavigate();
   const isLaptop = useMediaQuery({ maxWidth: 1024 });
   const dispatch = useDispatch();
   const [deleteReview] = useDeleteReviewMutation();
@@ -70,15 +71,7 @@ const DisplayReview = ({ review, reviewIndex }) => {
   };
 
   const handleEdit = async () => {
-    // const { date, theaterDetails, movieDetails } = review;
-    // const initEditForm = {
-    //   selectedDay: date,
-    //   selectedMovie: movieDetails,
-    //   selectedMovieId: movieDetails._id,
-    //   selectedTheater: theaterDetails.name,
-    // };
-    // dispatch(initState(initEditForm));
-    // navigate(`/admin/review/editShowtime/${review._id}`);
+    navigate(`/admin/review/editReview/${review._id}`);
   };
 
   const indexContent = (index) => <div className="text-center">{index}</div>;
@@ -184,7 +177,18 @@ const DisplayReview = ({ review, reviewIndex }) => {
 
   return (
     <>
-      <tr onClick={() => isLaptop && setOpen(!open)}>
+      <tr
+        onClick={() =>
+          isLaptop &&
+          setOpenExtend(() => {
+            if (openExtend && openExtend === reviewIndex) {
+              return null;
+            } else {
+              return reviewIndex;
+            }
+          })
+        }
+      >
         {Object.entries(contents).map(([key, productContent], index) => (
           <td
             // key={"content" + product["itemName"] + index}
@@ -200,7 +204,11 @@ const DisplayReview = ({ review, reviewIndex }) => {
           </td>
         ))}
       </tr>
-      <tr className={`${(!open || !isLaptop) && "hidden"}`}>
+      <tr
+        className={`${
+          (!(openExtend === reviewIndex) || !isLaptop) && "hidden"
+        }`}
+      >
         <td
           colSpan={9}
           className="border border-gray-500 border-t-0 border-l-0 bg-[rgb(36,36,41)]"
