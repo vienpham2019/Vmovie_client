@@ -161,9 +161,9 @@ const formatDate = ({ date, formatType }) => {
 
     case DateFormatTypeEnum.VERBOSE:
       const options = {
-        weekday: "long",
+        weekday: "short",
         year: "numeric",
-        month: "long",
+        month: "short",
         day: "numeric",
       };
       return date.toLocaleDateString(undefined, options);
@@ -176,6 +176,12 @@ const formatDate = ({ date, formatType }) => {
     default:
       throw new Error("Unsupported format type");
   }
+};
+
+const getWeekday = (date) => {
+  const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const dayIndex = new Date(date).getDay();
+  return daysOfWeek[dayIndex];
 };
 
 const isDateBetween = ({ dateToCheck, startDate, endDate }) => {
@@ -227,4 +233,5 @@ module.exports = {
   isBeforeDate,
   isAfterDate,
   getLastDayOfMonth,
+  getWeekday,
 };

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useMediaQuery } from "react-responsive";
 import {
@@ -58,7 +58,7 @@ const DisplayShowtime = ({ showtime, showtimeIndex }) => {
     };
 
     handleModalResponse();
-  }, [modalResponse, showtime._id, dispatch]);
+  }, [modalResponse, showtime._id, dispatch, deleteShowtime]);
 
   const handleDelete = async () => {
     dispatch(

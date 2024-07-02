@@ -57,7 +57,7 @@ const Calendar = ({
   useEffect(() => {
     let { year, month } = getCurrentMonth();
     if (selectDay) {
-      let [selectMonth, _, selectYear] = selectDay.split("/");
+      let [selectMonth, , selectYear] = selectDay.split("/");
 
       year = +selectYear;
       month = +selectMonth - 1;

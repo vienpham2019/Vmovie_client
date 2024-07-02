@@ -3,7 +3,7 @@ const hourAndMinToMin = (hour, min) => {
 };
 
 const convertMinutesToHoursAndMinutesString = (durationStr) => {
-  const totalMinutes = parseInt(durationStr.replace("min", ""), 10);
+  const totalMinutes = +durationStr.replace("min", "");
   return convertMinutesToHoursAndMinutes(totalMinutes);
 };
 

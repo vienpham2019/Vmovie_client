@@ -41,6 +41,21 @@ export const showtimeApiSlice = apiSlice.injectEndpoints({
         url: `/showtime/timeline?date=${date}&theaterName=${theaterName}`,
       }),
     }),
+    getAllShowtimeByDate: builder.query({
+      query: ({ date }) => ({
+        url: `/showtime/all/${date}`,
+      }),
+    }),
+    getAllShowtimeByMovie: builder.query({
+      query: ({ movieId }) => ({
+        url: `/showtime/allByMovie/${movieId}`,
+      }),
+    }),
+    getAllShowtimeDates: builder.query({
+      query: () => ({
+        url: `/showtime/allDates`,
+      }),
+    }),
     countShowtimeDayByMovieId: builder.query({
       query: ({ movie }) => ({
         url: `/showtime/countShowtimeDay/${movie._id}`,
@@ -68,7 +83,10 @@ export const showtimeApiSlice = apiSlice.injectEndpoints({
 
 export const {
   useGetAllShowtimeByAdminQuery,
+  useGetAllShowtimeDatesQuery,
   useGetAllShowtimeTimelineQuery,
+  useGetAllShowtimeByDateQuery,
+  useGetAllShowtimeByMovieQuery,
   useCountShowtimeDayByMovieIdQuery,
   useCreateShowtimeMutation,
   useDeleteShowtimeMutation,

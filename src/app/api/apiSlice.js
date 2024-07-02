@@ -19,7 +19,6 @@ const baseQuery = fetchBaseQuery({
 
 const baseQueryWithReauth = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
-
   if (result?.error?.status === 500) {
     // send refresh token to get new access token
     const refreshRes = await baseQuery("/auth/refresh", api, extraOptions);
@@ -33,7 +32,7 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
     }
   }
 
-  if (result?.error?.data?.message) {
+  if (result?.error?.data?.message && args.url !== "/auth/refresh") {
     api.dispatch(
       setMessage({
         message: result.error.data.message,

@@ -1,6 +1,6 @@
-import { Link, Outlet, useNavigate } from "react-router-dom";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import Logo from "../components/Logo";
-import { LuLogOut, LuLayoutGrid, LuFilm } from "react-icons/lu";
+import { LuLogOut, LuFilm } from "react-icons/lu";
 import { GiForkKnifeSpoon, GiTheater } from "react-icons/gi";
 
 import UserIcon from "../components/UserIcon";
@@ -11,26 +11,38 @@ import { HiOutlineCalendarDays } from "react-icons/hi2";
 import { MdOutlineRateReview } from "react-icons/md";
 
 const AdminLayout = () => {
-  const initSideBar = {
-    dashboard: { active: true, icon: <LuLayoutGrid />, path: "" },
-    catalog: { active: false, icon: <LuFilm />, path: "catalog" },
-    product: { active: false, icon: <GiForkKnifeSpoon />, path: "product" },
-    theater: { active: false, icon: <GiTheater />, path: "theater" },
-    review: {
-      active: false,
-      icon: <MdOutlineRateReview />,
-      path: "review",
-    },
-    showtime: {
-      active: false,
-      icon: <HiOutlineCalendarDays />,
-      path: "showtime",
-    },
-  };
+  const location = useLocation();
   const { username } = useAuth();
-  const [sideBar, setSideBar] = useState(initSideBar);
+  const [sideBar, setSideBar] = useState();
   const [logOut, { isSuccess }] = useLogoutMutation();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const initSideBar = {
+      catalog: { active: false, icon: <LuFilm />, path: "catalog" },
+      product: { active: false, icon: <GiForkKnifeSpoon />, path: "product" },
+      theater: { active: false, icon: <GiTheater />, path: "theater" },
+      review: {
+        active: false,
+        icon: <MdOutlineRateReview />,
+        path: "review",
+      },
+      showtime: {
+        active: false,
+        icon: <HiOutlineCalendarDays />,
+        path: "showtime",
+      },
+    };
+    const newSidebar = { ...initSideBar };
+
+    Object.keys(newSidebar).forEach((key) => {
+      if (location.pathname.includes(newSidebar[key].path)) {
+        newSidebar[key].active = true;
+      }
+    });
+
+    setSideBar(newSidebar);
+  }, [location.pathname]);
 
   useEffect(() => {
     if (isSuccess) navigate("/");
@@ -57,19 +69,20 @@ const AdminLayout = () => {
   const displaySideBar = () => {
     return (
       <div className="grid w-full text-gray-400">
-        {Object.entries(sideBar).map(([key, value]) => (
-          <Link
-            key={key}
-            className={`flex gap-[1rem] pl-[1.4rem] py-[0.8rem] items-center cursor-pointer hover:bg-cyan-800 ${
-              value.active ? "text-cyan-400" : ""
-            }`}
-            onClick={() => handleClick(key)}
-            to={value.path}
-          >
-            {value.icon}
-            <span className="uppercase font-thin">{key}</span>
-          </Link>
-        ))}
+        {sideBar &&
+          Object.entries(sideBar).map(([key, value]) => (
+            <Link
+              key={key}
+              className={`flex gap-[1rem] pl-[1.4rem] py-[0.8rem] items-center cursor-pointer hover:bg-cyan-800 ${
+                value.active ? "text-cyan-400" : ""
+              }`}
+              onClick={() => handleClick(key)}
+              to={value.path}
+            >
+              {value.icon}
+              <span className="uppercase font-thin">{key}</span>
+            </Link>
+          ))}
       </div>
     );
   };

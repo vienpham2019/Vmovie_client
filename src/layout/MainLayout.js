@@ -7,7 +7,7 @@ const MainLayout = () => {
   const { isModalOpen } = useSelector((state) => state.modal);
   const { message } = useSelector((state) => state.notificationMessage);
   return (
-    <div className="relative overflow-x-hidden">
+    <div className="relative overflow-x-hidden bg-gray-900 min-h-screen">
       {message && <NotificationMessage />}
       {isModalOpen && <Modal />}
       <Outlet />

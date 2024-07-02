@@ -7,7 +7,6 @@ import {
   hourAndMinToMin,
   isTimeBetween,
   subtractTimes,
-  timeToMinutes,
 } from "../../util/time";
 import {
   notificationMessageEnum,

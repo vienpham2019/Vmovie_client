@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
@@ -14,6 +14,14 @@ const Slider = ({
   const [currentSlide, setCurrentSlide] = useState(0);
   const [hideArrowLeft, setHideArrowLeft] = useState(true);
   const [hideArrowRight, setHideArrowRight] = useState(false);
+
+  useEffect(() => {
+    const { slidesToShow } = sliderRef.current.state;
+    if (totalAmount === slidesToShow) {
+      setHideArrowLeft(true);
+      setHideArrowRight(true);
+    }
+  }, [totalAmount]);
 
   const handleSetCurrentSlide = () => {
     const {

@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./features/auths/Login";
 import AuthLayout from "./layout/AuthLayout";
 import SignUp from "./features/auths/SignUp";
@@ -26,6 +26,9 @@ import AddShowtime from "./features/showtime/AddShowtime";
 import Review from "./features/admin/Review";
 import AddReview from "./features/review/AddReview";
 import EditReview from "./features/review/EditReview";
+import NotFound from "./features/NotFound";
+import Home from "./features/Home";
+import NowPlaying from "./features/NowPlaying";
 
 const App = () => {
   return (
@@ -37,14 +40,21 @@ const App = () => {
           <Route path="forgotpassword" element={<ForgotPassword />} />
           <Route path="resetpassword/:token" element={<ResetPassword />} />
         </Route>
-        <Route path="movie/:movieId">
-          <Route index element={<MovieDetails />} />
-          <Route path="getTicket" element={<MovieTicket />} />
+        {/* Movie */}
+        <Route index element={<Navigate to="movies" replace />} />
+        <Route path="movies" element={<Home />}>
+          <Route index element={<Navigate to="nowPlaying" replace />} />
+          <Route path="nowPlaying" element={<NowPlaying />} />
+          <Route path=":movieId">
+            <Route index element={<MovieDetails />} />
+            {/* <Route path="getTicket" element={<MovieTicket />} /> */}
+          </Route>
         </Route>
         {/* Dash */}
         <Route element={<PersistLogin />}>
           <Route element={<RequireAuth allowedRoles={[RoleEnum.ADMIN]} />}>
             <Route path="admin" element={<AdminLayout />}>
+              <Route index element={<Navigate to="catalog" replace />} />
               <Route path="catalog">
                 <Route index element={<Catalog />} />
                 <Route path="addMovie" element={<AddMovie />} />
@@ -84,6 +94,7 @@ const App = () => {
             </Route>
           </Route>
         </Route>{" "}
+        <Route path="*" element={<NotFound />} />
         {/*End Dash */}
       </Route>
     </Routes>

@@ -74,7 +74,8 @@ const Login = () => {
           messageType: notificationMessageEnum.SUCCESS,
         })
       );
-      navigate(location.state.from, { replace: true });
+      const previousLocation = location.state?.from || "/";
+      navigate(previousLocation, { replace: true });
     } catch (error) {
       setFormData((prevData) => ({
         email: {

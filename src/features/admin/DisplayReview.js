@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useMediaQuery } from "react-responsive";
 import {
@@ -55,7 +55,7 @@ const DisplayReview = ({ review, reviewIndex, openExtend, setOpenExtend }) => {
     };
 
     handleModalResponse();
-  }, [modalResponse, review._id, dispatch]);
+  }, [modalResponse, review._id, dispatch, deleteReview]);
 
   const handleDelete = async () => {
     dispatch(
@@ -124,7 +124,12 @@ const DisplayReview = ({ review, reviewIndex, openExtend, setOpenExtend }) => {
   const reviewContent = () => (
     <div className="flex flex-col p-2 flex-1 text-gray-300 text-[0.9rem] max-w-[12rem]">
       <p className="line-clamp-3">{review.reviewContent} </p>
-      <a href={review.fullReviewLink} target="_blank" className="text-cyan-500">
+      <a
+        href={review.fullReviewLink}
+        rel="noreferrer"
+        target="_blank"
+        className="text-cyan-500"
+      >
         Full Review
       </a>
     </div>

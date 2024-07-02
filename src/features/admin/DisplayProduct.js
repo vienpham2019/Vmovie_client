@@ -1,7 +1,7 @@
 import { FaEye, FaTrash } from "react-icons/fa6";
 import { RiEdit2Fill } from "react-icons/ri";
 import { IoIosArrowDown } from "react-icons/io";
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 import { useMediaQuery } from "react-responsive";
 import { Link } from "react-router-dom";
 
@@ -62,7 +62,7 @@ const DisplayProduct = ({
     };
 
     handleModalResponse();
-  }, [modalResponse, product._id, dispatch]);
+  }, [modalResponse, product._id, dispatch, deleteProduct]);
 
   const handleDelete = async () => {
     dispatch(

@@ -1,7 +1,7 @@
 import { FaEye, FaLock, FaLockOpen, FaStar, FaTrash } from "react-icons/fa6";
 import { RiEdit2Fill } from "react-icons/ri";
 import { IoIosArrowDown } from "react-icons/io";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useMediaQuery } from "react-responsive";
 import { Link } from "react-router-dom";
 import {
@@ -160,7 +160,7 @@ const DisplayMovie = ({ movie, movieIndex, openExtend, setOpenExtend }) => {
     };
 
     handleModalResponse();
-  }, [modalResponse, movie._id, dispatch]);
+  }, [modalResponse, movie._id, dispatch, deleteMovie]);
 
   const handleDelete = async () => {
     dispatch(

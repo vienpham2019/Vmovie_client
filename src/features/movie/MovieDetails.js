@@ -3,12 +3,21 @@ import { useGetMovieByIdQuery } from "./movieApiSlice";
 import { TbAwardFilled } from "react-icons/tb";
 import DateSlider from "../../components/slider/DateSlider";
 import { IoTicketSharp } from "react-icons/io5";
-import Selection from "../../components/form/Selection";
 import MovieSlider from "../../components/slider/MovieSlider";
 import MovieReviewSlider from "../../components/slider/MovieReviewSlider";
 import PhotoSlider from "../../components/slider/PhotoSlider";
+import { useDispatch } from "react-redux";
+import {
+  modalComponentEnum,
+  openModal,
+  setModalParams,
+} from "../../components/modal/ModalSlice";
+import { useEffect, useState } from "react";
+import { useGetAllShowtimeByMovieQuery } from "../showtime/showtimeApiSlice";
+import Selection from "../../components/form/Selection";
 
 const MovieDetails = () => {
+  const dispatch = useDispatch();
   const { movieId } = useParams();
   const { data: { metadata: movie } = {}, isLoading } = useGetMovieByIdQuery(
     { movieId },
@@ -18,11 +27,35 @@ const MovieDetails = () => {
     }
   );
 
+  const { data: { metadata: showtimes } = [] } = useGetAllShowtimeByMovieQuery(
+    {
+      movieId,
+    },
+    {
+      refertchOnFocus: true, // data will fetch when page on focus
+      refetchOnMountOrArgChange: true, // it will refresh data when remount component
+    }
+  );
+
+  const [dateOptions, setDateOptions] = useState([]);
+  const [selectedDate, setSelectedDate] = useState();
+  const [timeOptions, setTimeOptions] = useState([]);
+  const [selectedTime, setSelectedTime] = useState();
+
+  useEffect(() => {
+    if (showtimes) {
+      setDateOptions(showtimes.map((s) => s.date));
+      setSelectedDate(showtimes[0].date);
+      setTimeOptions(showtimes[0].showtimes);
+      setSelectedTime(showtimes[0].showtimes[0]);
+    }
+  }, [showtimes]);
+
   if (isLoading || !movie) return <div>Loading</div>;
   return (
-    <div className="w-screen bg-black h-screen flex justify-center overflow-x-hidden font-sans">
-      <div className={`w-[80rem] h-[40rem] py-3 relative grid gap-4`}>
-        <div className="relative flex justify-end">
+    <div className="bg-black flex justify-center overflow-x-hidden font-sans pb-[2rem]">
+      <div className={`w-[80rem] py-3 grid gap-4 relative`}>
+        <div className="absolute w-[80rem] top-0 flex justify-end">
           <div
             className="relative w-[50%] h-[40rem] bg-cover bg-center bg-no-repeat tablet:hidden"
             style={{ backgroundImage: `url(${movie.thumbnail.url})` }}
@@ -35,16 +68,22 @@ const MovieDetails = () => {
           </div>
         </div>
 
-        <div className="absolute bottom-0 tablet:relative w-full flex flex-wrap gap-[2rem] justify-center px-3">
-          <div className="relative">
+        <div className="min-h-[40rem] z-10 tablet:relative w-full flex flex-wrap gap-[2rem] justify-center px-3">
+          <div className="relative flex items-center">
             <img
-              className="max-w-[20rem] mobile:max-w-[18rem] rounded-lg shadow-[20px_20px_20px_-20px_rgba(255,255,255,0.5)]"
+              className="max-w-[20rem] h-fit mobile:max-w-[18rem] rounded-lg shadow-[20px_20px_20px_-20px_rgba(255,255,255,0.5)]"
               src={movie.poster.url}
               alt="poster"
             />
 
             <div className="absolute top-0 w-full h-full flex justify-center items-center">
-              <div className="bg-[rgba(0,0,0,0.6)] p-2 rounded-full flex justify-center items-center border-gray-500 border-[0.2rem] cursor-pointer">
+              <div
+                onClick={() => {
+                  dispatch(setModalParams({ videoUrl: movie.trailer }));
+                  dispatch(openModal(modalComponentEnum.VIDEO));
+                }}
+                className="bg-[rgba(0,0,0,0.6)] p-2 rounded-full flex justify-center items-center border-gray-500 border-[0.2rem] cursor-pointer"
+              >
                 <lord-icon
                   src="https://cdn.lordicon.com/becebamh.json"
                   trigger="hover"
@@ -158,61 +197,45 @@ const MovieDetails = () => {
           </div>
         </div>
 
-        <div className="py-2 rounded flex bg-[#172532]">
-          <div className="text-gray-300 items-center gap-4 flex flex-wrap tablet:flex-col justify-around w-full px-4">
-            <div>
-              <span className="text-[0.9rem] font-thin">Chose Date</span>
-              <div className="mx-[1.5rem]">
-                <DateSlider
-                  dates={[
-                    "Apr-12-Mon",
-                    "Apr-13-Tue",
-                    "Apr-14-Wed",
-                    "Apr-15-th",
-                    "Apr-16-Thu",
-                    "Apr-17-Fri",
-                    "Apr-18-Sat",
-                    "Apr-19-Sun",
-                    "Apr-20-Mon",
-                    "Apr-21-Tue",
-                  ]}
-                />
+        {dateOptions.length && (
+          <div className="py-2 rounded bg-[#284158]">
+            <div className="text-gray-100 items-end gap-4 flex flex-wrap tablet:flex-col justify-end px-4">
+              <div>
+                <span className="text-[0.9rem] font-thin">Chose Date</span>
+                <div className="mx-[1.5rem] w-[10rem]">
+                  <Selection
+                    formData={{
+                      value: selectedDate,
+                      options: dateOptions,
+                    }}
+                    placeHolder="Select Date"
+                    border={"border border-gray-600"}
+                    handleOnChange={(value) => setSelectedDate(value)}
+                  />
+                </div>
               </div>
-            </div>
-            <div>
-              <span className="text-[0.9rem] font-thin">Chose Time</span>
-              <div className="mx-[1.5rem]">
-                <DateSlider
-                  dates={[
-                    "-08:20-AM",
-                    "-10:20-AM",
-                    "-11:40-AM",
-                    "-12:20-PM",
-                    "-14:30-PM",
-                    "-20:20-PM",
-                    "-22:50-PM",
-                  ]}
-                />
+              <div>
+                <span className="text-[0.9rem] font-thin">Chose Time</span>
+                <div className="mx-[1.5rem] w-[10rem]">
+                  <Selection
+                    formData={{
+                      value: selectedTime,
+                      options: timeOptions,
+                    }}
+                    placeHolder="Select Time"
+                    border={"border border-gray-600"}
+                    handleOnChange={(value) => setSelectedDate(value)}
+                  />
+                </div>
               </div>
+
+              <button className="btn-blue w-[10rem] flex justify-center items-center gap-2">
+                <span>Get Ticket</span>
+                <IoTicketSharp className="text-black text-[1.2rem]" />
+              </button>
             </div>
-            <div className="w-[12rem] flex-auto">
-              <Selection
-                formData={{
-                  value: "",
-                  options: ["2D", "3D", "IMAX", "IMAX 3D"],
-                }}
-                placeHolder="Select Type"
-                border={"border border-gray-600"}
-                background={""}
-                handleOnChange={(value) => console.log(value)}
-              />
-            </div>
-            <button className="btn-blue w-[12rem] flex justify-center items-center gap-2 flex-auto">
-              <span>Get Ticket</span>
-              <IoTicketSharp className="text-black text-[1.2rem]" />
-            </button>
           </div>
-        </div>
+        )}
 
         <div className="text-gray-300 flex flex-col gap-10 mt-10">
           <div className="flex flex-col gap-2 items-center">

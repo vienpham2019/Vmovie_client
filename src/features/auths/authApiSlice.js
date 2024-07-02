@@ -1,4 +1,8 @@
 import { apiSlice } from "../../app/api/apiSlice";
+import {
+  notificationMessageEnum,
+  setMessage,
+} from "../../components/notificationMessage/notificationMessageSlice";
 import { logOut, setCredentials } from "./authSlice";
 
 export const authApiSlice = apiSlice.injectEndpoints({
@@ -62,6 +66,12 @@ export const authApiSlice = apiSlice.injectEndpoints({
           await queryFulfilled;
           dispatch(logOut());
           dispatch(apiSlice.util.resetApiState());
+          dispatch(
+            setMessage({
+              message: "LogOut Success.",
+              messageType: notificationMessageEnum.SUCCESS,
+            })
+          );
         } catch (error) {
           console.log(error);
         }
