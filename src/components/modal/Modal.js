@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { closeModal, getModalComponent } from "./ModalSlice";
 
@@ -8,16 +8,18 @@ const Modal = () => {
   const contentRef = useRef(null);
   return (
     <div
-      className="z-50 absolute w-full h-full bg-[rgba(0,0,0,0.8)] cursor-pointer flex justify-center items-center"
+      className="z-50 absolute w-screen h-full bg-[rgba(0,0,0,0.8)] cursor-pointer"
       onClick={(e) => {
         if (contentRef.current && !contentRef.current.contains(e.target)) {
           dispatch(closeModal());
         }
       }}
     >
-      <div className="rounded-sm cursor-default bg-white" ref={contentRef}>
-        <div className="overflow-auto">
-          {getModalComponent(modalContentTitle)}
+      <div className=" w-screen h-screen fixed flex justify-center items-center">
+        <div className="rounded-sm cursor-default" ref={contentRef}>
+          <div className="overflow-auto">
+            {getModalComponent(modalContentTitle)}
+          </div>
         </div>
       </div>
     </div>

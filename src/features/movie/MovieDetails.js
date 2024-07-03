@@ -1,7 +1,6 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useGetMovieByIdQuery } from "./movieApiSlice";
 import { TbAwardFilled } from "react-icons/tb";
-import DateSlider from "../../components/slider/DateSlider";
 import { IoTicketSharp } from "react-icons/io5";
 import MovieSlider from "../../components/slider/MovieSlider";
 import MovieReviewSlider from "../../components/slider/MovieReviewSlider";
@@ -15,8 +14,11 @@ import {
 import { useEffect, useState } from "react";
 import { useGetAllShowtimeByMovieQuery } from "../showtime/showtimeApiSlice";
 import Selection from "../../components/form/Selection";
+import { FaRegHeart } from "react-icons/fa6";
+import { BiLike } from "react-icons/bi";
 
 const MovieDetails = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { movieId } = useParams();
   const { data: { metadata: movie } = {}, isLoading } = useGetMovieByIdQuery(
@@ -197,45 +199,67 @@ const MovieDetails = () => {
           </div>
         </div>
 
-        {dateOptions.length && (
-          <div className="py-2 rounded bg-[#284158]">
-            <div className="text-gray-100 items-end gap-4 flex flex-wrap tablet:flex-col justify-end px-4">
-              <div>
-                <span className="text-[0.9rem] font-thin">Chose Date</span>
-                <div className="mx-[1.5rem] w-[10rem]">
-                  <Selection
-                    formData={{
-                      value: selectedDate,
-                      options: dateOptions,
-                    }}
-                    placeHolder="Select Date"
-                    border={"border border-gray-600"}
-                    handleOnChange={(value) => setSelectedDate(value)}
-                  />
-                </div>
+        <div className="py-2 rounded bg-[#284158]">
+          <div className="text-gray-100 items-end gap-[1.5rem] flex flex-wrap justify-between px-4">
+            <div className="flex gap-3">
+              <div className="p-2 flex gap-2 items-center text-[0.9rem] border border-gray-500 cursor-pointer hover:bg-gray-800">
+                <BiLike />
+                <span>Like </span>
+                <span>1</span>
               </div>
-              <div>
-                <span className="text-[0.9rem] font-thin">Chose Time</span>
-                <div className="mx-[1.5rem] w-[10rem]">
-                  <Selection
-                    formData={{
-                      value: selectedTime,
-                      options: timeOptions,
-                    }}
-                    placeHolder="Select Time"
-                    border={"border border-gray-600"}
-                    handleOnChange={(value) => setSelectedDate(value)}
-                  />
-                </div>
+              <div className="p-2 flex gap-2 items-center text-[0.9rem] border border-gray-500 cursor-pointer hover:bg-gray-800">
+                <FaRegHeart />
+                <span>Add to Watch List </span>
               </div>
-
-              <button className="btn-blue w-[10rem] flex justify-center items-center gap-2">
-                <span>Get Ticket</span>
-                <IoTicketSharp className="text-black text-[1.2rem]" />
-              </button>
             </div>
+            {dateOptions.length > 0 && (
+              <div className="flex gap-[1.5rem] flex-wrap items-end">
+                <div>
+                  <span className="text-[0.9rem] font-thin">Chose Date</span>
+                  <div className="w-[10rem]">
+                    <Selection
+                      formData={{
+                        value: selectedDate,
+                        options: dateOptions,
+                      }}
+                      placeHolder="Select Date"
+                      border={"border border-gray-600"}
+                      handleOnChange={(value) => setSelectedDate(value)}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <span className="text-[0.9rem] font-thin">Chose Time</span>
+                  <div className="w-[10rem]">
+                    <Selection
+                      formData={{
+                        value: selectedTime,
+                        options: timeOptions,
+                      }}
+                      placeHolder="Select Time"
+                      border={"border border-gray-600"}
+                      handleOnChange={(value) => setSelectedDate(value)}
+                    />
+                  </div>
+                </div>
+
+                <button
+                  onClick={() =>
+                    navigate(
+                      `/movies/${movieId}/getTicket/${selectedDate
+                        .split("/")
+                        .join("-")}/${selectedTime}`
+                    )
+                  }
+                  className="btn-blue w-[10rem] flex justify-center items-center gap-2"
+                >
+                  <span>Get Ticket</span>
+                  <IoTicketSharp className="text-black text-[1.2rem]" />
+                </button>
+              </div>
+            )}
           </div>
-        )}
+        </div>
 
         <div className="text-gray-300 flex flex-col gap-10 mt-10">
           <div className="flex flex-col gap-2 items-center">

@@ -1,9 +1,39 @@
-import DateSlider from "../../components/slider/DateSlider";
-import Selection from "../../components/form/Selection";
+import { useParams } from "react-router-dom";
 import MovieSeats from "./MovieSeats";
-import { RxCross2 } from "react-icons/rx";
+import { useGetAllShowtimeByMovieQuery } from "../showtime/showtimeApiSlice";
+import { useEffect, useState } from "react";
+import Selection from "../../components/form/Selection";
+import { convertToAmPm } from "../../util/time";
+import { FiMinusCircle, FiPlusCircle } from "react-icons/fi";
+import { FaWheelchair } from "react-icons/fa6";
+import { MdOutlineWheelchairPickup } from "react-icons/md";
 const MovieReservedSeating = () => {
-  const sitLayOut = {
+  const { movieId, date, time } = useParams();
+  const { data: { metadata: showtimes } = [] } = useGetAllShowtimeByMovieQuery(
+    {
+      movieId,
+    },
+    {
+      refertchOnFocus: true, // data will fetch when page on focus
+      refetchOnMountOrArgChange: true, // it will refresh data when remount component
+    }
+  );
+
+  const [dateOptions, setDateOptions] = useState([]);
+  const [selectedDate, setSelectedDate] = useState();
+  const [timeOptions, setTimeOptions] = useState([]);
+  const [selectedTime, setSelectedTime] = useState();
+
+  useEffect(() => {
+    if (showtimes) {
+      setDateOptions(showtimes.map((s) => s.date));
+      setSelectedDate(showtimes[0].date);
+      setTimeOptions(showtimes[0].showtimes);
+      setSelectedTime(showtimes[0].showtimes[0]);
+    }
+  }, [showtimes]);
+
+  const seatLayOut = {
     A: ["1H", "4N", "1H", "5N", "1H", "4N", "1H"],
     B: ["1H", "4N", "1H", "5N", "1H", "4N", "1H"],
     Hall1: "",
@@ -37,139 +67,269 @@ const MovieReservedSeating = () => {
     "D9",
   ];
 
-  const selectSeat = [
-    "G7",
-    "G8",
-    "G9",
-    "H7",
-    "H8",
-    "H9",
-    "E1",
-    "E2",
-    "E3",
-    "E6",
-    "E7",
-    "E8",
+  const prices = [
+    { type: "XD Matinne", price: 10.5 },
+    { type: "XD Child", sub: "Child (1-11)", price: 9.25 },
+    { type: "XD Senior", sub: "Senior (62+)", price: 9.75 },
   ];
+
+  const [tickets, setTickets] = useState({});
+  const [totalTickets, setTotalTickets] = useState(0);
+  const [subTotal, setSubTotal] = useState(0);
+  const [selectSeat, setSelectSeat] = useState([]);
+
+  useEffect(() => {
+    if (prices) {
+      let initTickets = {};
+      prices.forEach(({ type, sub, price }) => {
+        initTickets[type] = { price, count: 0 };
+        if (sub) {
+          initTickets[type].sub = sub;
+        }
+      });
+      setTickets(initTickets);
+      setSubTotal(0);
+      setTotalTickets(0);
+    }
+  }, []);
+
+  const handleAddTickets = (type) => {
+    if (tickets[type].count === 20) return;
+    setTickets((prevTickets) => {
+      const updatedTickets = { ...prevTickets };
+      updatedTickets[type] = {
+        ...updatedTickets[type],
+        count: updatedTickets[type].count + 1,
+      };
+
+      return updatedTickets;
+    });
+    setSubTotal(subTotal + tickets[type].price);
+    setTotalTickets(totalTickets + 1);
+  };
+
+  const handleRemoveTickets = (type) => {
+    if (tickets[type].count === 0) return;
+    setTickets((prevTickets) => {
+      const updatedTickets = { ...prevTickets };
+      updatedTickets[type] = {
+        ...updatedTickets[type],
+        count: updatedTickets[type].count - 1,
+      };
+
+      return updatedTickets;
+    });
+    setSubTotal(subTotal - tickets[type].price);
+    setTotalTickets(totalTickets - 1);
+  };
+
+  const displaySelectSeatController = () => {
+    const remainTickets = totalTickets - selectSeat.length;
+    const remainSeats = selectSeat.length - totalTickets;
+    return (
+      <div className="w-[18rem] flex flex-col items-center gap-2 bg-[#172532] rounded">
+        <h2 className="text-[1.2rem] font-bold m-2 mt-[1.2rem]">
+          Select {selectSeat.length} Ticket{selectSeat.length > 1 && "s"}
+        </h2>
+        <hr className="border-gray-600 w-full" />
+        <span className="p-2 text-gray-300 text-[0.9rem]">
+          Select {selectSeat.length} Standard Ticket
+          {selectSeat.length > 1 && "s"}
+        </span>
+        <div className="flex flex-col gap-4 w-full p-2">
+          {Object.entries(tickets).map(
+            ([key, { price, sub, count }], index) => (
+              <div
+                key={`Ticket type ${index}`}
+                className="flex flex-col gap-3 items-center"
+              >
+                <div className="flex flex-col items-center">
+                  <span className="text-[0.9rem]">
+                    {key} ${price}
+                  </span>
+                  {sub && <small className="text-gray-400">{sub}</small>}
+                </div>
+                <div className="flex gap-3 items-center">
+                  <FiMinusCircle
+                    onClick={() => handleRemoveTickets(key)}
+                    className={`text-[1.3rem] ${
+                      count === 0
+                        ? "text-gray-500 cursor-default"
+                        : "cursor-pointer"
+                    }`}
+                  />
+                  <span>{count}</span>
+                  <FiPlusCircle
+                    onClick={() => handleAddTickets(key)}
+                    className={`text-[1.3rem] ${
+                      count === 20
+                        ? "text-gray-500 cursor-default"
+                        : "cursor-pointer"
+                    }`}
+                  />
+                </div>
+                {index < prices.length - 1 && (
+                  <hr className="border-gray-500 w-full" />
+                )}
+              </div>
+            )
+          )}
+        </div>
+        <hr className="border-gray-600 w-full" />
+        <div className="flex justify-around w-full">
+          <span className="font-bold">SubTotal</span>
+          <span className="text-[0.9rem] text-gray-200">${subTotal}</span>
+        </div>
+        <div>
+          <hr className="border-gray-600 w-full" />
+          {remainTickets > 0 && (
+            <div className="flex flex-col text-center p-2">
+              <span className="text-[0.9rem] font-bold">
+                {remainTickets} selected seat{remainTickets > 1 && "s"}{" "}
+                {remainTickets > 1 ? "has" : "have"} no ticket
+                {remainTickets > 1 && "s"}.
+              </span>
+              <span className="text-[0.8rem] text-gray-200">
+                Add {remainTickets > 1 && "a"} ticket{remainTickets > 1 && "s"}{" "}
+                for your selected seat{remainTickets > 1 && "s"} to continue.
+              </span>
+            </div>
+          )}
+          {remainSeats > 0 && (
+            <div className="flex flex-col text-center p-2">
+              <span className="text-[0.9rem] font-bold">
+                {remainSeats} ticket{remainSeats > 1 && "s"}{" "}
+                {remainSeats > 1 ? "has" : "have"} no selected seat
+                {remainSeats > 1 && "s"}.
+              </span>
+              <span className="text-[0.8rem] text-gray-200">
+                Select {remainSeats > 1 && "a"} seat{remainSeats > 1 && "s"} for
+                your remaining ticket{remainSeats > 1 && "s"} to continue.
+              </span>
+            </div>
+          )}
+        </div>
+        <button
+          className={`border ${
+            (totalTickets === 0 || remainTickets > 0 || remainSeats > 0) &&
+            "hidden"
+          }  border-cyan-400 text-gray-100 hover:border-cyan-700 p-2 w-[10rem] mx-2`}
+        >
+          Next
+        </button>
+      </div>
+    );
+  };
+
   return (
     <div className="w-full flex flex-col gap-2 mb-[2rem]">
       <div className="flex justify-center w-full">
         {/* Date */}
         <div className="py-2 rounded flex bg-[#172532] flex-1">
           <div className="text-gray-300 items-center gap-4 flex flex-wrap justify-around w-full px-4">
-            <div className="flex flex-wrap gap-2 justify-center">
-              <div>
-                <span className="text-[0.9rem] font-thin">Chose Date</span>
-                <div className="mx-[1.5rem]">
-                  <DateSlider
-                    dates={[
-                      "Apr-12-Mon",
-                      "Apr-13-Tue",
-                      "Apr-14-Wed",
-                      "Apr-15-th",
-                      "Apr-16-Thu",
-                      "Apr-17-Fri",
-                      "Apr-18-Sat",
-                      "Apr-19-Sun",
-                      "Apr-20-Mon",
-                      "Apr-21-Tue",
-                    ]}
-                  />
+            {dateOptions.length > 0 && (
+              <div className="flex gap-[1.5rem] flex-wrap items-end">
+                <div>
+                  <span className="text-[0.9rem] font-thin">Chose Date</span>
+                  <div className="w-[10rem]">
+                    <Selection
+                      formData={{
+                        value: selectedDate,
+                        options: dateOptions,
+                      }}
+                      placeHolder="Select Date"
+                      border={"border border-gray-600"}
+                      handleOnChange={(value) => setSelectedDate(value)}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <span className="text-[0.9rem] font-thin">Chose Time</span>
+                  <div className="w-[10rem]">
+                    <Selection
+                      formData={{
+                        value: selectedTime,
+                        options: timeOptions,
+                      }}
+                      placeHolder="Select Time"
+                      border={"border border-gray-600"}
+                      handleOnChange={(value) => setSelectedDate(value)}
+                    />
+                  </div>
                 </div>
               </div>
-              <div>
-                <span className="text-[0.9rem] font-thin">Chose Time</span>
-                <div className="mx-[1.5rem]">
-                  <DateSlider
-                    dates={[
-                      "-08:20-AM",
-                      "-10:20-AM",
-                      "-11:40-AM",
-                      "-12:20-PM",
-                      "-14:30-PM",
-                      "-20:20-PM",
-                      "-22:50-PM",
-                    ]}
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="w-[12rem] flex-auto">
-              <Selection
-                formData={{
-                  value: "",
-                  options: ["2D", "3D", "IMAX", "IMAX 3D"],
-                }}
-                placeHolder="Select Type"
-                border={"border border-gray-600"}
-                background={""}
-                handleOnChange={(value) => console.log(value)}
-              />
-            </div>
+            )}
           </div>
         </div>{" "}
         {/* Date */}
       </div>
-      <div className="flex flex-wrap-reverse gap-[2rem] w-full tablet:justify-center justify-start">
-        <div
-          className={`flex flex-col gap-2 font-thin ${
-            selectSeat.length === 0 && "opacity-0"
-          }`}
-        >
-          <div className="w-[12rem] tablet:w-full max-h-[30rem] overflow-y-scroll flex flex-wrap justify-center gap-2 boder p-2">
-            {selectSeat.map((seat) => (
-              <div
-                key={"select seat " + seat}
-                className="p-2 w-full border border-gray-500 rounded-sm flex justify-between items-center bg-[#172532]"
-              >
-                <span>Seat: {seat}</span>
-                <span>15$</span>
-                <span className="cursor-pointer">
-                  <RxCross2 />
-                </span>
-              </div>
-            ))}
-          </div>
-          <div className="flex justify-end items-center gap-2">
-            <span className="text-gray-400 text-[0.9rem]">ToTal</span>
-            <span className="text-[1.2rem] font-normal">
-              {" "}
-              ${selectSeat.length * 15}
-            </span>
-          </div>
-          <div className="flex gap-1">
-            <button className="border border-red-800 text-red-500 uppercase text-[0.9rem] p-2 flex-1">
-              Cancle
-            </button>
-            <button className="border border-cyan-800 text-cyan-500 uppercase text-[0.9rem] p-2 flex-1">
-              Next
-            </button>
-          </div>
-        </div>
+      <div className="flex flex-wrap-reverse gap-[1rem] w-full tablet:justify-center justify-start">
+        {displaySelectSeatController()}
         {/* Sit */}
         <MovieSeats
-          sitLayOut={sitLayOut}
+          seatLayOut={seatLayOut}
           selectedSeats={selectedSeats}
           selectSeat={selectSeat}
+          handleAddSelectSeat={(seatNumber) =>
+            setSelectSeat((prev) => [...prev, seatNumber])
+          }
+          handleRemoveSelectSeat={(seatNumber) =>
+            setSelectSeat((prev) => prev.filter((seat) => seat !== seatNumber))
+          }
         />
         {/* Sit */}
-        <div className="flex flex-col gap-4 font-thin laptop:hidden">
-          <div className="w-[5rem]">
-            <span className="text-gray-400">Date</span>
-            <div className="flex flex-col items-center border border-gray-500">
-              <span className="text-[2rem] font-normal">14</span>
-              <span className="uppercase">Dec</span>
+      </div>
+      <div className="flex flex-wrap gap-4">
+        <div className="p-2 rounded flex flex-col gap-2 bg-[#172532]  w-[18rem] flex-auto">
+          <span className="font-bold text-[1.3rem]">Seat Legend</span>
+          <div className="flex gap-3 items-center">
+            <div className="w-[1.8rem] rounded aspect-square bg-emerald-700 border border-emerald-400"></div>
+            <span className="text-[0.9rem] text-gray-300">Avaliable Seat</span>
+          </div>
+          <hr className="border-gray-600" />
+          <div className="flex gap-3 items-center">
+            <div className="w-[1.8rem] rounded aspect-square bg-gray-900 border border-gray-400"></div>
+            <span className="text-[0.9rem] text-gray-300">Selected Seat</span>
+          </div>
+          <hr className="border-gray-600" />
+          <div className="flex gap-3 items-center">
+            <div className="w-[1.8rem] rounded aspect-square bg-gray-700 text-gray-400"></div>
+            <span className="text-[0.9rem] text-gray-300">Unavaliable</span>
+          </div>
+          <hr className="border-gray-600" />
+          <div className="flex flex-wrap gap-3 items-center">
+            <div className="w-[1.8rem] flex items-center justify-center rounded aspect-square bg-[#2f76b8]">
+              <FaWheelchair />
             </div>
+            <span className="text-[0.9rem] text-gray-300">
+              Wheelchair Space (no seat)
+            </span>
+            <p className="w-full text-[0.9rem] text-gray-300">
+              This is a wheelchair space, it is not a seat.
+            </p>
           </div>
-
-          <div className="flex flex-col w-[5rem]">
-            <span className="text-gray-400">Time</span>
-            <span className="font-normal">08:20 AM</span>
+          <hr className="border-gray-600" />
+          <div className="flex flex-wrap gap-3 items-center">
+            <div className="w-[1.8rem] flex items-center justify-center rounded aspect-square bg-[#2f76b8]">
+              <MdOutlineWheelchairPickup />
+            </div>
+            <span className="text-[0.9rem] text-gray-300">Companion Seat</span>
+            <p className="w-full text-[0.9rem] text-gray-300">
+              This seat is only available for a guest accompanying a guest who
+              has purchased a wheelchair seat.
+            </p>
           </div>
-          <div className="flex flex-col w-[5rem]">
-            <span className="text-gray-400">Type</span>
-            <span className="font-normal">2D</span>
-          </div>
+        </div>
+        <div className="p-2 rounded flex flex-col gap-2 bg-[#172532] flex-1 h-fit">
+          <span className="font-bold text-[1.3rem]">
+            Information and Policies
+          </span>
+          <p className="text-[0.9rem] text-gray-300">
+            No Children Under Age 6 Will Be Admitted To Any R-Rated Feature
+            After 6:00 PM. Valid IDs will be required to attend Rated "R"
+            movies. You must be at least 17 years of age or have your parent
+            accompany you to view the movie. IDs will be checked at the theatre.{" "}
+          </p>
         </div>
       </div>
     </div>

@@ -16,7 +16,7 @@ const menuSchema = Object.freeze({
 const MovieTicket = () => {
   const { movieId } = useParams();
   const menu = Object.entries(menuSchema).map(([_, value]) => value);
-  const [selectedMenu, setSelectedMenu] = useState(menuSchema.FOOD_AND_DRINKS);
+  const [selectedMenu, setSelectedMenu] = useState(menuSchema.RESERVED_SEATING);
   const { data: { metadata: movie } = {}, isLoading } = useGetMovieByIdQuery(
     { movieId },
     {
@@ -28,10 +28,8 @@ const MovieTicket = () => {
   if (isLoading || !movie) return <div>Loading</div>;
 
   return (
-    <div className="w-screen bg-black h-screen flex justify-center overflow-x-hidden font-sans">
-      <div
-        className={`w-[80rem] h-[40rem] py-3 relative grid gap-4 mt-[6rem] p-2 text-white`}
-      >
+    <div className="bg-black flex justify-center overflow-x-hidden font-sans">
+      <div className="w-[80rem] py-3 grid gap-4 mt-[6rem] p-2 text-white">
         <div className="flex gap-4 flex-wrap">
           <div className="mobile:flex mobile:flex-auto justify-center">
             <img

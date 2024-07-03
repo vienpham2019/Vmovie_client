@@ -133,7 +133,7 @@ const UploadFileProgress = ({
               <strong>Size: </strong>
               {uploadImageFile.imageSrc.size}
             </small>
-            <small className="text-[0.6rem] text-gray-200">
+            <small className="text-[0.6rem] text-gray-200 truncate max-w-[10rem]">
               <strong>Type: </strong>
               {uploadImageFile.imageSrc.mimeType}
             </small>

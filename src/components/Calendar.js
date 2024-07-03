@@ -149,6 +149,9 @@ const Calendar = ({
           {row.map((day, dayIndex) => {
             const [numMonth, numDay] = day.split("/");
             const isTheSameMonth = +numMonth === month + 1;
+            const isInCurrentMonth = +numMonth === currentMonth + 1;
+            const isInNextMonth = +numMonth === nextMonth + 1;
+            const isInPrevMonth = +numMonth === currentMonth;
             const isInNotifications =
               Object.keys(notifications).length > 0 && !!notifications[day];
             return (
@@ -164,16 +167,36 @@ const Calendar = ({
                   } ${
                     selectedDay === day && isTheSameMonth && selectedDayClass
                   } 
-                  ${isInNotifications && "border border-red-400"}
+                  ${
+                    isInNotifications &&
+                    isTheSameMonth &&
+                    "border border-red-400"
+                  }
+                  ${
+                    isInNotifications &&
+                    !isTheSameMonth &&
+                    !isInCurrentMonth &&
+                    (isInNextMonth || isInPrevMonth) &&
+                    "border rounded-full border-gray-700"
+                  }
                   relative group`}
                 >
                   {numDay}
-                  {isInNotifications && (
+                  {isInNotifications && isTheSameMonth && (
                     <div className="absolute text-red-700 text-[0.7rem] font-bold -top-[0.7rem] left-[1.2rem] border-collapse border border-red-300 aspect-square w-[1.4rem] rounded-full flex justify-center items-center bg-black">
                       {(notifications && notifications[day]?.count) || ""}
                     </div>
                   )}
+                  {isInNotifications &&
+                    !isTheSameMonth &&
+                    !isInCurrentMonth &&
+                    (isInNextMonth || isInPrevMonth) && (
+                      <div className="absolute text-gray-700 text-[0.7rem] font-bold -top-[0.7rem] left-[1.2rem] border-collapse border border-gray-700 aspect-square w-[1.4rem] rounded-full flex justify-center items-center bg-black">
+                        {(notifications && notifications[day]?.count) || ""}
+                      </div>
+                    )}
                   {Object.keys(notifications).length > 0 &&
+                    isTheSameMonth &&
                     displayNotification(notifications[day], day)}
                 </div>
               </div>
