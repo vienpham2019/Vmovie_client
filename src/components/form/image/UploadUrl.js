@@ -1,5 +1,3 @@
-import { separatedWords } from "../../../util/string";
-
 const UploadUrl = ({ validate, value, name, handleOnChange }) => {
   return (
     <div className="flex flex-wrap gap-4 items-end border border-gray-500 rounded flex-auto p-2 bg-[#2b2b31]">

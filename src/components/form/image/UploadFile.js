@@ -3,6 +3,14 @@ import { IoIosImages, IoMdImages } from "react-icons/io";
 import UploadFileProgress from "./UploadFileProgress";
 import { v4 as uuidv4 } from "uuid";
 import { changeImageName } from "../../../util/file";
+import { IoLinkOutline } from "react-icons/io5";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  clearModalResponse,
+  modalComponentEnum,
+  openModal,
+  setModalParams,
+} from "../../modal/ModalSlice";
 
 const uploadFileStatusEnum = Object.freeze({
   ERROR: "Error",
@@ -13,6 +21,8 @@ const uploadFileStatusEnum = Object.freeze({
 const UploadFile = ({ type, validate, value, name, setOnChange, db }) => {
   const [uploadImage, setUploadImage] = useState({});
   const [isDragging, setIsDragging] = useState(false);
+  const { modalResponse } = useSelector((state) => state.modal);
+  const dispatch = useDispatch();
   useEffect(() => {
     const initUpload = {};
     if (type === "list") {
@@ -35,6 +45,42 @@ const UploadFile = ({ type, validate, value, name, setOnChange, db }) => {
     setUploadImage(initUpload);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
+
+  useEffect(() => {
+    const setImage = () => {
+      if (modalResponse?.url && modalResponse.name === name) {
+        const extension = modalResponse.url.split(".").pop();
+        const newVal = {
+          name: modalResponse.url,
+          mimeType: `image/${extension}`,
+          size: "NA",
+          url: modalResponse.url,
+        };
+
+        let updatedValue;
+        if (type === "list") {
+          updatedValue = [newVal, ...value];
+        } else {
+          updatedValue = newVal;
+        }
+
+        setOnChange(updatedValue);
+
+        setUploadImage((prevUpload) => ({
+          ...prevUpload,
+          [modalResponse.url]: {
+            ...prevUpload[modalResponse.url],
+            imageSrc: newVal,
+            status: uploadFileStatusEnum.COMPLETED,
+          },
+        }));
+
+        dispatch(clearModalResponse());
+      }
+    };
+
+    setImage();
+  }, [modalResponse, name, type, value, setOnChange, setUploadImage, dispatch]);
 
   const handleDragEnter = (e) => {
     e.preventDefault();
@@ -124,6 +170,11 @@ const UploadFile = ({ type, validate, value, name, setOnChange, db }) => {
     });
   };
 
+  const handleOpenAddImageUrlModal = () => {
+    dispatch(setModalParams({ message: `Add ${name} Url`, name }));
+    dispatch(openModal(modalComponentEnum.ADD_IMAGE_URL));
+  };
+
   if (type === "single") {
     return (
       <div
@@ -131,10 +182,16 @@ const UploadFile = ({ type, validate, value, name, setOnChange, db }) => {
         onDragLeave={handleDragLeave}
         onDragOver={handleDragOver}
         onDrop={handleDrop}
-        className={`flex justify-around border ${
+        className={`relative flex justify-around border ${
           isDragging ? "bg-[#393941]" : "bg-[#2b2b31]"
         } border-gray-500 ${validate} rounded-md h-[5rem] min-w-[15rem] items-center`}
       >
+        <div
+          onClick={handleOpenAddImageUrlModal}
+          className="absolute -top-3 right-0 border text-white text-[1.3rem] bg-gray-700 p-1 rounded cursor-pointer"
+        >
+          <IoLinkOutline />
+        </div>
         {Object.keys(uploadImage).length !== 0 ? (
           <div className="text-white w-full pl-2 flex justify-center">
             {Object.entries(uploadImage).map(([key, val]) => (
@@ -189,8 +246,14 @@ const UploadFile = ({ type, validate, value, name, setOnChange, db }) => {
 
   return (
     <div
-      className={`flex flex-wrap justify-center p-2 gap-[1rem] ${validate} border border-gray-500 bg-[#2b2b31] rounded-md`}
+      className={`relative flex flex-wrap justify-center p-2 gap-[1rem] ${validate} border border-gray-500 bg-[#2b2b31] rounded-md`}
     >
+      <div
+        onClick={handleOpenAddImageUrlModal}
+        className="absolute -top-3 right-0 text-white border text-[1.3rem] bg-gray-700 p-1 rounded cursor-pointer"
+      >
+        <IoLinkOutline />
+      </div>
       <div
         onDragEnter={handleDragEnter}
         onDragLeave={handleDragLeave}

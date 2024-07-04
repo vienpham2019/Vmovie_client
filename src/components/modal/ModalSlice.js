@@ -8,6 +8,7 @@ import ConfirmModal from "./ConfirmModal";
 import ProductDetailModal from "../../features/product/ProductDetailModal";
 import TheaterLayoutModal from "../../features/theater/TheaterLayoutModal";
 import SelectMoviesModal from "../../features/movie/SelectMoviesModal";
+import AddImageUrlModal from "../../features/movie/AddImageUrlModal";
 
 const initState = {
   isModalOpen: false,
@@ -61,6 +62,7 @@ const modalComponentEnum = Object.freeze({
   CONFIRM: "CONFIRM",
   SELECT_MOVIE: "SELECT_MOVIE",
   THEATER_LAYOUT: "THEATER_LAYOUT",
+  ADD_IMAGE_URL: "ADD_IMAGE_URL",
   // Add more roles as needed
 });
 
@@ -88,6 +90,8 @@ const getModalComponent = (modalIdentifier) => {
       return <SelectMoviesModal />;
     case modalComponentEnum.THEATER_LAYOUT:
       return <TheaterLayoutModal />;
+    case modalComponentEnum.ADD_IMAGE_URL:
+      return <AddImageUrlModal />;
     default:
       return null;
   }

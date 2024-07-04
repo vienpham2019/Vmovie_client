@@ -87,7 +87,7 @@ const actionsContent = ({
         </div>
       )}
       <Link
-        to={`/movie/${movie._id}`}
+        to={`/movies/${movie._id}`}
         className="tooltip_container w-[2rem] aspect-square rounded-md flex items-center justify-center cursor-pointer bg-[rgba(168,111,248,0.2)]"
       >
         <FaEye className="text-[rgb(168,111,248)]" />
