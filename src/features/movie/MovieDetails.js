@@ -21,19 +21,22 @@ const MovieDetails = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { movieId } = useParams();
-  const { data: { metadata: movie } = {}, isLoading } = useGetMovieByIdQuery(
-    { movieId },
-    {
-      refertchOnFocus: true, // data will fetch when page on focus
-      refetchOnMountOrArgChange: true, // it will refresh data when remount component
-    }
-  );
+  const { data: { metadata: { movie, reviews } = {} } = {}, isLoading } =
+    useGetMovieByIdQuery(
+      { movieId },
+      {
+        skip: !movieId,
+        refertchOnFocus: true, // data will fetch when page on focus
+        refetchOnMountOrArgChange: true, // it will refresh data when remount component
+      }
+    );
 
   const { data: { metadata: showtimes } = [] } = useGetAllShowtimeByMovieQuery(
     {
       movieId,
     },
     {
+      skip: !movieId,
       refertchOnFocus: true, // data will fetch when page on focus
       refetchOnMountOrArgChange: true, // it will refresh data when remount component
     }
@@ -45,7 +48,7 @@ const MovieDetails = () => {
   const [selectedTime, setSelectedTime] = useState();
 
   useEffect(() => {
-    if (showtimes) {
+    if (showtimes && showtimes.length) {
       setDateOptions(showtimes.map((s) => s.date));
       setSelectedDate(showtimes[0].date);
       setTimeOptions(showtimes[0].showtimes);
@@ -53,7 +56,7 @@ const MovieDetails = () => {
     }
   }, [showtimes]);
 
-  if (isLoading || !movie) return <div>Loading</div>;
+  if (isLoading) return <div>Loading</div>;
   return (
     <div className="bg-black flex justify-center overflow-x-hidden font-sans pb-[2rem]">
       <div className={`w-[80rem] py-3 grid gap-4 relative`}>
@@ -135,7 +138,7 @@ const MovieDetails = () => {
                     src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/IMDB_Logo_2016.svg/2560px-IMDB_Logo_2016.svg.png"
                     alt="moviedb_logo"
                   />
-                  <span className="text-[0.7rem]">78%</span>
+                  <span className="text-[0.7rem]">{movie.IMDBScore}</span>
                 </div>
                 <div className="flex items-center gap-1 ">
                   <img
@@ -143,7 +146,9 @@ const MovieDetails = () => {
                     src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Rotten_Tomatoes.svg/2019px-Rotten_Tomatoes.svg.png"
                     alt="moviedb_logo"
                   />
-                  <span className="text-[0.7rem]">78%</span>
+                  <span className="text-[0.7rem]">
+                    {movie.RottenTomatoesScore}
+                  </span>
                 </div>
                 <div className="flex items-center gap-1">
                   <img
@@ -151,7 +156,7 @@ const MovieDetails = () => {
                     src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_square_1-5bdc75aaebeb75dc7ae79426ddd9be3b2be1e342510f8202baf6bffa71d7f5c4.svg"
                     alt="moviedb_logo"
                   />
-                  <span className="text-[0.7rem]">78%</span>
+                  <span className="text-[0.7rem]">{movie.TMDBScore}</span>
                 </div>
               </div>
             </div>
@@ -279,9 +284,11 @@ const MovieDetails = () => {
               <span>Reviews</span>
               <div className="flex-1 h-[1px] bg-gray-700"></div>
             </div>
-            <div className="flex justify-center">
-              <MovieReviewSlider />
-            </div>
+            {reviews && reviews.length > 0 && (
+              <div className="flex justify-center">
+                <MovieReviewSlider reviews={reviews} />
+              </div>
+            )}
           </div>
 
           <div className="flex flex-col items-center">
@@ -291,7 +298,7 @@ const MovieDetails = () => {
               <div className="flex-1 h-[1px] bg-gray-700"></div>
             </div>
             <div className="flex justify-center">
-              <PhotoSlider />
+              <PhotoSlider photos={movie.photos.map((p) => p.url)} />
             </div>
           </div>
         </div>

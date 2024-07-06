@@ -243,6 +243,13 @@ const EditTheaterSeat = ({ theaterSeat, handleSubmit }) => {
       className += " border-red-600 bg-red-400";
     }
 
+    if (
+      seatType === seatTypeEnum.WHEELCHAIR ||
+      seatType === seatTypeEnum.COMPANITION
+    ) {
+      className += " bg-[#2f76b8]";
+    }
+
     return (
       <div
         key={"seat " + seatNumber}
@@ -509,8 +516,8 @@ const EditTheaterSeat = ({ theaterSeat, handleSubmit }) => {
         </div>
       ),
       [seatTypeEnum.WHEELCHAIR]: (
-        <div className="flex items-center gap-3 px-2">
-          <div className={`${seatClass}`}>
+        <div className="flex items-center gap-3 px-2 ">
+          <div className={`${seatClass} `}>
             <BiHandicap />
           </div>
           <span>Wheelchair</span>

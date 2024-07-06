@@ -17,6 +17,7 @@ const VideoInput = ({ formData, name, setOnChange }) => {
     <>
       <input
         className={`input ${formData[name].validate} border-gray-500 pl-[2rem]`}
+        placeholder="https://www.youtube.com/embed/<VideoId>"
         value={formData[name].value}
         onChange={(e) => setOnChange(e.target.value)}
       />

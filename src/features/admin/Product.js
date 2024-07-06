@@ -53,6 +53,7 @@ const Product = () => {
   };
 
   const handleDisplayProduct = () => {
+    if (!data?.products?.entities) return;
     if (Object.keys(data.products.entities).length === 0) {
       return (
         <div className="h-[30vh] flex justify-center items-center text-white">

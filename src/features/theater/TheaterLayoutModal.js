@@ -15,6 +15,13 @@ const TheaterLayoutModal = () => {
       className += "border border-gray-500 text-white";
     }
 
+    if (
+      seatType === seatTypeEnum.WHEELCHAIR ||
+      seatType === seatTypeEnum.COMPANITION
+    ) {
+      className += " bg-[#2f76b8]";
+    }
+
     return (
       <div key={"seat " + seatNumber} className={className}>
         {seatType === seatTypeEnum.WHEELCHAIR ? (

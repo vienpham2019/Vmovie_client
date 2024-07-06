@@ -32,6 +32,18 @@ const initState = {
       value: "",
       validate: "",
     },
+    IMDBScore: {
+      value: "",
+      validate: "",
+    },
+    RottenTomatoesScore: {
+      value: "",
+      validate: "",
+    },
+    TMDBScore: {
+      value: "",
+      validate: "",
+    },
     genre: {
       value: [],
       validate: "",

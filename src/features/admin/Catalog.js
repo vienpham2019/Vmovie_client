@@ -91,7 +91,9 @@ const Catalog = () => {
                     : header === "ratingScores"
                     ? "rating"
                     : header}{" "}
-                  {!["id", "actions", "status", "poster"].includes(header) && (
+                  {!["id", "actions", "reviews", "status", "poster"].includes(
+                    header
+                  ) && (
                     <div
                       className="cursor-pointer"
                       onClick={() => handleSortClick(header)}

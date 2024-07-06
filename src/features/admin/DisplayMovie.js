@@ -41,8 +41,33 @@ const ratingContent = (rating) => (
     <span>{rating}</span>
   </div>
 );
-const viewContent = (view) => (
-  <div className="min-w-[3rem] text-center">{view}</div>
+const viewContent = (IMDBScore, RottenTomatoesScore, TMDBScore) => (
+  <div className="min-w-[4rem] text-white text-center flex flex-col px-2 gap-1">
+    <div className="flex items-center gap-1">
+      <img
+        className="h-[0.7rem]"
+        src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/IMDB_Logo_2016.svg/2560px-IMDB_Logo_2016.svg.png"
+        alt="moviedb_logo"
+      />
+      <span className="text-[0.7rem]">{IMDBScore}</span>
+    </div>
+    <div className="flex items-center gap-1 ">
+      <img
+        className="h-[0.7rem]"
+        src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Rotten_Tomatoes.svg/2019px-Rotten_Tomatoes.svg.png"
+        alt="moviedb_logo"
+      />
+      <span className="text-[0.7rem]">{RottenTomatoesScore}</span>
+    </div>
+    <div className="flex items-center gap-1">
+      <img
+        className="h-[0.7rem]"
+        src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_square_1-5bdc75aaebeb75dc7ae79426ddd9be3b2be1e342510f8202baf6bffa71d7f5c4.svg"
+        alt="moviedb_logo"
+      />
+      <span className="text-[0.7rem]">{TMDBScore}</span>
+    </div>
+  </div>
 );
 const statusContent = (status) => {
   if (status) {
@@ -204,7 +229,11 @@ const DisplayMovie = ({ movie, movieIndex, openExtend, setOpenExtend }) => {
     poster: posterContent(movie["poster"]),
     title: titleContent(movie["title"]),
     rating: ratingContent(movie["ratingScores"]),
-    views: viewContent(movie["reviews"]),
+    views: viewContent(
+      movie["IMDBScore"],
+      movie["RottenTomatoesScore"],
+      movie["TMDBScore"]
+    ),
     status: statusContent(movie["isPublished"]),
     createdAt: createdAtContent(movie["createdAt"]),
     updatedAt: updatedAtContent(movie["updatedAt"]),

@@ -1,27 +1,36 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Pagination from "../../components/Pagination";
 import { useNavigate } from "react-router-dom";
 import { SlMagnifier } from "react-icons/sl";
 import { MdAdd } from "react-icons/md";
-import { useGetAllTheaterByAdminQuery } from "../theater/theaterApiSlice";
+import {
+  useDeleteTheaterMutation,
+  useGetAllTheaterByAdminQuery,
+} from "../theater/theaterApiSlice";
 import AdminSkeleton from "./AdminSkeleton";
 import { seatTypeEnum } from "../theater/theaterEnum";
-import { FaPencil, FaTrash } from "react-icons/fa6";
-import { useDispatch } from "react-redux";
+import { FaEye, FaPencil, FaTrash } from "react-icons/fa6";
+import { useDispatch, useSelector } from "react-redux";
 import {
+  clearModalResponse,
   modalComponentEnum,
   openModal,
   setModalParams,
 } from "../../components/modal/ModalSlice";
 import { ConfirmModalActionEnum } from "../../components/modal/ConfirmModal";
+import {
+  notificationMessageEnum,
+  setMessage,
+} from "../../components/notificationMessage/notificationMessageSlice";
 
 const Theater = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const { modalResponse } = useSelector((state) => state.modal);
   const limit = 10;
-
+  const [deleteTheater] = useDeleteTheaterMutation();
   const { data, isLoading } = useGetAllTheaterByAdminQuery(
     { search, page, limit },
     {
@@ -33,12 +42,47 @@ const Theater = () => {
     }
   );
 
+  useEffect(() => {
+    const handleModalResponse = async () => {
+      if (modalResponse?.isConfirm) {
+        if (
+          modalResponse.confirmAction.action ===
+          ConfirmModalActionEnum.DELETE_THEATER_BY_ID
+        ) {
+          const res = await deleteTheater({
+            _id: modalResponse.confirmAction.theaterId,
+          });
+          if (res?.data?.message) {
+            dispatch(
+              setMessage({
+                message: res.data.message,
+                messageType: notificationMessageEnum.SUCCESS,
+              })
+            );
+          } else {
+            dispatch(
+              setMessage({
+                message: res.error.data.message,
+                messageType: notificationMessageEnum.ERROR,
+              })
+            );
+          }
+          dispatch(clearModalResponse());
+        }
+      }
+    };
+
+    handleModalResponse();
+  }, [modalResponse, dispatch, deleteTheater]);
+
   const handleDeleteTheater = async (_id) => {
     dispatch(
       setModalParams({
         message: `Are you sure you want to delete this theater ?`,
-        confirmAction: ConfirmModalActionEnum.DELETE_THEATER_BY_ID,
-        confirmActionParams: { _id },
+        confirmAction: {
+          action: ConfirmModalActionEnum.DELETE_THEATER_BY_ID,
+          theaterId: _id,
+        },
       })
     );
     dispatch(openModal(modalComponentEnum.CONFIRM));
@@ -98,7 +142,17 @@ const Theater = () => {
                   <span>{theater.updatedAt.split("T")[0]}</span>
                 </div>
               </div>
-              <div className="flex flex-wrap gap-[2rem] border border-gray-500 py-2 justify-center">
+              <div className="flex flex-wrap border border-gray-500 py-2 gap-3 justify-around">
+                <div
+                  className="text-[rgb(168,111,248)] tooltip_container cursor-pointer"
+                  onClick={() => {
+                    dispatch(setModalParams({ grid: theater.grid }));
+                    dispatch(openModal(modalComponentEnum.THEATER_LAYOUT));
+                  }}
+                >
+                  <FaEye />
+                  <div className="tooltip tooltip_top">Preview</div>
+                </div>
                 <div
                   className="text-cyan-500 tooltip_container cursor-pointer"
                   onClick={() => navigate(`/admin/theater/editTheater/${_id}`)}
