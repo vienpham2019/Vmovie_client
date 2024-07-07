@@ -1,19 +1,37 @@
 import { useParams } from "react-router-dom";
 import MovieSeats from "./MovieSeats";
-import { useGetAllShowtimeByMovieQuery } from "../showtime/showtimeApiSlice";
+import {
+  useGetAllShowtimeByMovieQuery,
+  useGetShowtimeQuery,
+} from "../showtime/showtimeApiSlice";
 import { useEffect, useState } from "react";
 import Selection from "../../components/form/Selection";
 import { convertToAmPm } from "../../util/time";
 import { FiMinusCircle, FiPlusCircle } from "react-icons/fi";
 import { FaWheelchair } from "react-icons/fa6";
 import { MdOutlineWheelchairPickup } from "react-icons/md";
+import { compressGrid, expandGrid } from "../../util/grid";
 const MovieReservedSeating = () => {
   const { movieId, date, time } = useParams();
-  const { data: { metadata: showtimes } = [] } = useGetAllShowtimeByMovieQuery(
+  const { data: { metadata: showtimes } = [], isLoading: showtimeLoading } =
+    useGetAllShowtimeByMovieQuery(
+      {
+        movieId,
+      },
+      {
+        refertchOnFocus: true, // data will fetch when page on focus
+        refetchOnMountOrArgChange: true, // it will refresh data when remount component
+      }
+    );
+
+  const { data: { metadata: showtimeDetail } = {} } = useGetShowtimeQuery(
     {
+      date: date.split("-").join("/"),
       movieId,
+      time,
     },
     {
+      skip: !date || !movieId || !time,
       refertchOnFocus: true, // data will fetch when page on focus
       refetchOnMountOrArgChange: true, // it will refresh data when remount component
     }
@@ -23,55 +41,39 @@ const MovieReservedSeating = () => {
   const [selectedDate, setSelectedDate] = useState();
   const [timeOptions, setTimeOptions] = useState([]);
   const [selectedTime, setSelectedTime] = useState();
+  const [seatGrid, setSeatGrid] = useState([]);
+  const [takenSeats, setTakenSeats] = useState([]);
+  const [prices, setPrices] = useState([
+    { type: "XD Matinne", price: 10.5 },
+    { type: "XD Child", sub: "Child (1-11)", price: 9.25 },
+    { type: "XD Senior", sub: "Senior (62+)", price: 9.75 },
+  ]);
+  useEffect(() => {
+    setSelectedDate(date.split("-").join("/"));
+    setSelectedTime(convertToAmPm(time));
+  }, []);
 
   useEffect(() => {
     if (showtimes) {
       setDateOptions(showtimes.map((s) => s.date));
-      setSelectedDate(showtimes[0].date);
-      setTimeOptions(showtimes[0].showtimes);
-      setSelectedTime(showtimes[0].showtimes[0]);
+      setTimeOptions(showtimes[0].showtimes.map((time) => convertToAmPm(time)));
     }
   }, [showtimes]);
 
-  const seatLayOut = {
-    A: ["1H", "4N", "1H", "5N", "1H", "4N", "1H"],
-    B: ["1H", "4N", "1H", "5N", "1H", "4N", "1H"],
-    Hall1: "",
-    C: ["2D", "3N", "1H", "1N", "4D", "1H", "2N", "3D"],
-    D: ["5N", "1H", "5N", "1H", "5N"],
-    E: ["5N", "1H", "5N", "1H", "5N"],
-    Hall2: "",
-    F: ["5N", "1H", "5N", "1H", "5N"],
-    G: ["5N", "1H", "5N", "1H", "5N"],
-    H: ["5N", "1H", "5N", "1H", "5N"],
-  };
-
-  const selectedSeats = [
-    "A1",
-    "A2",
-    "A3",
-    "A5",
-    "A6",
-    "A7",
-    "C1",
-    "C2",
-    "C6",
-    "C7",
-    "C8",
-    "C9",
-    "D4",
-    "D5",
-    "D6",
-    "D7",
-    "D8",
-    "D9",
-  ];
-
-  const prices = [
-    { type: "XD Matinne", price: 10.5 },
-    { type: "XD Child", sub: "Child (1-11)", price: 9.25 },
-    { type: "XD Senior", sub: "Senior (62+)", price: 9.75 },
-  ];
+  useEffect(() => {
+    if (showtimeDetail) {
+      console.log(showtimeDetail);
+      const { takenSeats, childPrice, generalAdmissiopnPrice, seniorPrice } =
+        showtimeDetail;
+      setTakenSeats(takenSeats);
+      setPrices([
+        { type: "XD Matinne", price: generalAdmissiopnPrice },
+        { type: "XD Child", sub: "Child (1-11)", price: childPrice },
+        { type: "XD Senior", sub: "Senior (62+)", price: seniorPrice },
+      ]);
+      setSeatGrid(showtimeDetail.theaterId.grid);
+    }
+  }, [showtimeDetail]);
 
   const [tickets, setTickets] = useState({});
   const [totalTickets, setTotalTickets] = useState(0);
@@ -220,7 +222,7 @@ const MovieReservedSeating = () => {
       </div>
     );
   };
-
+  if (showtimeLoading) return <div>Loading...</div>;
   return (
     <div className="w-full flex flex-col gap-2 mb-[2rem]">
       <div className="flex justify-center w-full">
@@ -253,7 +255,7 @@ const MovieReservedSeating = () => {
                       }}
                       placeHolder="Select Time"
                       border={"border border-gray-600"}
-                      handleOnChange={(value) => setSelectedDate(value)}
+                      handleOnChange={(value) => setSelectedTime(value)}
                     />
                   </div>
                 </div>
@@ -267,8 +269,8 @@ const MovieReservedSeating = () => {
         {displaySelectSeatController()}
         {/* Sit */}
         <MovieSeats
-          seatLayOut={seatLayOut}
-          selectedSeats={selectedSeats}
+          seatLayOut={seatGrid}
+          selectedSeats={takenSeats}
           selectSeat={selectSeat}
           handleAddSelectSeat={(seatNumber) =>
             setSelectSeat((prev) => [...prev, seatNumber])

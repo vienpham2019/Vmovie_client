@@ -17,19 +17,19 @@ const MovieTicket = () => {
   const { movieId } = useParams();
   const menu = Object.entries(menuSchema).map(([_, value]) => value);
   const [selectedMenu, setSelectedMenu] = useState(menuSchema.RESERVED_SEATING);
-  const { data: { metadata: movie } = {}, isLoading } = useGetMovieByIdQuery(
-    { movieId },
-    {
-      refertchOnFocus: true, // data will fetch when page on focus
-      refetchOnMountOrArgChange: true, // it will refresh data when remount component
-    }
-  );
+  const { data: { metadata: { movie } = {} } = {}, isLoading } =
+    useGetMovieByIdQuery(
+      { movieId },
+      {
+        refertchOnFocus: true, // data will fetch when page on focus
+        refetchOnMountOrArgChange: true, // it will refresh data when remount component
+      }
+    );
 
   if (isLoading || !movie) return <div>Loading</div>;
-
   return (
     <div
-      className="overflow-x-hidden font-sans bg-fixed"
+      className="overflow-x-hidden font-sans bg-fixed bg-center bg-cover"
       style={{ backgroundImage: `url(${movie.thumbnail.url})` }}
     >
       <div className="bg-[rgba(0,0,0,0.8)] w-full flex justify-center">

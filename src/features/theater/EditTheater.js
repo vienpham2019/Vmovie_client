@@ -10,6 +10,7 @@ import {
   setMessage,
 } from "../../components/notificationMessage/notificationMessageSlice";
 import AdminSkeleton from "../admin/AdminSkeleton";
+import { compressGrid } from "../../util/grid";
 
 const EditTheater = () => {
   const [editTheater] = useEditTheaterMutation();
@@ -28,6 +29,7 @@ const EditTheater = () => {
   const dispatch = useDispatch();
   const handleEditTheater = async (newTheater) => {
     try {
+      newTheater.grid = compressGrid(newTheater.grid);
       const res = await editTheater({ payload: newTheater, _id: theaterId });
       dispatch(
         setMessage({

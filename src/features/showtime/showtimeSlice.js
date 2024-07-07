@@ -7,6 +7,9 @@ const initialState = {
   selectedTheater: null,
   showTimeList: [],
   countShowTime: {},
+  generalAdmissionPrice: 5,
+  childPrice: 5,
+  seniorPrice: 5,
 };
 
 const showtimeSlice = createSlice({

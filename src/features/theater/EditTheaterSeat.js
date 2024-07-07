@@ -10,6 +10,7 @@ import {
   setMessage,
 } from "../../components/notificationMessage/notificationMessageSlice";
 import { useDispatch } from "react-redux";
+import { expandGrid } from "../../util/grid";
 
 const EditTheaterSeat = ({ theaterSeat, handleSubmit }) => {
   const dispatch = useDispatch();
@@ -17,8 +18,8 @@ const EditTheaterSeat = ({ theaterSeat, handleSubmit }) => {
   const [cols, setCols] = useState(5);
   const [selectCols, setSelectCols] = useState({ start: null, end: null });
   const [selectRows, setSelectRows] = useState({ start: null, end: null });
-  const colMax = 20;
-  const rowMax = 15;
+  const colMax = 30;
+  const rowMax = 30;
   const [openColControll, setOpenColControll] = useState(null);
   const [openRowControll, setOpenRowControll] = useState(null);
   const [selectSeatType, setSelectSeatType] = useState(seatTypeEnum.NORMAL);
@@ -34,7 +35,7 @@ const EditTheaterSeat = ({ theaterSeat, handleSubmit }) => {
       setRoomName(theaterSeat.name);
     }
     if (theaterSeat?.grid.length) {
-      const initGrid = [...theaterSeat.grid];
+      const initGrid = expandGrid(theaterSeat.grid);
       const setInitGrid = [];
       for (let rowIndex = 0; rowIndex < initGrid.length; rowIndex++) {
         const row = [];
@@ -51,6 +52,8 @@ const EditTheaterSeat = ({ theaterSeat, handleSubmit }) => {
         setInitGrid.push(row);
       }
       setGrid(setInitGrid);
+      setRows(initGrid.length);
+      setCols(initGrid[0].length);
     }
   }, [theaterSeat, setGrid, setRoomName]);
 

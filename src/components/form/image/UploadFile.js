@@ -187,8 +187,15 @@ const UploadFile = ({ type, validate, value, name, setOnChange, db }) => {
         } border-gray-500 ${validate} rounded-md h-[5rem] min-w-[15rem] items-center`}
       >
         <div
-          onClick={handleOpenAddImageUrlModal}
-          className="absolute -top-3 right-0 border text-white text-[1.3rem] bg-gray-700 p-1 rounded cursor-pointer"
+          onClick={() => {
+            if (Object.entries(value).length === 0)
+              handleOpenAddImageUrlModal();
+          }}
+          className={`absolute -top-3 right-0 border text-[1.3rem] ${
+            Object.entries(value).length !== 0
+              ? " border-gray-500 text-gray-400"
+              : " text-white cursor-pointer"
+          } bg-gray-700 p-1 rounded `}
         >
           <IoLinkOutline />
         </div>

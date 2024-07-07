@@ -105,7 +105,7 @@ const Theater = () => {
           Object.entries(seatTypeEnum).forEach(([key, value]) => {
             seatTypeName[value] = key;
           });
-          theater.grid.forEach((row) => {
+          theater.grid.forEach(({ value: row }) => {
             row.forEach((seat) => {
               if (seat !== seatTypeEnum.HALL) {
                 seatCount[`${seatTypeName[seat]}`] =

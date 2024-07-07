@@ -16,7 +16,7 @@ const EditMovie = () => {
   const { movieId } = useParams(); // Extract movieId from route params
 
   const {
-    data: movie,
+    data: { metadata: { movie } = {} } = {},
     isLoading,
     isSuccess,
   } = useGetMovieByIdQuery(
@@ -30,11 +30,12 @@ const EditMovie = () => {
   const { movieFormData, id } = useSelector((state) => state.form);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   useEffect(() => {
     if (isSuccess) {
       const initMovieForm = {};
-      Object.keys(movie.metadata).forEach((key) => {
-        initMovieForm[key] = { value: movie.metadata[key] };
+      Object.keys(movie).forEach((key) => {
+        initMovieForm[key] = { value: movie[key] };
       });
       dispatch(initMovieFormData(initMovieForm));
     }

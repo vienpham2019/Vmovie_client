@@ -2,6 +2,7 @@ import { FaWheelchair } from "react-icons/fa6";
 import { seatTypeEnum } from "./theaterEnum";
 import { MdOutlineWheelchairPickup } from "react-icons/md";
 import { useSelector } from "react-redux";
+import { expandGrid } from "../../util/grid";
 
 const TheaterLayoutModal = () => {
   const { modalParams: { grid } = [] } = useSelector((state) => state.modal);
@@ -35,9 +36,10 @@ const TheaterLayoutModal = () => {
     );
   };
   const disPlaySeatLayOut = () => {
+    const displayGrid = expandGrid(grid);
     return (
       <div className="flex flex-col gap-2">
-        {grid.map((row, rowIndex) => {
+        {displayGrid.map((row, rowIndex) => {
           let seatNumber = 0;
           return (
             <div className="flex gap-2 justify-center" key={rowIndex}>

@@ -6,6 +6,7 @@ import {
   notificationMessageEnum,
   setMessage,
 } from "../../components/notificationMessage/notificationMessageSlice";
+import { compressGrid } from "../../util/grid";
 
 const AddTheater = () => {
   const [createTheater] = useCreateTheaterMutation();
@@ -13,6 +14,7 @@ const AddTheater = () => {
   const dispatch = useDispatch();
   const handleAddTheater = async (newTheater) => {
     try {
+      newTheater.grid = compressGrid(newTheater.grid);
       const res = await createTheater(newTheater);
       dispatch(
         setMessage({

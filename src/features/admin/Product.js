@@ -22,29 +22,32 @@ const Product = () => {
   const [search, setSearch] = useState("");
   const limit = 10;
   const [openExtend, setOpenExtend] = useState(null);
-  const { data: { metadata: allProductTypes } = [] } =
-    useGetAllProductTypesQuery(
-      {},
-      {
-        pollingInterval: 120000, // 2min the data will fetch again
-        refertchOnFocus: true, // data will fetch when page on focus
-        refetchOnMountOrArgChange: true,
-      }
-    );
-
-  const { data, isLoading } = useGetAllProductByAdminQuery(
-    { search, page, limit, sortBy, sortDir, filter },
+  const {
+    data: { metadata: allProductTypes } = [],
+    isLoading: allProductTypesLoading,
+  } = useGetAllProductTypesQuery(
+    {},
     {
       pollingInterval: 120000, // 2min the data will fetch again
       refertchOnFocus: true, // data will fetch when page on focus
-      refetchOnMountOrArgChange: true, // it will refresh data when remount component
-      // Set the query key to include the page so it updates when the page changes
-      queryKey: [
-        "getAllProductByAdmin",
-        { search, page, sortBy, sortDir, filter },
-      ],
+      refetchOnMountOrArgChange: true,
     }
   );
+
+  const { data: { products, totalProducts } = {}, isLoading: productLoading } =
+    useGetAllProductByAdminQuery(
+      { search, page, limit, sortBy, sortDir, filter },
+      {
+        pollingInterval: 120000, // 2min the data will fetch again
+        refertchOnFocus: true, // data will fetch when page on focus
+        refetchOnMountOrArgChange: true, // it will refresh data when remount component
+        // Set the query key to include the page so it updates when the page changes
+        queryKey: [
+          "getAllProductByAdmin",
+          { search, page, sortBy, sortDir, filter },
+        ],
+      }
+    );
 
   const handleSortClick = (header) => {
     setPage(1);
@@ -53,8 +56,8 @@ const Product = () => {
   };
 
   const handleDisplayProduct = () => {
-    if (!data?.products?.entities) return;
-    if (Object.keys(data.products.entities).length === 0) {
+    if (!products?.entities) return;
+    if (Object.keys(products.entities).length === 0) {
       return (
         <div className="h-[30vh] flex justify-center items-center text-white">
           No Product
@@ -62,7 +65,7 @@ const Product = () => {
       );
     }
 
-    const duplicatedProducts = Object.entries(data.products?.entities).flatMap(
+    const duplicatedProducts = Object.entries(products?.entities).flatMap(
       ([_, product]) => product
     );
 
@@ -132,7 +135,7 @@ const Product = () => {
     );
   };
 
-  if (isLoading) return <AdminSkeleton />;
+  if (productLoading || allProductTypesLoading) return <AdminSkeleton />;
 
   return (
     <div className="p-[1rem]">
@@ -187,14 +190,14 @@ const Product = () => {
             </div>
             {/* Movie List */}
             {handleDisplayProduct()}
-            {data.totalProducts > limit && (
+            {totalProducts > limit && (
               <div className="flex justify-between items-center">
                 <div className="text-gray-300 font-thin text-[0.8rem] border border-gray-700 bg-slate-800 flex items-center h-[2rem] px-2 rounded-md">
-                  Showing 10 of {data.totalProducts}
+                  Showing 10 of {totalProducts}
                 </div>
                 <Pagination
                   currentPage={page}
-                  totalPage={Math.ceil(data.totalProducts / 10)}
+                  totalPage={Math.ceil(totalProducts / 10)}
                   setCurrentPage={(page) => setPage(page)}
                 />
               </div>
