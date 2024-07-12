@@ -7,6 +7,7 @@ const MovieSeats = ({
   selectSeat = [],
   handleAddSelectSeat,
   handleRemoveSelectSeat,
+  theaterName = "",
 }) => {
   const displaySeatLayOut = () => {
     return seatLayOut.map((layout, index) => {
@@ -96,7 +97,11 @@ const MovieSeats = ({
             <div className="screen w-full bg-gray-400"></div>
           </div>
           <div className="w-[30rem] h-[5rem] screen-container">
-            <div className="screen-shadow w-full bg-gradient-to-b from-gray-700"></div>
+            <div className="screen-shadow flex justify-center w-full bg-gradient-to-b from-gray-700">
+              <span className="text-[#5292cd] bold text-[1.2rem]">
+                {theaterName}
+              </span>
+            </div>
           </div>
         </div>
         {displaySeatLayOut()}

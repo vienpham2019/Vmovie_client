@@ -2,9 +2,11 @@ import { useParams } from "react-router-dom";
 import { useGetMovieByIdQuery } from "./movieApiSlice";
 
 import MovieReservedSeating from "./MovieReservedSeating";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MovieFoodAndDrink from "./MovieFoodAndDrink";
 import MovieCheckOut from "./MovieCheckOut";
+import { useDispatch } from "react-redux";
+import { setStateSelectedMovie } from "./movieSlice";
 
 const menuSchema = Object.freeze({
   RESERVED_SEATING: "Reserved seating",
@@ -15,6 +17,7 @@ const menuSchema = Object.freeze({
 
 const MovieTicket = () => {
   const { movieId } = useParams();
+  const dispatch = useDispatch();
   const menu = Object.entries(menuSchema).map(([_, value]) => value);
   const [selectedMenu, setSelectedMenu] = useState(menuSchema.RESERVED_SEATING);
   const { data: { metadata: { movie } = {} } = {}, isLoading } =
@@ -25,6 +28,13 @@ const MovieTicket = () => {
         refetchOnMountOrArgChange: true, // it will refresh data when remount component
       }
     );
+
+  useEffect(() => {
+    if (movie) {
+      const { _id, poster, rating, title } = movie;
+      dispatch(setStateSelectedMovie({ _id, poster, rating, title }));
+    }
+  }, [dispatch, movie]);
 
   if (isLoading || !movie) return <div>Loading</div>;
   return (
@@ -66,7 +76,7 @@ const MovieTicket = () => {
               </div>
             </div>
             {selectedMenu === menuSchema.RESERVED_SEATING && (
-              <MovieReservedSeating />
+              <MovieReservedSeating setSelectedMenu={setSelectedMenu} />
             )}
             {selectedMenu === menuSchema.FOOD_AND_DRINKS && (
               <MovieFoodAndDrink />
@@ -78,5 +88,7 @@ const MovieTicket = () => {
     </div>
   );
 };
+
+export { menuSchema };
 
 export default MovieTicket;

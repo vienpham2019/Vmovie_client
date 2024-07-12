@@ -297,28 +297,22 @@ const MovieFoodAndDrink = () => {
             <div className="max-h-[30rem] overflow-y-scroll flex flex-wrap justify-center gap-2 boder p-2">
               {" "}
               {tickets && (
-                <div className="flex flex-col gap-1 items-center border-b border-gray-500">
+                <div className="flex w-full flex-col gap-1 items-center border-b border-gray-500">
                   <div className="flex justify-between items-center w-full p-1">
                     <div className="flex items-center gap-2 font-bold">
                       <GiTicket />
-                      <span>Tickets</span>
+                      <span>
+                        {tickets.seats.length} Ticket
+                        {tickets.seats.length > 1 && "s"}
+                      </span>
                     </div>
                     <span>${tickets.subTotal.toFixed(2) || ""}</span>
                   </div>
-                  <div className="flex items-end">
-                    <span className="w-[80%] text-[0.8rem]">
-                      {tickets.item_name}
-                    </span>
-                    <div className="flex gap-1 text-[0.8rem]">
-                      <span>{tickets.amount}</span>
-                      <span>x</span>
-                      <span>${tickets.price.toFixed(2)}</span>
-                    </div>
-                  </div>
+                  <div className="flex items-end"></div>
                 </div>
               )}
               {foodAndDrink && (
-                <div className="flex flex-col flex-1 gap-1 items-center">
+                <div className="flex w-full flex-col flex-1 gap-1 items-center">
                   <div className="flex w-full justify-between items-center p-1">
                     <div className="flex items-center gap-2 font-bold">
                       <GiPopcorn />

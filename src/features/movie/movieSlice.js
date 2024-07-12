@@ -1,11 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initState = {
+  selectedMovie: null,
   tickets: {
-    item_name: "G7, G8, G9, H7, H8, H9, E1, E2, E3, E6, E7, E8",
-    amount: 12,
-    price: 15,
-    subTotal: 180,
+    seats: [],
+    prices: [],
+    date: "",
+    time: "",
+    theaterName: "",
+    subTotal: 0,
   },
   foodAndDrink: {
     products: [
@@ -38,9 +41,9 @@ const initState = {
         ],
       },
     ],
-    subTotal: 75.85,
+    subTotal: 0,
   },
-  subTotal: 255.85,
+  subTotal: 0,
 };
 
 const findExistingProduct = (products, payload) => {
@@ -59,7 +62,13 @@ const movieSlice = createSlice({
   name: "movie",
   initialState: initState,
   reducers: {
-    setTickets: (state, action) => {
+    setStateSelectedMovie: (state, action) => {
+      return {
+        ...state,
+        selectedMovie: action.payload,
+      };
+    },
+    setStateTickets: (state, action) => {
       return {
         ...state,
         tickets: action.payload,
@@ -124,7 +133,12 @@ const movieSlice = createSlice({
   },
 });
 
-export const { setTickets, addFoodAndDrink, deleteFoodAndDrink, resetState } =
-  movieSlice.actions;
+export const {
+  setStateSelectedMovie,
+  setStateTickets,
+  addFoodAndDrink,
+  deleteFoodAndDrink,
+  resetState,
+} = movieSlice.actions;
 
 export default movieSlice.reducer;

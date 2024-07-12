@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import MovieSeats from "./MovieSeats";
 import {
   useGetAllShowtimeByMovieQuery,
@@ -6,13 +6,19 @@ import {
 } from "../showtime/showtimeApiSlice";
 import { useEffect, useState } from "react";
 import Selection from "../../components/form/Selection";
-import { convertToAmPm } from "../../util/time";
+import { convertTo24Hour, convertToAmPm } from "../../util/time";
 import { FiMinusCircle, FiPlusCircle } from "react-icons/fi";
 import { FaWheelchair } from "react-icons/fa6";
 import { MdOutlineWheelchairPickup } from "react-icons/md";
-import { compressGrid, expandGrid } from "../../util/grid";
-const MovieReservedSeating = () => {
-  const { movieId, date, time } = useParams();
+import { useDispatch, useSelector } from "react-redux";
+import { setStateTickets } from "./movieSlice";
+import { menuSchema } from "./MovieTicket";
+
+const MovieReservedSeating = ({ setSelectedMenu }) => {
+  const { movieId } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const dispatch = useDispatch();
+  const { tickets: stateTickets } = useSelector((state) => state.movie);
   const { data: { metadata: showtimes } = [], isLoading: showtimeLoading } =
     useGetAllShowtimeByMovieQuery(
       {
@@ -24,23 +30,8 @@ const MovieReservedSeating = () => {
       }
     );
 
-  const { data: { metadata: showtimeDetail } = {} } = useGetShowtimeQuery(
-    {
-      date: date.split("-").join("/"),
-      movieId,
-      time,
-    },
-    {
-      skip: !date || !movieId || !time,
-      refertchOnFocus: true, // data will fetch when page on focus
-      refetchOnMountOrArgChange: true, // it will refresh data when remount component
-    }
-  );
-
   const [dateOptions, setDateOptions] = useState([]);
-  const [selectedDate, setSelectedDate] = useState();
   const [timeOptions, setTimeOptions] = useState([]);
-  const [selectedTime, setSelectedTime] = useState();
   const [seatGrid, setSeatGrid] = useState([]);
   const [takenSeats, setTakenSeats] = useState([]);
   const [prices, setPrices] = useState([
@@ -48,10 +39,24 @@ const MovieReservedSeating = () => {
     { type: "XD Child", sub: "Child (1-11)", price: 9.25 },
     { type: "XD Senior", sub: "Senior (62+)", price: 9.75 },
   ]);
-  useEffect(() => {
-    setSelectedDate(date.split("-").join("/"));
-    setSelectedTime(convertToAmPm(time));
-  }, []);
+
+  const [tickets, setTickets] = useState({});
+  const [totalTickets, setTotalTickets] = useState(0);
+  const [subTotal, setSubTotal] = useState(0);
+  const [selectSeat, setSelectSeat] = useState([]);
+
+  const { data: { metadata: showtimeDetail } = {} } = useGetShowtimeQuery(
+    {
+      date: searchParams.get("date"),
+      movieId,
+      time: searchParams.get("time"),
+    },
+    {
+      skip: !searchParams.get("date") || !movieId || !searchParams.get("time"),
+      refertchOnFocus: true, // data will fetch when page on focus
+      refetchOnMountOrArgChange: true, // it will refresh data when remount component
+    }
+  );
 
   useEffect(() => {
     if (showtimes) {
@@ -62,23 +67,17 @@ const MovieReservedSeating = () => {
 
   useEffect(() => {
     if (showtimeDetail) {
-      console.log(showtimeDetail);
-      const { takenSeats, childPrice, generalAdmissiopnPrice, seniorPrice } =
+      const { takenSeats, childPrice, generalAdmissionPrice, seniorPrice } =
         showtimeDetail;
       setTakenSeats(takenSeats);
       setPrices([
-        { type: "XD Matinne", price: generalAdmissiopnPrice },
+        { type: "XD Matinne", price: generalAdmissionPrice },
         { type: "XD Child", sub: "Child (1-11)", price: childPrice },
         { type: "XD Senior", sub: "Senior (62+)", price: seniorPrice },
       ]);
       setSeatGrid(showtimeDetail.theaterId.grid);
     }
   }, [showtimeDetail]);
-
-  const [tickets, setTickets] = useState({});
-  const [totalTickets, setTotalTickets] = useState(0);
-  const [subTotal, setSubTotal] = useState(0);
-  const [selectSeat, setSelectSeat] = useState([]);
 
   useEffect(() => {
     if (prices) {
@@ -93,7 +92,18 @@ const MovieReservedSeating = () => {
       setSubTotal(0);
       setTotalTickets(0);
     }
-  }, []);
+  }, [prices]);
+
+  const handleChangeSearchParams = ({ key, value }) => {
+    setSelectSeat([]);
+    setSearchParams(
+      (prev) => {
+        prev.set(key, value);
+        return prev;
+      },
+      { replace: true }
+    );
+  };
 
   const handleAddTickets = (type) => {
     if (tickets[type].count === 20) return;
@@ -125,11 +135,24 @@ const MovieReservedSeating = () => {
     setTotalTickets(totalTickets - 1);
   };
 
+  const handleGoNext = () => {
+    const updateTickets = {
+      theaterName: showtimeDetail?.theaterId.name || "Unknow",
+      seats: selectSeat,
+      prices: tickets,
+      date: searchParams.get("date"),
+      time: searchParams.get("time"),
+      subTotal,
+    };
+    dispatch(setStateTickets(updateTickets));
+    setSelectedMenu(menuSchema.FOOD_AND_DRINKS);
+  };
+
   const displaySelectSeatController = () => {
     const remainTickets = totalTickets - selectSeat.length;
     const remainSeats = selectSeat.length - totalTickets;
     return (
-      <div className="w-[18rem] flex flex-col items-center gap-2 bg-[#172532] rounded">
+      <div className="w-[18rem] pb-[1rem] h-fit flex flex-col items-center gap-2 bg-[#172532] rounded">
         <h2 className="text-[1.2rem] font-bold m-2 mt-[1.2rem]">
           Select {selectSeat.length} Ticket{selectSeat.length > 1 && "s"}
         </h2>
@@ -212,6 +235,7 @@ const MovieReservedSeating = () => {
           )}
         </div>
         <button
+          onClick={() => handleGoNext()}
           className={`border ${
             (totalTickets === 0 || remainTickets > 0 || remainSeats > 0) &&
             "hidden"
@@ -236,12 +260,14 @@ const MovieReservedSeating = () => {
                   <div className="w-[10rem]">
                     <Selection
                       formData={{
-                        value: selectedDate,
+                        value: searchParams.get("date"),
                         options: dateOptions,
                       }}
                       placeHolder="Select Date"
                       border={"border border-gray-600"}
-                      handleOnChange={(value) => setSelectedDate(value)}
+                      handleOnChange={(value) =>
+                        handleChangeSearchParams({ key: "date", value })
+                      }
                     />
                   </div>
                 </div>
@@ -250,12 +276,17 @@ const MovieReservedSeating = () => {
                   <div className="w-[10rem]">
                     <Selection
                       formData={{
-                        value: selectedTime,
+                        value: convertToAmPm(searchParams.get("time")),
                         options: timeOptions,
                       }}
                       placeHolder="Select Time"
                       border={"border border-gray-600"}
-                      handleOnChange={(value) => setSelectedTime(value)}
+                      handleOnChange={(value) =>
+                        handleChangeSearchParams({
+                          key: "time",
+                          value: convertTo24Hour(value),
+                        })
+                      }
                     />
                   </div>
                 </div>
@@ -266,12 +297,14 @@ const MovieReservedSeating = () => {
         {/* Date */}
       </div>
       <div className="flex flex-wrap-reverse gap-[1rem] w-full tablet:justify-center justify-start">
-        {displaySelectSeatController()}
+        <div className="h-full">{displaySelectSeatController()}</div>
+
         {/* Sit */}
         <MovieSeats
           seatLayOut={seatGrid}
           selectedSeats={takenSeats}
           selectSeat={selectSeat}
+          theaterName={showtimeDetail?.theaterId.name || ""}
           handleAddSelectSeat={(seatNumber) =>
             setSelectSeat((prev) => [...prev, seatNumber])
           }

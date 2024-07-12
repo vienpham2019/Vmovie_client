@@ -21,15 +21,18 @@ const MovieDetails = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { movieId } = useParams();
-  const { data: { metadata: { movie, reviews } = {} } = {}, isLoading } =
-    useGetMovieByIdQuery(
-      { movieId },
-      {
-        skip: !movieId,
-        refertchOnFocus: true, // data will fetch when page on focus
-        refetchOnMountOrArgChange: true, // it will refresh data when remount component
-      }
-    );
+  const {
+    data: { metadata: { movie, reviews } = {} } = {},
+    isLoading,
+    isError,
+  } = useGetMovieByIdQuery(
+    { movieId },
+    {
+      skip: !movieId,
+      refertchOnFocus: true, // data will fetch when page on focus
+      refetchOnMountOrArgChange: true, // it will refresh data when remount component
+    }
+  );
 
   const { data: { metadata: showtimes } = [] } = useGetAllShowtimeByMovieQuery(
     {
@@ -57,6 +60,10 @@ const MovieDetails = () => {
   }, [showtimes]);
 
   if (isLoading) return <div>Loading</div>;
+  if (isError) {
+    navigate("notfound");
+    return;
+  }
   return (
     <div className="bg-black flex justify-center overflow-x-hidden font-sans pb-[2rem]">
       <div className={`w-[80rem] py-3 grid gap-4 relative`}>
@@ -249,13 +256,11 @@ const MovieDetails = () => {
                 </div>
 
                 <button
-                  onClick={() =>
+                  onClick={() => {
                     navigate(
-                      `/movies/${movieId}/getTicket/${selectedDate
-                        .split("/")
-                        .join("-")}/${selectedTime}`
-                    )
-                  }
+                      `/movies/${movieId}/getTicket?date=${selectedDate}&time=${selectedTime}`
+                    );
+                  }}
                   className="btn-blue w-[10rem] flex justify-center items-center gap-2"
                 >
                   <span>Get Ticket</span>

@@ -47,7 +47,7 @@ const App = () => {
           <Route path="nowPlaying" element={<NowPlaying />} />
           <Route path=":movieId">
             <Route index element={<MovieDetails />} />
-            <Route path="getTicket/:date/:time" element={<MovieTicket />} />
+            <Route path="getTicket" element={<MovieTicket />} />
           </Route>
         </Route>
         {/* Dash */}
