@@ -73,6 +73,13 @@ export const showtimeApiSlice = apiSlice.injectEndpoints({
         body: payload,
       }),
     }),
+    checkoutShowtime: builder.mutation({
+      query: (payload) => ({
+        url: `/showtime/checkout`,
+        method: "PATCH",
+        body: payload,
+      }),
+    }),
     deleteShowtime: builder.mutation({
       query: ({ _id }) => ({
         url: `/showtime/${_id}`,
@@ -95,5 +102,6 @@ export const {
   useGetAllShowtimeByMovieQuery,
   useCountShowtimeDayByMovieIdQuery,
   useCreateShowtimeMutation,
+  useCheckoutShowtimeMutation,
   useDeleteShowtimeMutation,
 } = showtimeApiSlice;

@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useGetMovieByIdQuery } from "./movieApiSlice";
 
 import MovieReservedSeating from "./MovieReservedSeating";
@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import MovieFoodAndDrink from "./MovieFoodAndDrink";
 import MovieCheckOut from "./MovieCheckOut";
 import { useDispatch } from "react-redux";
-import { setStateSelectedMovie } from "./movieSlice";
+import { resetState, setStateSelectedMovie } from "./movieSlice";
 import MovieCompletedPurchange from "./MovieCompletedPurchange";
 
 const menuSchema = Object.freeze({
@@ -33,6 +33,7 @@ const MovieTicket = () => {
   useEffect(() => {
     if (movie) {
       const { _id, poster, rating, title } = movie;
+      dispatch(resetState());
       dispatch(setStateSelectedMovie({ _id, poster, rating, title }));
     }
   }, [dispatch, movie]);
@@ -56,12 +57,12 @@ const MovieTicket = () => {
             <div className="flex-1 grid gap-2 items-end">
               <div>
                 {" "}
-                <h1 className="text-[3rem] uppercase font-mono font-bold">
+                <Link
+                  to={`/movies/${movieId}`}
+                  className="text-[3rem] uppercase font-mono font-bold hover:text-cyan-200"
+                >
                   {movie.title}
-                </h1>
-                <span className="text-[0.9rem] text-gray-200">
-                  {movie.rating}
-                </span>
+                </Link>
                 <div className="py-2 rounded flex items-center h-[4rem] bg-[#172532] mobile:text-[0.7rem] text-[0.9rem] uppercase px-2 font-thin">
                   {menu.map((m, i) => (
                     <span

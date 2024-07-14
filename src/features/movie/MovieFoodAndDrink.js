@@ -45,9 +45,7 @@ const productTypes = [
 
 const MovieFoodAndDrink = ({ setSelectedMenu }) => {
   const dispatch = useDispatch();
-  const { tickets, foodAndDrink, subTotal } = useSelector(
-    (state) => state.movie
-  );
+  const { tickets, foodAndDrink } = useSelector((state) => state.movie);
   const { modalResponse } = useSelector((state) => state.modal);
 
   const [openMenu, setOpenMenu] = useState(productTypes[0]);
@@ -203,7 +201,7 @@ const MovieFoodAndDrink = ({ setSelectedMenu }) => {
             <div className="flex justify-end items-center gap-2">
               <span className="text-gray-400 text-[0.9rem]">Subtotal -</span>
               <span className="text-[1.2rem] font-normal">
-                ${subTotal.toFixed(2)}
+                ${(tickets.subTotal + foodAndDrink.subTotal).toFixed(2)}
               </span>
             </div>
             <div className="flex gap-1">

@@ -4,21 +4,30 @@ import { FiPlusCircle } from "react-icons/fi";
 import {
   modalComponentEnum,
   openModal,
-  setModalParams,
 } from "../../components/modal/ModalSlice";
 import { convertToAmPm } from "../../util/time";
 import { GiPopcorn, GiTicket } from "react-icons/gi";
 import { GoPencil } from "react-icons/go";
 import { menuSchema } from "./MovieTicket";
+import { useCheckoutShowtimeMutation } from "../showtime/showtimeApiSlice";
 
 const MovieCheckOut = ({ setSelectedMenu }) => {
-  const { tickets, foodAndDrink, subTotal } = useSelector(
+  const { tickets, foodAndDrink, selectedMovie } = useSelector(
     (state) => state.movie
   );
+  const [checkout] = useCheckoutShowtimeMutation();
   const dispatch = useDispatch();
 
+  const subTotal = tickets.subTotal + foodAndDrink.subTotal;
   const onlineFees = 5.67;
   const tax = subTotal * 0.3;
+
+  const handleCheckout = async () => {
+    const res = await checkout({ tickets, selectedMovie });
+    if (res?.data?.statusCode === 200) {
+      setSelectedMenu(menuSchema.COMPLETED);
+    }
+  };
 
   return (
     <div className="w-full flex flex-col gap-2 mb-[2rem]">
@@ -255,7 +264,9 @@ const MovieCheckOut = ({ setSelectedMenu }) => {
           </div>
           <button
             className="p-3 rounded bg-red-600"
-            onClick={() => setSelectedMenu(menuSchema.COMPLETED)}
+            onClick={() => {
+              handleCheckout();
+            }}
           >
             Completed Purchase{" "}
           </button>

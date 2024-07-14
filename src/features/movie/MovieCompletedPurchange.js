@@ -1,14 +1,16 @@
 import { useSelector } from "react-redux";
 import { convertToAmPm } from "../../util/time";
 import { GiPopcorn, GiTicket } from "react-icons/gi";
-import { GoPencil } from "react-icons/go";
+import { Link } from "react-router-dom";
 
 const MovieCompletedPurchange = () => {
-  const { selectedMovie, tickets, foodAndDrink, subTotal } = useSelector(
+  const { selectedMovie, tickets, foodAndDrink } = useSelector(
     (state) => state.movie
   );
+  const subTotal = tickets.subTotal + foodAndDrink.subTotal;
   const onlineFees = 5.67;
   const tax = subTotal * 0.3;
+
   return (
     <div className="w-full flex-wrap flex gap-3">
       <div className="w-[18rem] flex-1 bg-[#172532]">
@@ -34,9 +36,9 @@ const MovieCompletedPurchange = () => {
               <span>Email</span>
             </div>
           </div>
-          <button className="mx-4 px-[2rem] py-1 text-[0.9rem] bg-red-700 rounded hover:bg-red-800">
-            RE-SEND
-          </button>
+        </div>
+        <div className="flex gap-3 mx-2 text-cyan-300 hover:text-cyan-400 cursor-pointer">
+          <Link to={"/"}>Home page</Link>
         </div>
       </div>
       <div className="flex flex-col flex-auto gap-2 bg-[#172532]">
@@ -48,9 +50,12 @@ const MovieCompletedPurchange = () => {
               alt="poster"
             />
             <div className="flex flex-col gap-3">
-              <span className="font-bold text-[1.2rem]">
+              <Link
+                to={`/movies/${selectedMovie._id}`}
+                className="font-bold text-[1.2rem]"
+              >
                 {selectedMovie.title}
-              </span>
+              </Link>
               <div className="flex flex-col gap-1">
                 <span className="text-[0.8rem]">
                   {tickets.date} At {convertToAmPm(tickets.time)}
@@ -78,22 +83,45 @@ const MovieCompletedPurchange = () => {
                 <h2 className="font-bold">Summary</h2>
               </div>
               <div className="flex justify-between items-center w-full p-1">
-                <div className="flex flex-col gap-1">
-                  <div className="flex items-center gap-2 font-bold">
-                    <GiTicket />
-                    <span>
-                      {tickets.seats.length} Ticket
-                      {tickets.seats.length > 1 && "s"}
-                    </span>
+                <div className="flex flex-col gap-1 w-full">
+                  <div className="flex justify-between">
+                    <div className="flex items-center gap-2 font-bold">
+                      <GiTicket />
+                      <span>
+                        {tickets.seats.length} Ticket
+                        {tickets.seats.length > 1 && "s"}
+                      </span>
+                    </div>
+                    <div className="flex gap-2 items-center">
+                      <span>${tickets.subTotal.toFixed(2) || ""}</span>
+                    </div>
                   </div>
                   <span className="text-[0.9rem]">
                     Seats: {tickets.seats.join(",")}
                   </span>
-                </div>
-
-                <div className="flex gap-2 items-center">
-                  <span>${tickets.subTotal.toFixed(2) || ""}</span>
-                </div>
+                  <div className="w-full flex flex-col flex-1 gap-1 text-[0.9rem]">
+                    {Object.entries(tickets.prices).map(
+                      ([key, value], index) => {
+                        return (
+                          value.count > 0 && (
+                            <div
+                              className="flex w-full justify-between border-b border-gray-700"
+                              key={`tickets details ${index}`}
+                            >
+                              <span>{key}</span>
+                              <div className="w-[4rem] flex justify-between">
+                                <div>
+                                  <span>{value.count}</span> <span>x</span>
+                                </div>
+                                <span>${value.price.toFixed(2)}</span>
+                              </div>
+                            </div>
+                          )
+                        );
+                      }
+                    )}
+                  </div>
+                </div>{" "}
               </div>
               <div className="flex justify-between items-center w-full p-1">
                 <div className="flex items-center gap-2 font-bold">
@@ -124,7 +152,10 @@ const MovieCompletedPurchange = () => {
                   </div>
                 )}
                 {foodAndDrink.products.map((value, index) => (
-                  <div key={"food" + index} className="flex flex-col ">
+                  <div
+                    key={"food" + index}
+                    className="flex flex-col border-b border-gray-500"
+                  >
                     <div className="flex justify-between flex-1">
                       <span className="font-bold pr-2">
                         {value["itemName"]}
@@ -136,24 +167,26 @@ const MovieCompletedPurchange = () => {
                           .map(([key, opt]) => `${key} - ${opt}`)
                           .join(", ")}
                       </span>
-                      <div className="flex gap-1">
-                        <span>{value["amount"]}</span>
-                        <span>x</span>
-                        <span>${value["price"].toFixed(2)}</span>
+                      <div className="flex w-[4rem] justify-between gap-1 text-[0.9rem]">
+                        <div className="flex gap-1">
+                          <span>{value.amount}</span> <span>x</span>
+                        </div>
+                        <span>${value.price.toFixed(2)}</span>
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
-              <div className="border-t border-gray-500"></div>
-              <div className="flex justify-between">
-                <span>Subtotal</span>
-                <span>$ {subTotal.toFixed(2)}</span>
+              <div className="flex justify-between border-b">
+                <span className="font-semibold">Subtotal</span>
+                <span className="font-semibold">$ {subTotal.toFixed(2)}</span>
               </div>
               <div className="flex flex-col">
                 <div className="flex justify-between">
                   <span>Online Ticket Fees</span>
-                  <span>$ {onlineFees.toFixed(2)}</span>
+                  <span className="font-semibold">
+                    $ {onlineFees.toFixed(2)}
+                  </span>
                 </div>
                 <span className="text-[0.8rem] w-[70%] text-gray-300">
                   Online Fees are waived when you are a Movie Club member.
@@ -161,12 +194,14 @@ const MovieCompletedPurchange = () => {
               </div>
               <div className="flex justify-between">
                 <span>Tax</span>
-                <span>$ {tax.toFixed(2)}</span>
+                <span className="font-semibold">$ {tax.toFixed(2)}</span>
               </div>
               <div className="border-t border-gray-500"></div>
               <div className="flex justify-between">
                 <span className="font-bold">Total</span>
-                <span>$ {(subTotal + tax + onlineFees).toFixed(2)}</span>
+                <span className="font-semibold">
+                  $ {(subTotal + tax + onlineFees).toFixed(2)}
+                </span>
               </div>
             </div>
           </div>

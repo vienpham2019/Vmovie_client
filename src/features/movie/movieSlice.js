@@ -14,7 +14,6 @@ const initState = {
     products: [],
     subTotal: 0,
   },
-  subTotal: 0,
 };
 
 const findExistingProduct = (products, payload) => {
@@ -75,7 +74,6 @@ const movieSlice = createSlice({
       return {
         ...state,
         foodAndDrink: { ...updateFoodAndDrink },
-        subTotal: updateFoodAndDrink.subTotal + state.tickets.subTotal,
       };
     },
 
@@ -96,7 +94,6 @@ const movieSlice = createSlice({
       return {
         ...state,
         foodAndDrink: { ...updateFoodAndDrink },
-        subTotal: updateFoodAndDrink.subTotal + state.tickets.subTotal,
       };
     },
     resetState: () => {

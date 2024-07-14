@@ -41,9 +41,9 @@ const MovieReservedSeating = ({ setSelectedMenu }) => {
   ]);
 
   const [tickets, setTickets] = useState({});
-  const [totalTickets, setTotalTickets] = useState(stateTickets.seats.length);
+  const [totalTickets, setTotalTickets] = useState();
   const [subTotal, setSubTotal] = useState(0);
-  const [selectSeat, setSelectSeat] = useState(stateTickets.seats || []);
+  const [selectSeat, setSelectSeat] = useState([]);
 
   const { data: { metadata: showtimeDetail } = {} } = useGetShowtimeQuery(
     {
@@ -89,6 +89,8 @@ const MovieReservedSeating = ({ setSelectedMenu }) => {
       setSubTotal(subTotal);
       setTickets(initTickets);
       setTakenSeats(takenSeats);
+      setSelectSeat(stateTickets.seats);
+      setTotalTickets(stateTickets.seats.length);
       setPrices(initPrices);
       setSeatGrid(showtimeDetail.theaterId.grid);
     }
