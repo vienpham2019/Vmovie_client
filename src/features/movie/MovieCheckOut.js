@@ -1,16 +1,17 @@
 import { useDispatch, useSelector } from "react-redux";
 import { FiPlusCircle } from "react-icons/fi";
-import { RiVisaLine, RiMastercardFill } from "react-icons/ri";
-import { SiAmericanexpress } from "react-icons/si";
-import { FaCcDiscover } from "react-icons/fa";
 
 import {
   modalComponentEnum,
   openModal,
   setModalParams,
 } from "../../components/modal/ModalSlice";
+import { convertToAmPm } from "../../util/time";
+import { GiPopcorn, GiTicket } from "react-icons/gi";
+import { GoPencil } from "react-icons/go";
+import { menuSchema } from "./MovieTicket";
 
-const MovieCheckOut = () => {
+const MovieCheckOut = ({ setSelectedMenu }) => {
   const { tickets, foodAndDrink, subTotal } = useSelector(
     (state) => state.movie
   );
@@ -24,7 +25,12 @@ const MovieCheckOut = () => {
       <div className="flex flex-wrap-reverse gap-[2rem] w-full tablet:justify-center justify-start">
         {/* Total menu */}
         <div className="relative">
-          <small>April 11, 2024 at 7:25 PM</small>
+          <div className="flex flex-col">
+            <small>{tickets.theaterName}</small>
+            <small>
+              {tickets.date} At {convertToAmPm(tickets.time)}
+            </small>
+          </div>
           <div className="flex flex-col gap-2 font-thin p-1 w-[19rem] rounded bg-[#172532]">
             <div className="max-h-[30rem] overflow-y-scroll flex flex-col gap-2 boder p-2">
               <div className="flex gap-2 items-center">
@@ -32,31 +38,53 @@ const MovieCheckOut = () => {
                 <FiPlusCircle
                   className="cursor-pointer text-red-600"
                   onClick={() => {
-                    dispatch(
-                      setModalParams({ products: { tickets, foodAndDrink } })
-                    );
                     dispatch(openModal(modalComponentEnum.CHECKOUT_SUMMARY));
                   }}
                 />
               </div>
-              <div className="flex justify-between">
-                <span>Tickets</span>
-                <span>${tickets.subTotal.toFixed(2)}</span>
+              <div className="flex justify-between items-center w-full p-1">
+                <div className="flex items-center gap-2 font-bold">
+                  <GiTicket />
+                  <span>
+                    {tickets.seats.length} Ticket
+                    {tickets.seats.length > 1 && "s"}
+                  </span>
+                </div>
+                <div className="flex gap-2 items-center">
+                  <GoPencil
+                    className="cursor-pointer"
+                    onClick={() => {
+                      setSelectedMenu(menuSchema.RESERVED_SEATING);
+                    }}
+                  />
+                  <span>${tickets.subTotal.toFixed(2) || ""}</span>
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span>Food & Drink</span>
-                <span>${foodAndDrink.subTotal.toFixed(2)}</span>
+              <div className="flex justify-between items-center w-full p-1">
+                <div className="flex items-center gap-2 font-bold">
+                  <GiPopcorn />
+                  <span>{foodAndDrink.products.length} Food & Drink</span>
+                </div>
+                <div className="flex gap-2 items-center">
+                  <GoPencil
+                    className="cursor-pointer"
+                    onClick={() => {
+                      setSelectedMenu(menuSchema.FOOD_AND_DRINKS);
+                    }}
+                  />
+                  <span>${foodAndDrink.subTotal.toFixed(2) || ""}</span>
+                </div>
               </div>
 
               <div className="border-t border-gray-500"></div>
               <div className="flex justify-between">
                 <span>Subtotal</span>
-                <span>$ {subTotal}</span>
+                <span>$ {subTotal.toFixed(2)}</span>
               </div>
               <div className="flex flex-col">
                 <div className="flex justify-between">
                   <span>Online Ticket Fees</span>
-                  <span>$ {onlineFees}</span>
+                  <span>$ {onlineFees.toFixed(2)}</span>
                 </div>
                 <span className="text-[0.8rem] w-[70%] text-gray-300">
                   Online Fees are waived when you are a Movie Club member.
@@ -225,7 +253,10 @@ const MovieCheckOut = () => {
               </div>
             </div>
           </div>
-          <button className="p-3 rounded bg-red-600">
+          <button
+            className="p-3 rounded bg-red-600"
+            onClick={() => setSelectedMenu(menuSchema.COMPLETED)}
+          >
             Completed Purchase{" "}
           </button>
         </div>

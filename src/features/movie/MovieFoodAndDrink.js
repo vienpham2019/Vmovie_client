@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { GiPopcorn, GiTicket } from "react-icons/gi";
 import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
 import { TbBottleFilled } from "react-icons/tb";
@@ -10,289 +10,100 @@ import { IoIceCreamOutline } from "react-icons/io5";
 import { GiChipsBag } from "react-icons/gi";
 import { GoPencil } from "react-icons/go";
 import { RxCrossCircled } from "react-icons/rx";
-import { deleteFoodAndDrink } from "./movieSlice";
+import { addFoodAndDrink, deleteFoodAndDrink } from "./movieSlice";
 
 import {
+  clearModalResponse,
   modalComponentEnum,
   openModal,
   setModalParams,
 } from "../../components/modal/ModalSlice";
+import { useGetAllProductByTypeQuery } from "../product/productApiSlice";
+import { productDetailTypeEnum } from "../product/ProductDetailModal";
+import { convertToAmPm } from "../../util/time";
+import { menuSchema } from "./MovieTicket";
 
 const productIcons = {
   Popcorn: <GiPopcorn />,
-  Fountain_Drinks: <MdOutlineLocalDrink />,
-  Combo: <ImSpoonKnife />,
-  Bottled_Drinks: <TbBottleFilled />,
+  "Fountain Drinks": <MdOutlineLocalDrink />,
+  Combos: <ImSpoonKnife />,
+  "Bottled Drinks": <TbBottleFilled />,
   Candy: <LuCandy />,
-  Ice_Cream: <IoIceCreamOutline />,
-  Snacks: <GiChipsBag />,
+  "Ice Cream": <IoIceCreamOutline />,
+  Snack: <GiChipsBag />,
 };
 
-const fountain_PO = [
-  "Coca-Cola",
-  "Diet Coke",
-  "Dr Pepper",
-  "Sprite",
-  "Coke Zero",
-  "Cherry Coke",
-  `Barq's Root Beer`,
-  "Powerade Mountain Blast",
-  "Fanta Orange",
-  "Hi-C Fruit Punch",
+const productTypes = [
+  "Combos",
+  "Popcorn",
+  "Fountain Drinks",
+  "Bottled Drinks",
+  "Candy",
+  "Ice Cream",
+  "Snack",
 ];
-const butter_PO = ["No Added Butter", "Regular Butter", "Layered Butter"];
-const ice_PO = ["Regular Ice", "No Ice", "Light Ice", "Extra Ice"];
-const ICEE_PO = ["ICEE Coke", "ICEE Cherry", "ICEE Blue Raspberry"];
 
-const MovieFoodAndDrink = () => {
-  const [openMenu, setOpenMenu] = useState("Popcorn");
-
-  const products = {
-    Combo: [
-      {
-        item_name: "Large Popcorn & Drink Combo",
-        price: 14.8,
-        describe:
-          "Tub of buttered Orville Redenbacher's light and fluffy popcorn & a Large fountain beverage of your choice from a variety of Coca-Cola® products.",
-        img: "https://www.cinemark.com/media/76011403/400x225-siat-combo1.jpg",
-        PO: [
-          {
-            name: "butter_options",
-            options: butter_PO,
-          },
-          {
-            name: "ice_options",
-            options: ice_PO,
-          },
-          {
-            name: "fountain_flavors",
-            options: fountain_PO,
-          },
-        ],
-      },
-      {
-        item_name: "Large Popcorn & 2 Large Drinks Combo",
-        price: 21.25,
-        describe:
-          "Tub of buttered Orville Redenbacher's light and fluffy popcorn & two Large fountain beverages of your choice from a variety of Coca-Cola® products.",
-        img: "https://www.cinemark.com/media/76011400/400x225-siat-combo2.jpg",
-        PO: [
-          {
-            name: "butter_options",
-            options: butter_PO,
-          },
-          {
-            name: "ice_options#1",
-            options: ice_PO,
-          },
-          {
-            name: "fountain_flavors#1",
-            options: fountain_PO,
-          },
-          {
-            name: "ice_options#2",
-            options: ice_PO,
-          },
-          {
-            name: "fountain_flavors#2",
-            options: fountain_PO,
-          },
-        ],
-      },
-      {
-        item_name: "Large Popcorn & Large ICEE Combo",
-        price: 15.0,
-        describe:
-          "Tub of buttered Orville Redenbacher's light and fluffy popcorn & a Large ICEE flavor of choice in a to-go cup with lid and straw.",
-        img: "https://www.cinemark.com/media/76011401/400x225-siat-combo3.jpg",
-        PO: [
-          {
-            name: "butter_options",
-            options: butter_PO,
-          },
-          {
-            name: "ICEE_flavors",
-            options: ICEE_PO,
-          },
-        ],
-      },
-    ],
-    Popcorn: [
-      {
-        item_name: "XL Refillable Popcorn",
-        price: 9.95,
-        describe:
-          "Bring home a taste of the movies with our signature light ‘n fluffy popcorn. Pair it with one or more of our many candy options for a sweet and salty snack mix. Comes with 1 free same day refill.",
-        img: "https://www.cinemark.com/media/76001745/siat-popcornxl-desktop-768x432.png",
-        PO: [
-          {
-            name: "butter_options",
-            options: butter_PO,
-          },
-        ],
-      },
-      {
-        item_name: "Popcorn Tub",
-        price: 8.1,
-        describe:
-          "Bring home a taste of the movies with our signature light ‘n fluffy popcorn. Pair it with one or more of our many candy options for a sweet and salty snack mix.",
-        img: "https://www.cinemark.com/media/76010048/siat-concession-resize-large-popcorn-400x225.png",
-        PO: [
-          {
-            name: "butter_options",
-            options: butter_PO,
-          },
-        ],
-      },
-    ],
-    Fountain_Drinks: [
-      {
-        item_name: "Free Refill – Large Drink",
-        price: 6.2,
-        describe:
-          "Choose from a variety of Coca-Cola® fountain beverages, including Coke®, Diet Coke®, Coke Zero® Sugar, Sprite®, and more!",
-        img: "https://www.cinemark.com/media/76010045/siat-concession-resize-large-cup-400x225.png",
-        PO: [
-          {
-            name: "ice_options",
-            options: ice_PO,
-          },
-          {
-            name: "fountain_flavors",
-            options: fountain_PO,
-          },
-        ],
-      },
-      {
-        item_name: "Large ICEE",
-        price: 6.4,
-        describe:
-          "Cool things down with an ICEE flavor of choice in a to-go cup with lid and straw.",
-        img: "https://www.cinemark.com/media/75992305/siat-400x225_0003_blue-icee.jpg",
-        PO: [
-          {
-            name: "ICEE_flavors",
-            options: ICEE_PO,
-          },
-        ],
-      },
-    ],
-    Bottled_Drinks: [
-      {
-        item_name: "1 Liter Bottled Dasani Water",
-        price: 5.75,
-        describe: "DASANI Purified Water Bottle",
-        img: "https://www.cinemark.com/media/75978617/400x225_dasani.jpg",
-        PO: [],
-      },
-      {
-        item_name: "16oz Monster Energy",
-        price: 5.75,
-        describe:
-          "Tear into a can of one of the meanest energy drinks on the planet, Monster OG. Monster Energy OG is a smooth, refreshing blend of sweet and salty exotic citrus flavors with a hint of pure adrenaline packing 160MG of caffeine. Unleash the beast with Monster OG!",
-        img: "https://www.cinemark.com/media/76009567/siat-image-16ozmonsteroriginal-mobile-400x225.png",
-        PO: [],
-      },
-    ],
-    Candy: [
-      {
-        item_name: "Buncha Crunch Box",
-        price: 4.35,
-        describe:
-          "A sweeter way to crunch! Enjoy the same great taste of a classic Nestle Crunch bar, but in the shape of perfectly munchable pieces.",
-        img: "https://www.cinemark.com/media/75963105/bunchacrunch_400x225.jpg",
-        PO: [],
-      },
-    ],
-    Snacks: [
-      {
-        item_name: "Cheetos Crunchy",
-        price: 4.65,
-        describe:
-          "Bring a cheesy, delicious crunch to snack time with a bag of CHEETOS® Crunchy Cheese-Flavored Snacks. Made with real cheese for maximum flavor.",
-        img: "https://www.cinemark.com/media/76010730/hot-august-2023_3rd-party-resizes_cheetoscnk-mo_400x225.jpg",
-        PO: [],
-      },
-      {
-        item_name: "Rico's Jalapeno Pouch",
-        price: 0.65,
-        describe:
-          "Crisp and zesty jalapenos grown in Mexico. A great addition to your meal, and the best tasting peppers available anywhere!",
-        img: "https://www.cinemark.com/media/75979228/400x225_ricos-jalapenos.jpg",
-        PO: [],
-      },
-    ],
-    Ice_Cream: [
-      {
-        item_name: "Dibs",
-        price: 5.5,
-        describe:
-          "Bite-sized bliss! With a Crispy Nestle Crunch coating filled with creamy vanilla, it’s one sweet way to snack.",
-        img: "https://www.cinemark.com/media/76008586/hot-may-23-ice-cream-candy-siat-ue-resizes_dibs-new768-x-432_siat.jpg",
-        PO: [],
-      },
-      {
-        item_name: "M&M's Vanilla Ice Cream Sandwich",
-        price: 5.5,
-        describe:
-          "Treat yourself to a cool and colorful ice-cream sandwich. Velvety vanilla ice cream between two sugar cookies, covered in classic M&M’s.",
-        img: "https://www.cinemark.com/media/76008608/hot-may-23-ice-cream-candy-siat-ue-resizes_mm-ice-cream-sandwitch400-x-225_siat.jpg",
-        PO: [],
-      },
-    ],
-  };
-
+const MovieFoodAndDrink = ({ setSelectedMenu }) => {
   const dispatch = useDispatch();
   const { tickets, foodAndDrink, subTotal } = useSelector(
     (state) => state.movie
   );
+  const { modalResponse } = useSelector((state) => state.modal);
 
-  console.log(JSON.stringify(foodAndDrink));
-  const getProductByTitle = (item_name) => {
-    for (const category in products) {
-      const productsInCategory = products[category];
-      const product = productsInCategory.find(
-        (product) => product.item_name === item_name
-      );
-      if (product) {
-        return product;
+  const [openMenu, setOpenMenu] = useState(productTypes[0]);
+
+  useEffect(() => {
+    if (modalResponse) {
+      if (modalResponse.type === productDetailTypeEnum.ADD) {
+        dispatch(addFoodAndDrink(modalResponse.product));
+      } else if (modalResponse.type === productDetailTypeEnum.EDIT) {
+        dispatch(deleteFoodAndDrink(modalResponse.editProduct));
+        dispatch(addFoodAndDrink(modalResponse.product));
       }
+      dispatch(clearModalResponse());
     }
-    return null; // If no product found with the given title
-  };
+  }, [modalResponse, dispatch]);
+
+  const { data: { metadata: products } = [], isLoading: productLoading } =
+    useGetAllProductByTypeQuery(
+      { type: openMenu },
+      {
+        skip: !openMenu,
+        pollingInterval: 120000, // 2min the data will fetch again
+        refertchOnFocus: true, // data will fetch when page on focus
+        refetchOnMountOrArgChange: true, // it will refresh data when remount component
+      }
+    );
 
   const handleOpenEditModal = (item) => {
-    const food = {
-      ...getProductByTitle(item.item_name),
-      amount: item.amount,
-      PO: getProductByTitle(item.item_name).PO.map((option) => {
-        const foundOption = item.options.find((o) => o.name === option.name);
-        return foundOption
-          ? { ...option, selection: foundOption.selection }
-          : option;
-      }),
-    };
-    dispatch(setModalParams({ food, type: "Edit", editItem: item }));
-    dispatch(openModal(modalComponentEnum.FOOD_AND_DRINK));
+    dispatch(
+      setModalParams({
+        _id: item._id,
+        product: item,
+        type: productDetailTypeEnum.EDIT,
+      })
+    );
+    dispatch(openModal(modalComponentEnum.PRODUCT_DETAIL));
   };
 
   const handleOpenModal = (item) => {
-    const food = {
-      ...item,
-      amount: 1,
-      PO: item.PO.map((opt) => ({ ...opt, selection: opt.options[0] })),
-    };
-
-    dispatch(setModalParams({ food, type: "Add" }));
-    dispatch(openModal(modalComponentEnum.FOOD_AND_DRINK));
+    dispatch(setModalParams({ _id: item._id, type: "Add" }));
+    dispatch(openModal(modalComponentEnum.PRODUCT_DETAIL));
   };
+
+  if (productLoading) return <div>Loading...</div>;
 
   return (
     <div className="w-full flex flex-col gap-2 mb-[2rem]">
       <div className="flex flex-wrap-reverse gap-[2rem] w-full tablet:justify-center justify-start">
         {/* Total menu */}
         <div className="relative">
-          <small>April 11, 2024 at 7:25 PM</small>
+          <div className="flex flex-col">
+            <small>{tickets.theaterName}</small>
+            <small>
+              {tickets.date} At {convertToAmPm(tickets.time)}
+            </small>
+          </div>
           <div className="flex flex-col gap-2 font-thin p-1 w-[19rem] rounded bg-[#172532]">
             <div className="max-h-[30rem] overflow-y-scroll flex flex-wrap justify-center gap-2 boder p-2">
               {" "}
@@ -306,7 +117,15 @@ const MovieFoodAndDrink = () => {
                         {tickets.seats.length > 1 && "s"}
                       </span>
                     </div>
-                    <span>${tickets.subTotal.toFixed(2) || ""}</span>
+                    <div className="flex gap-2 items-center">
+                      <GoPencil
+                        className="cursor-pointer"
+                        onClick={() => {
+                          setSelectedMenu(menuSchema.RESERVED_SEATING);
+                        }}
+                      />
+                      <span>${tickets.subTotal.toFixed(2) || ""}</span>
+                    </div>
                   </div>
                   <div className="flex items-end"></div>
                 </div>
@@ -323,6 +142,24 @@ const MovieFoodAndDrink = () => {
                     )}
                   </div>
                   <div className="text-[0.8rem] grid gap-2 w-full">
+                    {foodAndDrink.products.length === 0 && (
+                      <div className="bg-gray-700 rounded p-2 flex gap-2 items-center">
+                        <img
+                          className="w-[3rem] h-fit"
+                          src="https://www.cinemark.com/images/concessions_pickup_image@2x.png"
+                          alt=" icon"
+                        />
+                        <div className="grid gap-2">
+                          <span className="font-bold text-[0.9rem]">
+                            Don't forget the co-stars
+                          </span>
+                          <p className="text-[0.8rem]">
+                            It isn't a movie without the snacks. Order now to
+                            skip the line and get snacking faster!
+                          </p>
+                        </div>
+                      </div>
+                    )}
                     {foodAndDrink.products.map((value, index) => (
                       <div
                         key={"food" + index}
@@ -330,7 +167,7 @@ const MovieFoodAndDrink = () => {
                       >
                         <div className="flex justify-between flex-1">
                           <span className="font-bold w-[80%] pr-2">
-                            {value["item_name"]}
+                            {value["itemName"]}
                           </span>
                           <div className="flex gap-2 text-[1rem]">
                             <GoPencil
@@ -347,8 +184,8 @@ const MovieFoodAndDrink = () => {
                         </div>
                         <div className="flex justify-between items-end">
                           <span>
-                            {value["options"]
-                              .map((opt) => opt.selection)
+                            {Object.entries(value["selectedOptions"])
+                              .map(([key, opt]) => `${key} - ${opt}`)
                               .join(", ")}
                           </span>
                           <div className="flex gap-1">
@@ -370,10 +207,12 @@ const MovieFoodAndDrink = () => {
               </span>
             </div>
             <div className="flex gap-1">
-              <button className="border border-red-800 text-red-500 uppercase text-[0.9rem] p-2 flex-1">
-                Cancle
-              </button>
-              <button className="border border-cyan-800 text-cyan-500 uppercase text-[0.9rem] p-2 flex-1">
+              <button
+                onClick={() => {
+                  setSelectedMenu(menuSchema.CHECK_OUT);
+                }}
+                className="border border-cyan-800 text-cyan-500 uppercase text-[0.9rem] p-2 flex-1"
+              >
                 Next
               </button>
             </div>
@@ -382,37 +221,35 @@ const MovieFoodAndDrink = () => {
         {/* Total menu */}
         <div className="flex-1 min-w-[15rem] bg-[#172532] p-2 rounded">
           <div className="w-full flex flex-col gap-4">
-            {Object.entries(products).map(([key, items]) => (
+            {productTypes.map((type) => (
               <div
-                key={"Product " + key}
+                key={"Product type " + type}
                 className="flex-1 gap-2 flex flex-col border p-2 rounded border-gray-500 "
               >
                 <div
                   className="flex items-center justify-between cursor-pointer "
-                  onClick={() => setOpenMenu(key)}
+                  onClick={() => setOpenMenu(type)}
                 >
                   <div className="flex items-center gap-2">
-                    {productIcons[key]}
-                    <span className="font-bold">
-                      {key.split("_").join(" ")}
-                    </span>
+                    {productIcons[type]}
+                    <span className="font-bold">{type}</span>
                   </div>
-                  {openMenu === key ? <FaAngleUp /> : <FaAngleDown />}
+                  {openMenu === type ? <FaAngleUp /> : <FaAngleDown />}
                 </div>
-                {openMenu === key && (
+                {openMenu === type && (
                   <div className="flex flex-wrap gap-2 ">
-                    {items.map((item, index) => (
+                    {products.map((item, index) => (
                       <div
-                        key={"item " + key + index}
+                        key={"item " + type + index}
                         onClick={() => {
                           handleOpenModal(item);
                         }}
                         className="flex flex-col justify-between gap-1 font-thin rounded w-[10rem] border border-gray-500 cursor-pointer"
                       >
                         <div className="grid gap-1">
-                          <img src={item.img} alt="item" />
+                          <img src={item.imgUrl} alt="item" />
                           <span className="px-1 font-normal">
-                            {item.item_name}
+                            {item.itemName}
                           </span>
                         </div>
                         <span className="px-1">${item.price.toFixed(2)}</span>

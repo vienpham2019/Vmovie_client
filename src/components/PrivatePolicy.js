@@ -1,6 +1,6 @@
 const PrivatePolicy = () => {
   return (
-    <div className="text-sm">
+    <div className="text-sm bg-white p-2">
       <div className="grid gap-[1rem]">
         <p className="">
           It is a long established fact that a reader will be distracted by the

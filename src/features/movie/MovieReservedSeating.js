@@ -41,9 +41,9 @@ const MovieReservedSeating = ({ setSelectedMenu }) => {
   ]);
 
   const [tickets, setTickets] = useState({});
-  const [totalTickets, setTotalTickets] = useState(0);
+  const [totalTickets, setTotalTickets] = useState(stateTickets.seats.length);
   const [subTotal, setSubTotal] = useState(0);
-  const [selectSeat, setSelectSeat] = useState([]);
+  const [selectSeat, setSelectSeat] = useState(stateTickets.seats || []);
 
   const { data: { metadata: showtimeDetail } = {} } = useGetShowtimeQuery(
     {
@@ -69,30 +69,30 @@ const MovieReservedSeating = ({ setSelectedMenu }) => {
     if (showtimeDetail) {
       const { takenSeats, childPrice, generalAdmissionPrice, seniorPrice } =
         showtimeDetail;
-      setTakenSeats(takenSeats);
-      setPrices([
+      const initPrices = [
         { type: "XD Matinne", price: generalAdmissionPrice },
         { type: "XD Child", sub: "Child (1-11)", price: childPrice },
         { type: "XD Senior", sub: "Senior (62+)", price: seniorPrice },
-      ]);
-      setSeatGrid(showtimeDetail.theaterId.grid);
-    }
-  }, [showtimeDetail]);
-
-  useEffect(() => {
-    if (prices) {
+      ];
       let initTickets = {};
-      prices.forEach(({ type, sub, price }) => {
-        initTickets[type] = { price, count: 0 };
+      let subTotal = 0;
+      initPrices.forEach(({ type, sub, price }) => {
+        initTickets[type] = {
+          price,
+          count: stateTickets.prices[type]?.count || 0,
+        };
+        subTotal += initTickets[type].price * initTickets[type].count;
         if (sub) {
           initTickets[type].sub = sub;
         }
       });
+      setSubTotal(subTotal);
       setTickets(initTickets);
-      setSubTotal(0);
-      setTotalTickets(0);
+      setTakenSeats(takenSeats);
+      setPrices(initPrices);
+      setSeatGrid(showtimeDetail.theaterId.grid);
     }
-  }, [prices]);
+  }, [showtimeDetail, stateTickets]);
 
   const handleChangeSearchParams = ({ key, value }) => {
     setSelectSeat([]);

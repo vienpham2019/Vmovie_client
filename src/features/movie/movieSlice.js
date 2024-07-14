@@ -11,50 +11,24 @@ const initState = {
     subTotal: 0,
   },
   foodAndDrink: {
-    products: [
-      {
-        item_name: "XL Refillable Popcorn",
-        amount: 4,
-        price: 9.95,
-        options: [{ name: "butter_options", selection: "Regular Butter" }],
-      },
-      {
-        item_name: "Large Popcorn & Drink Combo",
-        amount: 1,
-        price: 14.8,
-        options: [
-          { name: "butter_options", selection: "No Added Butter" },
-          { name: "ice_options", selection: "No Ice" },
-          { name: "fountain_flavors", selection: "Dr Pepper" },
-        ],
-      },
-      {
-        item_name: "Large Popcorn & 2 Large Drinks Combo",
-        amount: 1,
-        price: 21.25,
-        options: [
-          { name: "butter_options", selection: "No Added Butter" },
-          { name: "ice_options#1", selection: "Light Ice" },
-          { name: "fountain_flavors#1", selection: "Hi-C Fruit Punch" },
-          { name: "ice_options#2", selection: "Light Ice" },
-          { name: "fountain_flavors#2", selection: "Hi-C Fruit Punch" },
-        ],
-      },
-    ],
+    products: [],
     subTotal: 0,
   },
   subTotal: 0,
 };
 
 const findExistingProduct = (products, payload) => {
-  const { item_name: pl_item_name, options: pl_options } = payload;
+  const { itemName: pl_itemName, selectedOptions: pl_options } = payload;
   return products.findIndex(
-    ({ item_name: p_item_name, options: p_options }) =>
-      pl_item_name === p_item_name &&
-      p_options.length === pl_options.length &&
-      p_options.every(
-        (option, index) => option.selection === pl_options[index].selection
-      )
+    ({ itemName: p_itemName, selectedOptions: p_options }) => {
+      return (
+        pl_itemName === p_itemName &&
+        Object.keys(p_options).length === Object.keys(pl_options).length &&
+        Object.entries(p_options).every(
+          ([key, option]) => option === pl_options[key]
+        )
+      );
+    }
   );
 };
 

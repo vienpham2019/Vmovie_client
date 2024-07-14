@@ -26,6 +26,11 @@ export const productApiSlice = apiSlice.injectEndpoints({
         url: `/product/details/${_id}`,
       }),
     }),
+    getAllProductByType: builder.query({
+      query: ({ type }) => ({
+        url: `/product/getAllProductByType/${type}`,
+      }),
+    }),
     getAllProductByAdmin: builder.query({
       query: ({ page, limit, sortBy, sortDir, filter, search }) => ({
         url: `/product/allProductByAdmin?page=${page}&limit=${limit}&sortBy=${sortBy}&sortDir=${sortDir}&filter=${filter}&search=${search}`,
@@ -171,6 +176,7 @@ export const productApiSlice = apiSlice.injectEndpoints({
 
 export const {
   useIsOptionTypeExistsMutation,
+  useGetAllProductByTypeQuery,
   useGetAllProductByAdminQuery,
   useGetProductDetailsQuery,
   useGetAllProductTypesQuery,

@@ -2,7 +2,10 @@ import Selection from "../../components/form/Selection";
 import { useDispatch, useSelector } from "react-redux";
 import { useGetProductDetailsQuery } from "./productApiSlice";
 import { FaMinus, FaPlus } from "react-icons/fa6";
-import { closeModal } from "../../components/modal/ModalSlice";
+import {
+  closeModal,
+  setModalResponse,
+} from "../../components/modal/ModalSlice";
 import { useEffect, useState } from "react";
 
 const productDetailTypeEnum = Object.freeze({
@@ -13,11 +16,12 @@ const productDetailTypeEnum = Object.freeze({
 
 const ProductDetailModal = () => {
   const {
-    modalParams: { _id, type, amount: paramsAmount },
+    modalParams: { _id, type, amount: paramsAmount, product: editProduct },
   } = useSelector((state) => state.modal);
 
   const dispatch = useDispatch();
   const [amount, setAmount] = useState(1);
+  const [selectedOptions, setSelectedOptions] = useState({});
   const { data: { metadata: product } = {}, isLoading } =
     useGetProductDetailsQuery(
       { _id },
@@ -26,6 +30,29 @@ const ProductDetailModal = () => {
         refetchOnMountOrArgChange: true, // it will refresh data when remount component
       }
     );
+
+  useEffect(() => {
+    if (editProduct) {
+      setAmount(editProduct.amount);
+      setSelectedOptions(editProduct.selectedOptions);
+    } else if (product?.options) {
+      const initSelectedOptions = product.options.reduce(
+        (acc, { type, selected }) => {
+          selected.forEach(({ isParent, name, optionType }) => {
+            const key = isParent ? type : `${type}_${optionType}`;
+            if (!acc[key]) {
+              acc[key] = name;
+            }
+          });
+          return acc;
+        },
+        {}
+      );
+
+      setSelectedOptions(initSelectedOptions);
+    }
+  }, [product, editProduct, setSelectedOptions, setAmount]);
+
   const handleCloseModal = () => {
     dispatch(closeModal());
   };
@@ -34,7 +61,23 @@ const ProductDetailModal = () => {
     if (paramsAmount) {
       setAmount(amount);
     }
-  }, [paramsAmount, setAmount]);
+  }, [paramsAmount, amount, setAmount]);
+
+  const handleConfirmAction = () => {
+    const { price, itemName } = product;
+    dispatch(
+      setModalResponse({
+        product: { price, amount, itemName, _id, selectedOptions },
+        editProduct,
+        type,
+      })
+    );
+    dispatch(closeModal());
+  };
+
+  const handleSelectOptions = ({ type, option }) => {
+    setSelectedOptions((prev) => ({ ...prev, [type]: option }));
+  };
 
   const handleDisplayOptions = () => {
     return product.options.map((option) => {
@@ -53,7 +96,9 @@ const ProductDetailModal = () => {
           <div className="grid gap-2">
             {Object.entries(transformedObject).map(([k, v], i) => (
               <div key={k + i}>
-                {v[0]?.img ? displayFlavors(v) : displaySelectOptions(v)}
+                {v[0]?.img
+                  ? displayFlavors(option.type, v)
+                  : displaySelectOptions(option.type, v)}
               </div>
             ))}
           </div>
@@ -62,7 +107,7 @@ const ProductDetailModal = () => {
     });
   };
 
-  const displaySelectOptions = (options) => {
+  const displaySelectOptions = (type, options) => {
     const { isParent, name, optionType } = options[0];
     return (
       <div>
@@ -73,17 +118,24 @@ const ProductDetailModal = () => {
         )}
         <Selection
           formData={{
-            value: name,
+            value:
+              selectedOptions[isParent ? type : `${type}_${optionType}`] ||
+              name,
             options: options.map((o) => o.name),
           }}
           border={"border border-gray-600"}
-          handleOnChange={() => null}
+          handleOnChange={(selecOption) =>
+            handleSelectOptions({
+              type: isParent ? type : `${type}_${optionType}`,
+              option: selecOption,
+            })
+          }
         />
       </div>
     );
   };
 
-  const displayFlavors = (options) => {
+  const displayFlavors = (type, options) => {
     const { isParent, optionType } = options[0];
     return (
       <div className="flex flex-col gap-2">
@@ -93,13 +145,21 @@ const ProductDetailModal = () => {
               {optionType.split("_").join(" ")}
             </span>
           )}
+          <small>{selectedOptions[type]}</small>
         </div>
-
         <div className="flex flex-wrap gap-2">
-          {options.map(({ img }, index) => (
+          {options.map(({ img, name }, index) => (
             <div
+              onClick={() =>
+                handleSelectOptions({
+                  type,
+                  option: name,
+                })
+              }
               key={"flavor " + index}
-              className={`w-[3rem] aspect-square rounded-full cursor-pointer p-[2px]`}
+              className={`w-[3rem] ${
+                selectedOptions[type] === name && "border-2 border-red-700"
+              } aspect-square rounded-full cursor-pointer p-[2px]`}
             >
               <img src={img} alt="flavor" className="rounded-full" />
             </div>
@@ -155,7 +215,7 @@ const ProductDetailModal = () => {
               </div>
             </div>
           )}
-          <span>${product.price.toFixed(2) * amount}</span>
+          <span>${(product.price * amount).toFixed(2)}</span>
         </div>
         {productDetailTypeEnum.DETAIL !== type && (
           <div className="flex gap-1">
@@ -167,7 +227,7 @@ const ProductDetailModal = () => {
             </button>
             <button
               className="border h-[3rem] flex-1 border-red-700 text-white bg-red-700 rounded uppercase"
-              // onClick={() => handleAddProduct()}
+              onClick={() => handleConfirmAction()}
             >
               {type}
             </button>

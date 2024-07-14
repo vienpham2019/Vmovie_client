@@ -7,6 +7,7 @@ import MovieFoodAndDrink from "./MovieFoodAndDrink";
 import MovieCheckOut from "./MovieCheckOut";
 import { useDispatch } from "react-redux";
 import { setStateSelectedMovie } from "./movieSlice";
+import MovieCompletedPurchange from "./MovieCompletedPurchange";
 
 const menuSchema = Object.freeze({
   RESERVED_SEATING: "Reserved seating",
@@ -79,9 +80,14 @@ const MovieTicket = () => {
               <MovieReservedSeating setSelectedMenu={setSelectedMenu} />
             )}
             {selectedMenu === menuSchema.FOOD_AND_DRINKS && (
-              <MovieFoodAndDrink />
+              <MovieFoodAndDrink setSelectedMenu={setSelectedMenu} />
             )}
-            {selectedMenu === menuSchema.CHECK_OUT && <MovieCheckOut />}
+            {selectedMenu === menuSchema.CHECK_OUT && (
+              <MovieCheckOut setSelectedMenu={setSelectedMenu} />
+            )}
+            {selectedMenu === menuSchema.COMPLETED && (
+              <MovieCompletedPurchange />
+            )}
           </div>
         </div>
       </div>
