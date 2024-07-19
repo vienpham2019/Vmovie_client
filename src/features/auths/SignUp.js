@@ -211,7 +211,7 @@ const SignUp = () => {
         onSubmit={handleSubmit}
       >
         {Object.keys(formData).map((name) => (
-          <div className="input_group" key={name}>
+          <div className="input_group " key={name}>
             <input
               type={formData[name].type}
               className={`input ${formData[name].validate}`}
@@ -221,10 +221,10 @@ const SignUp = () => {
               onFocus={handleFocus}
               required
             />
+            {passwordType(name)}
             <div className="input_title">
               <span>{separatedWords(name)} *</span>
             </div>
-            {passwordType(name)}
             {name === "password" && formData.password.focus && (
               <PasswordRule password={formData.password.value} />
             )}

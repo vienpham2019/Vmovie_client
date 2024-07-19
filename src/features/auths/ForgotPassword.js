@@ -79,7 +79,6 @@ const ForgotPassword = () => {
     try {
       await forgotPassword({
         email: formData.email.value,
-        clientUrl: `${process.env.REACT_APP_BASE_URL}/resetpassword`,
       }).unwrap();
       setFormData(initFormData);
       dispatch(openModal(modalComponentEnum.RESET_PASSWORD));

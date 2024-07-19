@@ -1,26 +1,30 @@
-import { useSelector } from "react-redux";
 import { convertToAmPm } from "../../util/time";
 import { GiPopcorn, GiTicket } from "react-icons/gi";
 import { Link } from "react-router-dom";
 
-const MovieCompletedPurchange = () => {
-  const { selectedMovie, tickets, foodAndDrink } = useSelector(
-    (state) => state.movie
-  );
-  const subTotal = tickets.subTotal + foodAndDrink.subTotal;
-  const onlineFees = 5.67;
-  const tax = subTotal * 0.3;
+const MovieCompletedPurchange = ({ resCheckout }) => {
+  const {
+    selectedMovie,
+    bookingId,
+    feed,
+    subTotal,
+    tax,
+    total,
+    tickets,
+    foodAndDrink,
+    toEmail,
+  } = resCheckout;
 
   return (
     <div className="w-full flex-wrap flex gap-3">
-      <div className="w-[18rem] flex-1 bg-[#172532]">
+      <div className="w-[18rem] p-4 flex-1 bg-[#172532]">
         <div className="p-4">
           <span className="text-[1.2rem] font-bold">
-            Thank you for your purchase
+            Thank you for your purchase!
           </span>
-          <p className="text-[0.9rem]">
-            Your ticket has been saved to your accont, and an email confirmation
-            has been sent to the email address used to make the purchase.
+          <p className="text-[0.9rem] text-gray-300">
+            Your ticket has been saved to your account, and a confirmation email
+            has been sent to the address used for the purchase.
           </p>
         </div>
         <div className="p-3">
@@ -28,11 +32,11 @@ const MovieCompletedPurchange = () => {
           <div className="input_group m-4">
             <input
               type="text"
-              className={`input border-gray-500`}
-              value={""}
-              onChange={(e) => console.log(e.target.value)}
+              className="input border-gray-500"
+              value={toEmail}
+              readOnly
             />
-            <div className={`input_title `}>
+            <div className="input_title">
               <span>Email</span>
             </div>
           </div>
@@ -43,38 +47,59 @@ const MovieCompletedPurchange = () => {
       </div>
       <div className="flex flex-col flex-auto gap-2 bg-[#172532]">
         <div className="flex flex-col gap-2 border border-gray-500 rounded">
-          <div className="flex flex-wrap gap-4 p-2">
+          <div className="flex flex-wrap gap-[2rem] p-5 items-center leading-5">
             <img
-              className="w-[5rem] h-fit"
+              className="w-[6rem] h-fit"
               src={selectedMovie.poster.url}
               alt="poster"
             />
             <div className="flex flex-col gap-3">
-              <Link
-                to={`/movies/${selectedMovie._id}`}
-                className="font-bold text-[1.2rem]"
-              >
-                {selectedMovie.title}
-              </Link>
-              <div className="flex flex-col gap-1">
-                <span className="text-[0.8rem]">
+              <div className="grid">
+                <Link
+                  to={`/movies/${selectedMovie._id}`}
+                  className="font-bold text-[1.2rem]"
+                >
+                  {selectedMovie.title}
+                </Link>
+                <span className="text-[0.9rem] text-gray-400">
+                  {selectedMovie.rating} {selectedMovie.runtime}
+                </span>
+              </div>
+              <div className="grid">
+                <p className="font-bold">Regal Brandywine Town Center 16</p>
+                <span className="text-[0.9rem] text-gray-400">
+                  3300 Brandywine Parkway
+                </span>
+                <span className="text-[0.9rem] text-gray-400">
+                  Wilmington, DE 19803
+                </span>
+              </div>
+              <div className="grid">
+                <span className="text-[1rem] font-bold">
                   {tickets.date} At {convertToAmPm(tickets.time)}
                 </span>
-                <span>Cinema Tinseltown Houston 290 and XD</span>
+                <span className="text-[0.9rem] text-gray-400">
+                  {tickets.theaterName}
+                </span>
+                <p className="text-[0.9rem] text-gray-400">
+                  Seat no: {tickets.seats.join(", ")}
+                </p>
               </div>
             </div>
           </div>
-          <div className="flex gap-2 p-4">
+          <div className="flex flex-col items-center gap-2 p-4">
+            <span>{bookingId}</span>
             <img
-              className="w-[5rem] h-fit bg-white"
-              src="https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg"
+              className="w-[7rem] h-fit bg-white"
+              src="https://ci3.googleusercontent.com/meips/ADKq_NYcymyrCuaxPPgcAsd9sicXquQ4ZiRCWvwQzX3pXn8u_GBr2-3eLodut2hR5sS8vHsiRMcTjJygDRVKfZrJQEAej4x9LZgI6CPPX2ppBngu-e7IYMKp8BhIV5JCthFYp9WFgs1FwOBSm0aWu7bWliSBRg=s0-d-e1-ft#https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRtXlqDpLThmp7OWsG60Kab68pt9_Dgtj3qXg&s"
               alt="qr code"
             />
-            <div className="flex flex-col gap-3">
-              <span className="text-[1.1rem] font-bold">
-                Confirmation Number
+            <div className="grid text-center">
+              <span className="text-[1.1rem] font-bold">Scan QR Code</span>
+              <span className="text-[0.9rem] text-gray-300 max-w-[30rem] text-center">
+                Go direct to the ticket taker to have your mobile ticket scanned
+                directly from your device.
               </span>
-              <span>123456789</span>
             </div>
           </div>
           <div className="flex flex-col gap-2 font-thin p-1 rounded bg-[#172532]">
@@ -96,9 +121,6 @@ const MovieCompletedPurchange = () => {
                       <span>${tickets.subTotal.toFixed(2) || ""}</span>
                     </div>
                   </div>
-                  <span className="text-[0.9rem]">
-                    Seats: {tickets.seats.join(",")}
-                  </span>
                   <div className="w-full flex flex-col flex-1 gap-1 text-[0.9rem]">
                     {Object.entries(tickets.prices).map(
                       ([key, value], index) => {
@@ -184,9 +206,7 @@ const MovieCompletedPurchange = () => {
               <div className="flex flex-col">
                 <div className="flex justify-between">
                   <span>Online Ticket Fees</span>
-                  <span className="font-semibold">
-                    $ {onlineFees.toFixed(2)}
-                  </span>
+                  <span className="font-semibold">$ {feed.toFixed(2)}</span>
                 </div>
                 <span className="text-[0.8rem] w-[70%] text-gray-300">
                   Online Fees are waived when you are a Movie Club member.
@@ -199,9 +219,7 @@ const MovieCompletedPurchange = () => {
               <div className="border-t border-gray-500"></div>
               <div className="flex justify-between">
                 <span className="font-bold">Total</span>
-                <span className="font-semibold">
-                  $ {(subTotal + tax + onlineFees).toFixed(2)}
-                </span>
+                <span className="font-semibold">$ {total.toFixed(2)}</span>
               </div>
             </div>
           </div>

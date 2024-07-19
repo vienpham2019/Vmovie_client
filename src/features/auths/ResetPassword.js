@@ -170,10 +170,11 @@ const ResetPassword = () => {
               onFocus={handleFocus}
               required
             />
+            {passwordType(name)}
+
             <div className="input_title">
               <span>{separatedWords(name)} *</span>
             </div>
-            {passwordType(name)}
             {name === "newPassword" && formData.newPassword.focus && (
               <PasswordRule password={formData.newPassword.value} />
             )}

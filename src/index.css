@@ -137,9 +137,12 @@ ol ol > li:before {
   @apply bg-transparent border-none text-gray-400 h-full hidden;
 }
 
-.password_type,
 .input_attachment {
   @apply absolute top-0 right-0 h-full flex items-center p-2 text-gray-300;
+}
+
+.password_type {
+  @apply absolute top-0 right-0 flex items-center p-2 text-gray-300;
 }
 
 .password_type {

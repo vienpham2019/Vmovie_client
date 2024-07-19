@@ -36,7 +36,7 @@ const ResetPasswordModal = () => {
     }
   };
   return (
-    <div className="grid text-center gap-[1rem] max-w-[30rem]">
+    <div className="grid text-center gap-[1rem] max-w-[30rem] bg-white p-4 rounded">
       <div className="flex justify-center items-center">
         <h2 className="text-[1.7rem] font-[1rem]">Check Your Email</h2>
         <div className="w-[3rem] aspect-square flex justify-center items-center">
@@ -61,7 +61,7 @@ const ResetPasswordModal = () => {
           If you do not receive the password reset message within a few moments,
           please check your spam folder or other filtering tools
         </span>
-        <span>The password reset link will expire in 1 day.</span>
+        <span>The password reset link will expire in 15 min.</span>
       </div>
       <div className="flex gap-[0.4rem] justify-center items-center">
         {isLoading ? (

@@ -10,11 +10,19 @@ import { GiPopcorn, GiTicket } from "react-icons/gi";
 import { GoPencil } from "react-icons/go";
 import { menuSchema } from "./MovieTicket";
 import { useCheckoutShowtimeMutation } from "../showtime/showtimeApiSlice";
+import { resetState } from "./movieSlice";
+import { useState } from "react";
+import {
+  notificationMessageEnum,
+  setMessage,
+} from "../../components/notificationMessage/notificationMessageSlice";
 
-const MovieCheckOut = ({ setSelectedMenu }) => {
+const MovieCheckOut = ({ setSelectedMenu, setResCheckout }) => {
   const { tickets, foodAndDrink, selectedMovie } = useSelector(
     (state) => state.movie
   );
+  const [toEmail, setToEmail] = useState("");
+  const [toEmailValid, setToEmailValid] = useState("");
   const [checkout] = useCheckoutShowtimeMutation();
   const dispatch = useDispatch();
 
@@ -23,8 +31,37 @@ const MovieCheckOut = ({ setSelectedMenu }) => {
   const tax = subTotal * 0.3;
 
   const handleCheckout = async () => {
-    const res = await checkout({ tickets, selectedMovie });
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!toEmail) {
+      setToEmailValid('invalid')
+      dispatch(
+        setMessage({
+          message:
+            "Please enter your email address so we can send your ticket.",
+          messageType: notificationMessageEnum.WARNING,
+        })
+      );
+      return;
+    }
+    if (!emailRegex.test(toEmail)) {
+      setToEmailValid('invalid')
+      dispatch(
+        setMessage({
+          message: "Please enter a valid email address.",
+          messageType: notificationMessageEnum.ERROR,
+        })
+      );
+      return;
+    }
+    const res = await checkout({
+      tickets,
+      selectedMovie,
+      foodAndDrink,
+      toEmail,
+    });
     if (res?.data?.statusCode === 200) {
+      dispatch(resetState());
+      setResCheckout(res.data.metadata);
       setSelectedMenu(menuSchema.COMPLETED);
     }
   };
@@ -131,9 +168,12 @@ const MovieCheckOut = ({ setSelectedMenu }) => {
             <div className="input_group mt-4">
               <input
                 type="text"
-                className={`input border-gray-500 `}
-                value=""
-                onChange={(e) => console.log(e.target.value)}
+                className={`input border-gray-500 ${toEmailValid}`}
+                value={toEmail}
+                onChange={(e) => {
+                  setToEmailValid('')
+                  setToEmail(e.target.value)}
+                }
               />
               <div className={`input_title `}>
                 <span>

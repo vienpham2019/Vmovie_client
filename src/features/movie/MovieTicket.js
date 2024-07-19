@@ -21,6 +21,7 @@ const MovieTicket = () => {
   const dispatch = useDispatch();
   const menu = Object.entries(menuSchema).map(([_, value]) => value);
   const [selectedMenu, setSelectedMenu] = useState(menuSchema.RESERVED_SEATING);
+  const [resCheckout, setResCheckout] = useState({});
   const { data: { metadata: { movie } = {} } = {}, isLoading } =
     useGetMovieByIdQuery(
       { movieId },
@@ -54,7 +55,7 @@ const MovieTicket = () => {
                 alt="poster"
               />
             </div>
-            <div className="flex-1 grid gap-2 items-end">
+            <div className="flex-1 grid gap-2 items-end ">
               <div>
                 {" "}
                 <Link
@@ -84,10 +85,13 @@ const MovieTicket = () => {
               <MovieFoodAndDrink setSelectedMenu={setSelectedMenu} />
             )}
             {selectedMenu === menuSchema.CHECK_OUT && (
-              <MovieCheckOut setSelectedMenu={setSelectedMenu} />
+              <MovieCheckOut
+                setSelectedMenu={setSelectedMenu}
+                setResCheckout={setResCheckout}
+              />
             )}
             {selectedMenu === menuSchema.COMPLETED && (
-              <MovieCompletedPurchange />
+              <MovieCompletedPurchange resCheckout={resCheckout} />
             )}
           </div>
         </div>
