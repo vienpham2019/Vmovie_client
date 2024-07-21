@@ -73,12 +73,6 @@ const NowPlaying = () => {
     }
   }, [dates]);
 
-  useEffect(() => {
-    if (showtimes) {
-      console.log(showtimes);
-    }
-  }, [showtimes]);
-
   const displayShowtime = ({
     movieId,
     posterUrl,
@@ -140,9 +134,17 @@ const NowPlaying = () => {
             </div>
           </div>
           <div className="flex flex-wrap gap-2 max-w-[30rem]">
-            {times.map(({ startTime }) => {
+            {times.map(({ startTime }, index) => {
               return (
-                <div className="bg-gray-200 text-gray-900 hover:bg-gray-300 cursor-pointer text-[0.9rem] px-2 py-1 rounded">
+                <div
+                  onClick={() =>
+                    navigate(
+                      `/movies/${movieId}/getTicket?date=${selectShowtimeDates}&time=${startTime}`
+                    )
+                  }
+                  key={`Showtime ${startTime}` + index}
+                  className="bg-gray-200 text-gray-900 hover:bg-gray-300 cursor-pointer text-[0.9rem] px-2 py-1 rounded"
+                >
                   {convertToAmPm(startTime)}
                 </div>
               );

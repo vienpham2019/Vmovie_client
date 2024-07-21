@@ -159,7 +159,7 @@ const MovieForm = ({ handleOnSubmit }) => {
             </div>
           </div>
           <div className="flex flex-wrap flex-1 gap-4 items-center">
-            <div className="flex-1">
+            <div className="flex-1 ">
               {input({ name: "producer", type: inputTypeEnum.INPUT_LIST })}
             </div>
             <div className="flex-1">

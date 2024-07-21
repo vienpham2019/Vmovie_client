@@ -106,10 +106,16 @@ const DisplayReview = ({ review, reviewIndex, openExtend, setOpenExtend }) => {
   );
 
   const authorDetailsContent = () => (
-    <div className="flex flex-col p-2 flex-1 text-gray-300 text-[0.9rem]">
-      <span>{review.authorName}</span>
-      {review.authorCop && <span>{review.authorCop}</span>}
-      <span>{review.date}</span>
+    <div className="flex flex-col p-2 flex-1 text-[0.9rem]">
+      <span className="font-bold max-w-[8rem]">{review.authorName}</span>
+      {review.authorCop && (
+        <span className="max-w-[8rem] text-[0.8rem] text-gray-400">
+          {review.authorCop}
+        </span>
+      )}
+      <span className="text-[0.8rem] text-gray-400 font-bold">
+        {review.date}
+      </span>
     </div>
   );
 

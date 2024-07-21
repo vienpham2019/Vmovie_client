@@ -38,8 +38,16 @@ const Home = () => {
   return (
     <div>
       <nav className="flex flex-wrap justify-between items-center text-white py-3 px-[2rem] bg-gray-800">
-        <div className="w-[5rem]">
-          <Logo />
+        <div className="flex gap-2 items-center">
+          <div className="w-[5rem]">
+            <Logo />
+          </div>
+          <Link
+            className="text-[1.1rem] text-gray-300 font-bold hover:text-cyan-300"
+            to={"/"}
+          >
+            Home
+          </Link>
         </div>
         {!token ? (
           <div className="flex gap-3">

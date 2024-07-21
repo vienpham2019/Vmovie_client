@@ -84,7 +84,6 @@ const ReviewForm = ({ handleSubmit, selectedMovieInit }) => {
       const value = updatedFormData[key].value;
       if (updatedFormData.hasOwnProperty(key)) {
         if (value === "") {
-          console.log(updatedFormData[key], key);
           isInvalid = true;
           updatedFormData[key].validate = inputValidateEnum.INVALID;
         }
