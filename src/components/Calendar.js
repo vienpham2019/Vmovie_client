@@ -1,10 +1,15 @@
 import { useEffect, useState } from "react";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import {
+  DateFormatTypeEnum,
+  formatDate,
   getAllDaysInMonth,
   getCurrentMonth,
+  getFirtDayOfNextMonth,
+  getLastDayOfMonth,
   getLastMonth,
   getNextMonth,
+  isDateBetween,
   MonthEnum,
   WeekdaysEnum,
 } from "../util/date";
@@ -13,6 +18,7 @@ import { capitalizeString } from "../util/string";
 import OutsideClickDetector from "./OutsideClickDetector";
 
 const Calendar = ({
+  type = "Single",
   onSelectDate,
   notifications = {},
   displayNotification,
@@ -29,7 +35,8 @@ const Calendar = ({
   const [nextMonth, setNextMonth] = useState(null);
   const [nextYear, setNextYear] = useState(null);
   const [daysOfNextMonth, setDayOfNextMonth] = useState([]);
-  const [selectedDay, setSelectedDay] = useState();
+  const [lastDayOfCurrent, setLastDayOfCurrent] = useState();
+  const [firstDayOfNext, setFirstDayOfNext] = useState();
 
   const updateDateBaseOnCurrentMonth = ({ month, year }) => {
     const { year: updateNextYear, month: updateNextMonth } = getNextMonth({
@@ -44,6 +51,18 @@ const Calendar = ({
       year: updateNextYear,
       month: updateNextMonth,
     });
+    setLastDayOfCurrent(
+      `${formatDate({
+        date: getLastDayOfMonth({ year, month: month + 1 }),
+        formatType: DateFormatTypeEnum.MM_DD_YYYY,
+      })}`
+    );
+    setFirstDayOfNext(
+      `${formatDate({
+        date: getFirtDayOfNextMonth({ year, month: month + 1 }),
+        formatType: DateFormatTypeEnum.MM_DD_YYYY,
+      })}`
+    );
     setCurrentMonth(month);
     setCurrentYear(year);
     setDayOfCurrentMonth(updateDayOfCurrentMonth);
@@ -56,14 +75,19 @@ const Calendar = ({
 
   useEffect(() => {
     let { year, month } = getCurrentMonth();
-    if (selectDay) {
-      let [selectMonth, , selectYear] = selectDay.split("/");
+    if (
+      (type === "Single" && selectDay) ||
+      (type === "List" && selectDay.length > 0)
+    ) {
+      let selectedDay = selectDay;
+      if (type === "List") {
+        selectedDay = selectDay[0];
+      }
+      let [selectMonth, , selectYear] = selectedDay.split("/");
 
       year = +selectYear;
       month = +selectMonth - 1;
-      setSelectedDay(selectDay);
     }
-
     setYears(Array.from({ length: 4 }, (_, index) => year + index));
     updateDateBaseOnCurrentMonth({ year, month });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -92,6 +116,24 @@ const Calendar = ({
       month,
     });
 
+    setLastDayOfCurrent(
+      `${formatDate({
+        date: getLastDayOfMonth({
+          year: updateCurrentYear,
+          month: updateCurrentMonth + 1,
+        }),
+        formatType: DateFormatTypeEnum.MM_DD_YYYY,
+      })}`
+    );
+    setFirstDayOfNext(
+      `${formatDate({
+        date: getFirtDayOfNextMonth({
+          year: updateCurrentYear,
+          month: updateCurrentMonth + 1,
+        }),
+        formatType: DateFormatTypeEnum.MM_DD_YYYY,
+      })}`
+    );
     setCurrentMonth(updateCurrentMonth);
     setCurrentYear(updateCurrentYear);
     setDayOfCurrentMonth(updateDayOfCurrentMonth);
@@ -127,10 +169,46 @@ const Calendar = ({
     );
   };
 
-  const handleSelectDay = (day) => {
-    setSelectedDay(day);
+  const checkIsSelectedDay = (day) => {
+    if (type === "List") {
+      return selectDay.includes(day);
+    }
+    return selectDay === day;
+  };
 
-    onSelectDate(day);
+  const getListClassName = ({ day, isCurrent }) => {
+    if (type === "Single") return "";
+    if (selectDay.length < 2) return "";
+    const [numMonth] = day.split("/");
+    const month = isCurrent ? currentMonth : nextMonth;
+    const isTheSameMonth = +numMonth === month + 1;
+    const isInBetween =
+      selectDay.length === 2 &&
+      isDateBetween({
+        dateToCheck: day,
+        startDate: selectDay[0],
+        endDate: selectDay[1],
+      });
+    let className = "";
+    if (isTheSameMonth) {
+      if (isInBetween) {
+        className += " first:rounded-s-full last:rounded-e-full bg-neutral-800";
+      }
+      if (day === selectDay[0]) {
+        className += " rounded-s-full bg-neutral-800";
+      } else if (day === selectDay[1]) {
+        className += " rounded-e-full bg-neutral-800";
+      }
+    }
+
+    if (isInBetween && day === firstDayOfNext) {
+      className += " bg-gradient-to-r from-neutral-800";
+    }
+    if (isInBetween && day !== selectDay[1] && day === lastDayOfCurrent) {
+      className += " bg-gradient-to-l from-neutral-800";
+    }
+
+    return className;
   };
 
   const handleDisplayDay = ({ isCurrent, days }) => {
@@ -154,18 +232,22 @@ const Calendar = ({
             const isInPrevMonth = +numMonth === currentMonth;
             const isInNotifications =
               Object.keys(notifications).length > 0 && !!notifications[day];
+
             return (
               <div
                 key={`${
                   isCurrent ? "Current" : "Next"
                 } day ${rowIndex} ${dayIndex}`}
+                className={getListClassName({ day, isCurrent })}
               >
                 <div
-                  onClick={() => handleSelectDay(day)}
+                  onClick={() => isTheSameMonth && onSelectDate(day)}
                   className={`${dayClass} ${
                     isTheSameMonth ? dayActiceClass : dayDisableClass
                   } ${
-                    selectedDay === day && isTheSameMonth && selectedDayClass
+                    checkIsSelectedDay(day) &&
+                    isTheSameMonth &&
+                    selectedDayClass
                   } 
                   ${
                     isInNotifications &&
@@ -179,6 +261,7 @@ const Calendar = ({
                     (isInNextMonth || isInPrevMonth) &&
                     "border rounded-full border-gray-700"
                   }
+                  
                   relative group`}
                 >
                   {numDay}

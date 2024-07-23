@@ -217,7 +217,13 @@ const getLastDayOfMonth = ({ year, month }) => {
   const nextMonth = new Date(year, month, 1);
   // Subtract one day to get the last day of the input month
   nextMonth.setDate(nextMonth.getDate() - 1);
-  return nextMonth.getDate();
+  return nextMonth;
+};
+
+const getFirtDayOfNextMonth = ({ year, month }) => {
+  // Create a date object for the first day of the next month
+  const nextMonth = new Date(year, month, 1);
+  return nextMonth;
 };
 
 module.exports = {
@@ -234,4 +240,5 @@ module.exports = {
   isAfterDate,
   getLastDayOfMonth,
   getWeekday,
+  getFirtDayOfNextMonth,
 };

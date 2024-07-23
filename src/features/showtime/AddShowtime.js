@@ -1,11 +1,13 @@
 import { Link } from "react-router-dom";
 import ShowtimeEdit from "./ShowtimeEdit";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { resetState } from "./showtimeSlice";
+import AddMultipleShowtime from "./AddMultipleShowtime";
 
 const AddShowtime = () => {
   const dispatch = useDispatch();
+  const [type, setType] = useState("Single");
   useEffect(() => {
     dispatch(resetState());
   }, [dispatch]);
@@ -20,7 +22,27 @@ const AddShowtime = () => {
       </div>
       {/* Body */}
       <div className="p-2 mobile:p-1">
-        <ShowtimeEdit />
+        <div className="flex gap-1">
+          <button
+            onClick={() => setType("Single")}
+            className={`border ${
+              type === "Single" ? "text-white" : "border-gray-600 text-gray-600"
+            } bg-gray-800 hover:bg-gray-900 font-medium rounded text-sm px-5 py-2.5 me-2 mb-2`}
+          >
+            Single
+          </button>
+          <button
+            onClick={() => setType("Multiple")}
+            className={`border ${
+              type === "Multiple"
+                ? "text-white"
+                : "border-gray-600 text-gray-600"
+            } bg-gray-800 hover:bg-gray-900 font-medium rounded text-sm px-5 py-2.5 me-2 mb-2`}
+          >
+            Multiple
+          </button>
+        </div>
+        {type === "Single" ? <ShowtimeEdit /> : <AddMultipleShowtime />}
       </div>
     </div>
   );
