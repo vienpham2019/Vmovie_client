@@ -163,11 +163,12 @@ const Review = () => {
             {totalReviews > limit && (
               <div className="flex justify-between items-center">
                 <div className="text-gray-300 font-thin text-[0.8rem] border border-gray-700 bg-slate-800 flex items-center h-[2rem] px-2 rounded-md">
-                  Showing 10 of {totalReviews}
+                  Showing {Object.keys(reviews.entities).length} of{" "}
+                  {totalReviews}
                 </div>
                 <Pagination
                   currentPage={page}
-                  totalPage={Math.ceil(totalReviews / 10)}
+                  totalPage={Math.ceil(totalReviews / limit)}
                   setCurrentPage={(page) => setPage(page)}
                 />
               </div>

@@ -62,7 +62,7 @@ const SelectMoviesModal = () => {
             <input
               type="text"
               className="input py-[1.4rem]"
-              placeholder="Find moive"
+              placeholder="Find movie"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />

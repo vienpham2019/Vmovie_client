@@ -1,11 +1,8 @@
 import { useEffect, useState } from "react";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import {
-  DateFormatTypeEnum,
-  formatDate,
   getAllDaysInMonth,
   getCurrentMonth,
-  getFirtDayOfNextMonth,
   getLastDayOfMonth,
   getLastMonth,
   getNextMonth,
@@ -35,8 +32,6 @@ const Calendar = ({
   const [nextMonth, setNextMonth] = useState(null);
   const [nextYear, setNextYear] = useState(null);
   const [daysOfNextMonth, setDayOfNextMonth] = useState([]);
-  const [lastDayOfCurrent, setLastDayOfCurrent] = useState();
-  const [firstDayOfNext, setFirstDayOfNext] = useState();
 
   const updateDateBaseOnCurrentMonth = ({ month, year }) => {
     const { year: updateNextYear, month: updateNextMonth } = getNextMonth({
@@ -51,18 +46,6 @@ const Calendar = ({
       year: updateNextYear,
       month: updateNextMonth,
     });
-    setLastDayOfCurrent(
-      `${formatDate({
-        date: getLastDayOfMonth({ year, month: month + 1 }),
-        formatType: DateFormatTypeEnum.MM_DD_YYYY,
-      })}`
-    );
-    setFirstDayOfNext(
-      `${formatDate({
-        date: getFirtDayOfNextMonth({ year, month: month + 1 }),
-        formatType: DateFormatTypeEnum.MM_DD_YYYY,
-      })}`
-    );
     setCurrentMonth(month);
     setCurrentYear(year);
     setDayOfCurrentMonth(updateDayOfCurrentMonth);
@@ -116,24 +99,6 @@ const Calendar = ({
       month,
     });
 
-    setLastDayOfCurrent(
-      `${formatDate({
-        date: getLastDayOfMonth({
-          year: updateCurrentYear,
-          month: updateCurrentMonth + 1,
-        }),
-        formatType: DateFormatTypeEnum.MM_DD_YYYY,
-      })}`
-    );
-    setFirstDayOfNext(
-      `${formatDate({
-        date: getFirtDayOfNextMonth({
-          year: updateCurrentYear,
-          month: updateCurrentMonth + 1,
-        }),
-        formatType: DateFormatTypeEnum.MM_DD_YYYY,
-      })}`
-    );
     setCurrentMonth(updateCurrentMonth);
     setCurrentYear(updateCurrentYear);
     setDayOfCurrentMonth(updateDayOfCurrentMonth);
@@ -179,7 +144,7 @@ const Calendar = ({
   const getListClassName = ({ day, isCurrent }) => {
     if (type === "Single") return "";
     if (selectDay.length < 2) return "";
-    const [numMonth] = day.split("/");
+    const [numMonth, , numYear] = day.split("/");
     const month = isCurrent ? currentMonth : nextMonth;
     const isTheSameMonth = +numMonth === month + 1;
     const isInBetween =
@@ -201,10 +166,21 @@ const Calendar = ({
       }
     }
 
-    if (isInBetween && day === firstDayOfNext) {
-      className += " bg-gradient-to-r from-neutral-800";
+    if (
+      isInBetween &&
+      day !== selectDay[0] &&
+      !isTheSameMonth &&
+      day.split("/")[1] === "01"
+    ) {
+      className += " first:rounded-s-full bg-gradient-to-r from-neutral-800";
     }
-    if (isInBetween && day !== selectDay[1] && day === lastDayOfCurrent) {
+    if (
+      isInBetween &&
+      day !== selectDay[1] &&
+      !isTheSameMonth &&
+      day.split("/")[1] ===
+        `${getLastDayOfMonth({ year: +numYear, month: +numMonth })}`
+    ) {
       className += " bg-gradient-to-l from-neutral-800";
     }
 

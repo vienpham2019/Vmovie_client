@@ -1,6 +1,5 @@
 import { useDispatch } from "react-redux";
 import { useGetAllMoviesInShowtimeQuery } from "../../features/showtime/showtimeApiSlice";
-import { convertMinutesToHoursAndMinutesString } from "../../util/time";
 import {
   modalComponentEnum,
   openModal,

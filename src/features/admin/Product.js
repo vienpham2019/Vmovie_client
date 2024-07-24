@@ -193,11 +193,12 @@ const Product = () => {
             {totalProducts > limit && (
               <div className="flex justify-between items-center">
                 <div className="text-gray-300 font-thin text-[0.8rem] border border-gray-700 bg-slate-800 flex items-center h-[2rem] px-2 rounded-md">
-                  Showing 10 of {totalProducts}
+                  Showing {Object.keys(products.entities).length} of{" "}
+                  {totalProducts}
                 </div>
                 <Pagination
                   currentPage={page}
-                  totalPage={Math.ceil(totalProducts / 10)}
+                  totalPage={Math.ceil(totalProducts / limit)}
                   setCurrentPage={(page) => setPage(page)}
                 />
               </div>

@@ -186,11 +186,12 @@ const Catalog = () => {
           {data.totalMovies > 10 && (
             <div className="flex justify-between items-center">
               <div className="text-gray-300 font-thin text-[0.8rem] border border-gray-700 bg-slate-800 flex items-center h-[2rem] px-2 rounded-md">
-                Showing 10 of {data.totalMovies}
+                Showing {Object.keys(data.movies.entities).length} of{" "}
+                {data.totalMovies}
               </div>
               <Pagination
                 currentPage={page}
-                totalPage={Math.ceil(data.totalMovies / 10)}
+                totalPage={Math.ceil(data.totalMovies / limit)}
                 setCurrentPage={(page) => setPage(page)}
               />
             </div>

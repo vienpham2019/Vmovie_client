@@ -76,7 +76,7 @@ const displayInput = ({
     content = (
       <input
         type={inputType}
-        className={`input ${formData[name].validate} border-gray-500`}
+        className={`input ${formData[name].validate} border-gray-500 `}
         value={formData[name].value}
         onChange={(e) => handleOnChange(e.target.value, name)}
       />

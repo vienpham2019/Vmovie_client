@@ -216,18 +216,6 @@ const Theater = () => {
             </div>
             {/* Theater List */}
             {handleDisplayTheater()}
-            {false && (
-              <div className="flex justify-between items-center">
-                <div className="text-gray-300 font-thin text-[0.8rem] border border-gray-700 bg-slate-800 flex items-center h-[2rem] px-2 rounded-md">
-                  Showing 10 of {0}
-                </div>
-                <Pagination
-                  currentPage={page}
-                  totalPage={Math.ceil(1 / 10)}
-                  setCurrentPage={(page) => setPage(page)}
-                />
-              </div>
-            )}
           </div>
         </div>
         {/* Body */}

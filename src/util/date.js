@@ -217,13 +217,33 @@ const getLastDayOfMonth = ({ year, month }) => {
   const nextMonth = new Date(year, month, 1);
   // Subtract one day to get the last day of the input month
   nextMonth.setDate(nextMonth.getDate() - 1);
-  return nextMonth;
+  return nextMonth.getDate();
 };
 
 const getFirtDayOfNextMonth = ({ year, month }) => {
   // Create a date object for the first day of the next month
   const nextMonth = new Date(year, month, 1);
   return nextMonth;
+};
+
+const countDaysBetween = (startDay, endDay) => {
+  // Convert date strings to Date objects
+  const startDate = new Date(startDay);
+  const endDate = new Date(endDay);
+
+  // Check if the given dates are valid
+  if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+    throw new Error("Invalid start date or end date");
+  }
+
+  // Calculate the difference in time between the two dates
+  const differenceInTime = endDate.getTime() - startDate.getTime();
+
+  // Convert the difference in time from milliseconds to days
+  const differenceInDays = differenceInTime / (1000 * 3600 * 24);
+
+  // Return the difference in days, adding 1 to include the end day
+  return Math.floor(differenceInDays) + 1;
 };
 
 module.exports = {
@@ -241,4 +261,5 @@ module.exports = {
   getLastDayOfMonth,
   getWeekday,
   getFirtDayOfNextMonth,
+  countDaysBetween,
 };
