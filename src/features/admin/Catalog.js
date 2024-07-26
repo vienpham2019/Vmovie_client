@@ -41,7 +41,10 @@ const Catalog = () => {
   };
 
   const handleDisplayMovie = () => {
-    if (Object.keys(data.movies.entities).length === 0) {
+    if (
+      !data?.movies?.entities ||
+      Object.keys(data.movies.entities).length === 0
+    ) {
       return (
         <div className="h-[30vh] flex justify-center items-center text-white">
           No movie
@@ -183,7 +186,7 @@ const Catalog = () => {
           </div>
           {/* Movie List */}
           {handleDisplayMovie()}
-          {data.totalMovies > 10 && (
+          {data?.totalMovies && data.totalMovies > 10 && (
             <div className="flex justify-between items-center">
               <div className="text-gray-300 font-thin text-[0.8rem] border border-gray-700 bg-slate-800 flex items-center h-[2rem] px-2 rounded-md">
                 Showing {Object.keys(data.movies.entities).length} of{" "}
