@@ -47,19 +47,20 @@ const NowPlaying = () => {
   const navigate = useNavigate();
   const [showtimeDates, setShowtimeDates] = useState([]);
   const [selectShowtimeDates, setSelectShowtimeDates] = useState();
-  const { data: { metadata: dates } = {} } = useGetAllShowtimeDatesQuery(
-    {},
-    {
-      pollingInterval: 120000, // 2min the data will fetch again
-      refertchOnFocus: true, // data will fetch when page on focus
-      refetchOnMountOrArgChange: true, // it will refresh data when remount component
-    }
-  );
+  const { data: { metadata: dates } = {}, isLoading } =
+    useGetAllShowtimeDatesQuery(
+      {},
+      {
+        pollingInterval: 300000, // 5min the data will fetch again
+        refertchOnFocus: true, // data will fetch when page on focus
+        refetchOnMountOrArgChange: true, // it will refresh data when remount component
+      }
+    );
   const { data: { metadata: showtimes } = [] } = useGetAllShowtimeByDateQuery(
     { date: selectShowtimeDates?.split("/").join("-") },
     {
       skip: !selectShowtimeDates,
-      pollingInterval: 120000, // 2min the data will fetch again
+      pollingInterval: 300000, // 5min the data will fetch again
       refertchOnFocus: true, // data will fetch when page on focus
       refetchOnMountOrArgChange: true, // it will refresh data when remount component
     }
@@ -155,6 +156,34 @@ const NowPlaying = () => {
     );
   };
 
+  if (isLoading)
+    return (
+      <div className="animate-pulse w-full p-2 flex flex-col gap-2 items-center">
+        <div className="flex flex-col gap-2 items-center">
+          <div class="h-[2rem] rounded-full bg-gray-700 w-[18rem] mb-4"></div>
+          <div className="flex gap-3 overflow-hidden">
+            {Array.from({ length: 4 }).map((i) => (
+              <div
+                key={`movie skeleton ${i}`}
+                class="h-[10rem] rounded bg-gray-700 w-[10rem] mb-4"
+              ></div>
+            ))}
+          </div>
+        </div>
+        <div class="h-[10rem] rounded bg-gray-700 w-[50%] mb-4"></div>
+        <div className="gird gap-2 max-w-[50rem]">
+          <div className="w-[50%]">
+            <div class="h-[2rem] rounded-full bg-gray-700 w-[18rem] mb-4"></div>
+            <div className="grid gap-2">
+              {Array.from({ length: 5 }).map((i) => (
+                <div class="h-[10rem] rounded bg-gray-700 w-[40rem] mb-4"></div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+
   return (
     <div className="relative w-full grid justify-center">
       <div className="absolute top-0 h-[30rem] w-full">
@@ -198,7 +227,7 @@ const NowPlaying = () => {
           </div>
 
           <div className={`flex gap-2`}>
-            {showtimeDates && showtimeDates.length > 5 ? (
+            {showtimeDates && showtimeDates?.length > 5 ? (
               <DateSlider
                 dates={showtimeDates}
                 handleSelecDay={setSelectShowtimeDates}

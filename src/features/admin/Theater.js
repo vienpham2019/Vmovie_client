@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Pagination from "../../components/Pagination";
 import { useNavigate } from "react-router-dom";
 import { SlMagnifier } from "react-icons/sl";
 import { MdAdd } from "react-icons/md";
@@ -26,7 +25,7 @@ import {
 const Theater = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [page, setPage] = useState(1);
+  const [page] = useState(1);
   const [search, setSearch] = useState("");
   const { modalResponse } = useSelector((state) => state.modal);
   const limit = 10;
