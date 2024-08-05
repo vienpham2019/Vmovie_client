@@ -24,20 +24,17 @@ const imageAddress =
 
 const news = [
   {
-    imgUrl:
-      "http://demo.amytheme.com/movie/demo/elementor-single-cinema/wp-content/uploads/sites/2/2022/05/img_59.jpg",
+    imgUrl: require("../img/img_56.jpg"),
     title: "Six book-to-film adaptations to get excited about this autumn",
     date: "April 28, 2022",
   },
   {
-    imgUrl:
-      "http://demo.amytheme.com/movie/demo/elementor-single-cinema/wp-content/uploads/sites/2/2022/05/img_57.jpg",
+    imgUrl: require("../img/img_57.jpg"),
     title: "The Beatles: Eight Days a Week – The Touring",
     date: "April 30, 2022",
   },
   {
-    imgUrl:
-      "http://demo.amytheme.com/movie/demo/elementor-single-cinema/wp-content/uploads/sites/2/2022/05/img_56.jpg",
+    imgUrl: require("../img/img_59.jpg"),
     title: "Win a Wizarding World holiday with Fantastic",
     date: "April 12, 2022",
   },
@@ -215,10 +212,7 @@ const NowPlaying = () => {
           <MovieSlider />
         </div>
         <div className="relative flex justify-center p-[1.9rem]">
-          <img
-            src="https://www.cinemark.com/media/vrwnzmvh/fmm_1080x360_er_sneak.jpg"
-            alt="new"
-          />
+          <img src={require("../img/fmm_1080x360_er_sneak.webp")} alt="new" />
         </div>
         <div className="flex flex-col gap-4">
           <div className="flex gap-2 items-end">
@@ -271,18 +265,18 @@ const NowPlaying = () => {
               <div className="flex gap-3">
                 <img
                   className="max-w-[5rem] h-fit"
-                  src="https://assets-in.bmscdn.com/discovery-catalog/events/tr:w-400,h-600,bg-CCCCCC/et00374973-zzhqldybgd-portrait.jpg"
+                  src={require("../img/newMovie3.webp")}
                   alt="Upcoming"
                 />
                 <div className="flex flex-col gap-2">
                   <img
                     className="max-w-[9rem] h-fit"
-                    src="https://staticctf.ubisoft.com/J3yJr34U2pZ2Ieem48Dwy9uqj5PNUQTn/18SUzqEXhDog0ArxeDn7xu/2239ffa86d8b85bb5a2ddc957f13edd6/AFOP_KEY_ART_WIDE_VERSION_UbisoftForward_June12th_2023_8.15pmCET-11.15amPT_1920x1080_A-SONY.jpg"
+                    src={require("../img/newMovie1.avif")}
                     alt="Upcoming"
                   />
                   <img
                     className="max-w-[9rem] h-fit"
-                    src="https://www.sonypictures-kinofinder.de/media/images/69ec4da0/gbfekinofinder1400x700ab.jpg"
+                    src={require("../img/newMovie2.jpg")}
                     alt="Upcoming"
                   />
                 </div>
@@ -315,7 +309,7 @@ const NowPlaying = () => {
               <hr className="border-gray-500" />
               <img
                 className="max-h-[12rem] w-fit"
-                src="http://demo.amytheme.com/movie/demo/elementor-single-cinema/wp-content/uploads/sites/2/2022/05/img_63.png"
+                src={require("../img/img_63.png")}
                 alt="ad"
               />
             </div>
