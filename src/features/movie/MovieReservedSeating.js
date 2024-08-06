@@ -32,6 +32,7 @@ const MovieReservedSeating = ({ setSelectedMenu }) => {
 
   const [dateOptions, setDateOptions] = useState([]);
   const [timeOptions, setTimeOptions] = useState([]);
+  const [theaterOptions, setTheaterOptions] = useState([]);
   const [seatGrid, setSeatGrid] = useState([]);
   const [takenSeats, setTakenSeats] = useState([]);
   const [prices, setPrices] = useState([
@@ -44,24 +45,57 @@ const MovieReservedSeating = ({ setSelectedMenu }) => {
   const [totalTickets, setTotalTickets] = useState();
   const [subTotal, setSubTotal] = useState(0);
   const [selectSeat, setSelectSeat] = useState([]);
+  const [selectedTheaterId, setSelectedTheaterId] = useState();
 
   const { data: { metadata: showtimeDetail } = {} } = useGetShowtimeQuery(
     {
       date: searchParams.get("date"),
       movieId,
-      time: searchParams.get("time"),
+      time: convertTo24Hour(searchParams.get("time")),
+      theaterId: selectedTheaterId,
     },
     {
-      skip: !searchParams.get("date") || !movieId || !searchParams.get("time"),
+      skip:
+        !searchParams.get("date") ||
+        !movieId ||
+        !searchParams.get("time") ||
+        !selectedTheaterId,
       refertchOnFocus: true, // data will fetch when page on focus
       refetchOnMountOrArgChange: true, // it will refresh data when remount component
     }
   );
 
+  const getTimeOptions = (date) => {
+    if (!showtimes?.length) return [];
+    const foundShowtimes =
+      showtimes.find((s) => s.date === date)?.showtimes || [];
+
+    return foundShowtimes.reduce((acc, curr) => {
+      const { startTime, theaterId, theaterName } = curr;
+      if (!acc[startTime]) {
+        acc[startTime] = [];
+      }
+      acc[startTime].push({ theaterId, theaterName });
+      return acc;
+    }, {});
+  };
+
   useEffect(() => {
     if (showtimes) {
-      setDateOptions(showtimes.map((s) => s.date));
-      setTimeOptions(showtimes[0].showtimes.map((time) => convertToAmPm(time)));
+      setDateOptions(showtimes.map(({ date }) => date));
+      const times = getTimeOptions(
+        searchParams.get("date") || showtimes[0].date
+      );
+      setTimeOptions(times);
+      const selectedTimeInit =
+        convertTo24Hour(searchParams.get("time")) || Object.keys(times)[0];
+      setTheaterOptions(
+        times[selectedTimeInit].map(({ theaterName }) => theaterName)
+      );
+      const foundTheater = times[selectedTimeInit].find(({ theaterName }) => {
+        return theaterName === searchParams.get("theater");
+      });
+      setSelectedTheaterId(foundTheater?.theaterId || null);
     }
   }, [showtimes]);
 
@@ -89,18 +123,50 @@ const MovieReservedSeating = ({ setSelectedMenu }) => {
       setSubTotal(subTotal);
       setTickets(initTickets);
       setTakenSeats(takenSeats);
-      setSelectSeat(stateTickets.seats);
+      setSelectSeat([]);
       setTotalTickets(stateTickets.seats.length);
       setPrices(initPrices);
       setSeatGrid(showtimeDetail.theaterId.grid);
     }
   }, [showtimeDetail, stateTickets]);
 
-  const handleChangeSearchParams = ({ key, value }) => {
-    setSelectSeat([]);
+  const handleChangeSearchParams = ({ date, time, theater }) => {
     setSearchParams(
       (prev) => {
-        prev.set(key, value);
+        const updateTimeAndTheaterOptions = ({ selectedTime, timeOptions }) => {
+          const convertedTime = convertTo24Hour(selectedTime);
+          const theaters = timeOptions[convertedTime].map(
+            ({ theaterName }) => theaterName
+          );
+          setTheaterOptions(theaters);
+          prev.set("theater", timeOptions[convertedTime][0].theaterName);
+          setSelectedTheaterId(timeOptions[convertedTime][0].theaterId);
+        };
+
+        if (date && prev.get("date") !== date) {
+          prev.set("date", date);
+          const times = getTimeOptions(date);
+          setTimeOptions(times);
+          const firstTime = convertToAmPm(Object.keys(times)[0]);
+          prev.set("time", firstTime);
+          updateTimeAndTheaterOptions({
+            selectedTime: firstTime,
+            timeOptions: times,
+          });
+        } else if (time && prev.get("time") !== time) {
+          prev.set("time", time);
+          updateTimeAndTheaterOptions({
+            selectedTime: time,
+            timeOptions: timeOptions,
+          });
+        } else if (theater && prev.get("theater") !== theater) {
+          prev.set("theater", theater);
+          setSelectedTheaterId(
+            timeOptions[convertTo24Hour(prev.get("time"))].find(
+              (t) => t.theaterName === theater
+            ).theaterId
+          );
+        }
         return prev;
       },
       { replace: true }
@@ -268,7 +334,7 @@ const MovieReservedSeating = ({ setSelectedMenu }) => {
                       placeHolder="Select Date"
                       border={"border border-gray-600"}
                       handleOnChange={(value) =>
-                        handleChangeSearchParams({ key: "date", value })
+                        handleChangeSearchParams({ date: value })
                       }
                     />
                   </div>
@@ -278,15 +344,34 @@ const MovieReservedSeating = ({ setSelectedMenu }) => {
                   <div className="w-[10rem]">
                     <Selection
                       formData={{
-                        value: convertToAmPm(searchParams.get("time")),
-                        options: timeOptions,
+                        value: searchParams.get("time"),
+                        options: Object.keys(timeOptions).map((k) =>
+                          convertToAmPm(k)
+                        ),
                       }}
                       placeHolder="Select Time"
                       border={"border border-gray-600"}
                       handleOnChange={(value) =>
                         handleChangeSearchParams({
-                          key: "time",
-                          value: convertTo24Hour(value),
+                          time: value,
+                        })
+                      }
+                    />
+                  </div>
+                </div>
+                <div>
+                  <span className="text-[0.9rem] font-thin">Chose Theater</span>
+                  <div className="w-[10rem]">
+                    <Selection
+                      formData={{
+                        value: searchParams.get("theater"),
+                        options: theaterOptions,
+                      }}
+                      placeHolder="Select Time"
+                      border={"border border-gray-600"}
+                      handleOnChange={(value) =>
+                        handleChangeSearchParams({
+                          theater: value,
                         })
                       }
                     />

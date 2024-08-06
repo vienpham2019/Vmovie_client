@@ -47,8 +47,8 @@ export const showtimeApiSlice = apiSlice.injectEndpoints({
       }),
     }),
     getShowtime: builder.query({
-      query: ({ date, movieId, time }) => ({
-        url: `/showtime/byDateAndTime?date=${date}&movieId=${movieId}&time=${time}`,
+      query: ({ date, movieId, time, theaterId }) => ({
+        url: `/showtime/byDateAndTime?date=${date}&movieId=${movieId}&time=${time}&theaterId=${theaterId}`,
       }),
     }),
     getAllShowtimeByDate: builder.query({

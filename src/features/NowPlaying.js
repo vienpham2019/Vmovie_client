@@ -64,6 +64,10 @@ const NowPlaying = () => {
   );
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
     if (dates) {
       const initDates = dates.map(({ date }) => date);
       setShowtimeDates(initDates);
@@ -132,12 +136,14 @@ const NowPlaying = () => {
             </div>
           </div>
           <div className="flex flex-wrap gap-2 max-w-[30rem]">
-            {times.map(({ startTime }, index) => {
+            {times.map(({ startTime, theaterName }, index) => {
               return (
                 <div
                   onClick={() =>
                     navigate(
-                      `/movies/${movieId}/getTicket?date=${selectShowtimeDates}&time=${startTime}`
+                      `/movies/${movieId}/getTicket?date=${selectShowtimeDates}&time=${convertToAmPm(
+                        startTime
+                      )}&theater=${theaterName}`
                     )
                   }
                   key={`Showtime ${startTime}` + index}
@@ -157,23 +163,26 @@ const NowPlaying = () => {
     return (
       <div className="animate-pulse w-full p-2 flex flex-col gap-2 items-center">
         <div className="flex flex-col gap-2 items-center">
-          <div class="h-[2rem] rounded-full bg-gray-700 w-[18rem] mb-4"></div>
+          <div className="h-[2rem] rounded-full bg-gray-700 w-[18rem] mb-4"></div>
           <div className="flex gap-3 overflow-hidden">
             {Array.from({ length: 4 }).map((i) => (
               <div
-                key={`movie skeleton ${i}`}
-                class="h-[10rem] rounded bg-gray-700 w-[10rem] mb-4"
+                key={`skeleton 1 ${i}`}
+                className="h-[10rem] rounded bg-gray-700 w-[10rem] mb-4"
               ></div>
             ))}
           </div>
         </div>
-        <div class="h-[10rem] rounded bg-gray-700 w-[50%] mb-4"></div>
+        <div className="h-[10rem] rounded bg-gray-700 w-[50%] mb-4"></div>
         <div className="gird gap-2 max-w-[50rem]">
           <div className="w-[50%]">
-            <div class="h-[2rem] rounded-full bg-gray-700 w-[18rem] mb-4"></div>
+            <div className="h-[2rem] rounded-full bg-gray-700 w-[18rem] mb-4"></div>
             <div className="grid gap-2">
               {Array.from({ length: 5 }).map((i) => (
-                <div class="h-[10rem] rounded bg-gray-700 w-[40rem] mb-4"></div>
+                <div
+                  key={`skeleton 2 ${i}`}
+                  className="h-[10rem] rounded bg-gray-700 w-[40rem] mb-4"
+                ></div>
               ))}
             </div>
           </div>
@@ -224,6 +233,7 @@ const NowPlaying = () => {
             {showtimeDates && showtimeDates?.length > 5 ? (
               <DateSlider
                 dates={showtimeDates}
+                selectedDate={selectShowtimeDates}
                 handleSelecDay={setSelectShowtimeDates}
               />
             ) : (

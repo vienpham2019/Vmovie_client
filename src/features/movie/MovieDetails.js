@@ -16,6 +16,7 @@ import { useGetAllShowtimeByMovieQuery } from "../showtime/showtimeApiSlice";
 import Selection from "../../components/form/Selection";
 import { FaRegHeart } from "react-icons/fa6";
 import { BiLike } from "react-icons/bi";
+import { convertTo24Hour, convertToAmPm } from "../../util/time";
 
 const MovieDetails = () => {
   const navigate = useNavigate();
@@ -49,21 +50,108 @@ const MovieDetails = () => {
   const [selectedDate, setSelectedDate] = useState();
   const [timeOptions, setTimeOptions] = useState([]);
   const [selectedTime, setSelectedTime] = useState();
+  const [thearerOptions, setTheaterOptions] = useState([]);
+  const [selectedTheater, setSelectedTheater] = useState();
+
+  const getTimeOptions = (date) => {
+    if (!showtimes?.length) return [];
+    const foundShowtimes =
+      showtimes.find((s) => s.date === date)?.showtimes || [];
+
+    return foundShowtimes.reduce((acc, curr) => {
+      const { startTime, theaterId, theaterName } = curr;
+      if (!acc[startTime]) {
+        acc[startTime] = [];
+      }
+      acc[startTime].push({ theaterId, theaterName });
+      return acc;
+    }, {});
+  };
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [movie]);
 
   useEffect(() => {
     if (showtimes && showtimes.length) {
-      setDateOptions(showtimes.map((s) => s.date));
+      setDateOptions(showtimes.map(({ date }) => date));
+      const times = getTimeOptions(showtimes[0].date);
       setSelectedDate(showtimes[0].date);
-      setTimeOptions(showtimes[0].showtimes);
-      setSelectedTime(showtimes[0].showtimes[0]);
+      setTimeOptions(times);
+      const selectedTimeInit = Object.keys(times)[0];
+      setSelectedTime(convertToAmPm(selectedTimeInit));
+      setTheaterOptions(
+        times[selectedTimeInit].map(({ theaterName }) => theaterName)
+      );
+      setSelectedTheater(times[selectedTimeInit][0].theaterName);
     }
   }, [showtimes]);
 
-  if (isLoading) return <div>Loading</div>;
+  if (isLoading)
+    return (
+      <div className="animate-pulse w-full p-2 flex flex-col gap-2 items-center">
+        <div className="w-[80rem]">
+          <div className="flex gap-2">
+            <div className="h-[25rem] w-[15rem] rounded bg-gray-700 mb-4"></div>
+            <div className="flex flex-col flex-1 gap-4 justify-end mb-4">
+              <div className="h-[1.4rem] w-[70%] rounded bg-gray-700 "></div>
+              <div className="flex flex-col gap-2">
+                <div className="h-[1rem] w-[10rem] rounded bg-gray-700"></div>
+                <div className="h-[1rem] w-[10rem] rounded bg-gray-700"></div>
+                <div className="h-[1rem] w-[10rem] rounded bg-gray-700"></div>
+              </div>
+              <div className="h-[4rem]  w-[50%] rounded bg-gray-700 "></div>
+              <div className="flex flex-col gap-2">
+                <div className="h-[1rem]  w-[40%] rounded bg-gray-700"></div>
+                <div className="h-[1rem]  w-[40%] rounded bg-gray-700"></div>
+                <div className="h-[1rem]  w-[40%] rounded bg-gray-700"></div>
+                <div className="h-[1rem]  w-[40%] rounded bg-gray-700"></div>
+              </div>
+            </div>
+          </div>
+          <div className="h-[7rem] w-full rounded bg-gray-700 mb-4"></div>
+          <div className="h-[15rem] w-full rounded bg-gray-700 mb-4"></div>
+          <div className="h-[8rem] w-full rounded bg-gray-700 mb-4"></div>
+          <div className="h-[10rem] w-full rounded bg-gray-700 mb-4"></div>
+        </div>
+      </div>
+    );
   if (isError) {
     navigate("notfound");
     return;
   }
+
+  const handleSelectTickets = ({ date, time, theater }) => {
+    const updateTimeAndTheaterOptions = ({ selectedTime, timeOptions }) => {
+      const convertedTime = convertTo24Hour(selectedTime);
+      const theaters = timeOptions[convertedTime].map(
+        ({ theaterName }) => theaterName
+      );
+      setTheaterOptions(theaters);
+      setSelectedTheater(timeOptions[convertedTime][0].theaterName);
+    };
+
+    if (date && selectedDate !== date) {
+      setSelectedDate(date);
+      const times = getTimeOptions(date);
+      setTimeOptions(times);
+      const firstTime = convertToAmPm(Object.keys(times)[0]);
+      setSelectedTime(firstTime);
+      updateTimeAndTheaterOptions({
+        selectedTime: firstTime,
+        timeOptions: times,
+      });
+    } else if (time && selectedTime !== time) {
+      setSelectedTime(time);
+      updateTimeAndTheaterOptions({
+        selectedTime: time,
+        timeOptions: timeOptions,
+      });
+    } else if (theater && selectedTheater !== theater) {
+      setSelectedTheater(theater);
+    }
+  };
+
   return (
     <div className="bg-black flex justify-center overflow-x-hidden font-sans pb-[2rem]">
       <div className={`w-[80rem] py-3 grid gap-4 relative`}>
@@ -236,7 +324,9 @@ const MovieDetails = () => {
                       }}
                       placeHolder="Select Date"
                       border={"border border-gray-600"}
-                      handleOnChange={(value) => setSelectedDate(value)}
+                      handleOnChange={(value) =>
+                        handleSelectTickets({ date: value })
+                      }
                     />
                   </div>
                 </div>
@@ -246,11 +336,31 @@ const MovieDetails = () => {
                     <Selection
                       formData={{
                         value: selectedTime,
-                        options: timeOptions,
+                        options: Object.keys(timeOptions).map((k) =>
+                          convertToAmPm(k)
+                        ),
                       }}
                       placeHolder="Select Time"
                       border={"border border-gray-600"}
-                      handleOnChange={(value) => setSelectedDate(value)}
+                      handleOnChange={(value) =>
+                        handleSelectTickets({ time: value })
+                      }
+                    />
+                  </div>
+                </div>
+                <div>
+                  <span className="text-[0.9rem] font-thin">Chose Theater</span>
+                  <div className="w-[10rem]">
+                    <Selection
+                      formData={{
+                        value: selectedTheater,
+                        options: thearerOptions,
+                      }}
+                      placeHolder="Select Time"
+                      border={"border border-gray-600"}
+                      handleOnChange={(value) =>
+                        handleSelectTickets({ theater: value })
+                      }
                     />
                   </div>
                 </div>
@@ -258,7 +368,7 @@ const MovieDetails = () => {
                 <button
                   onClick={() => {
                     navigate(
-                      `/movies/${movieId}/getTicket?date=${selectedDate}&time=${selectedTime}`
+                      `/movies/${movieId}/getTicket?date=${selectedDate}&time=${selectedTime}&theater=${selectedTheater}`
                     );
                   }}
                   className="btn-blue w-[10rem] flex justify-center items-center gap-2"

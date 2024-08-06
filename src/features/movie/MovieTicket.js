@@ -39,7 +39,30 @@ const MovieTicket = () => {
     }
   }, [dispatch, movie]);
 
-  if (isLoading || !movie) return <div>Loading</div>;
+  if (isLoading || !movie)
+    return (
+      <div className="animate-pulse w-full p-2 flex flex-col gap-2 items-center">
+        <div className="w-[80rem] flex flex-col gap-4">
+          <div className="flex gap-4">
+            <div className="h-[10rem] w-[8rem] rounded bg-gray-700"></div>
+            <div className="flex flex-col justify-end flex-1 gap-3">
+              <div className="h-[2rem] w-full rounded bg-gray-700"></div>
+              <div className="h-[3rem] w-full rounded bg-gray-700"></div>
+            </div>
+          </div>
+          <div className="h-[5rem] w-full rounded bg-gray-700"></div>
+          <div className="h-[40rem] w-full flex gap-4">
+            <div className="h-full w-[18rem] rounded bg-gray-700"></div>
+            <div className="h-full w-full rounded bg-gray-700"></div>
+          </div>
+          <div className="h-[20rem] w-full flex gap-4">
+            <div className="h-full w-full rounded bg-gray-700"></div>
+            <div className="h-full w-full rounded bg-gray-700"></div>
+          </div>
+        </div>
+      </div>
+    );
+
   return (
     <div
       className="overflow-x-hidden font-sans bg-fixed bg-center bg-cover"
